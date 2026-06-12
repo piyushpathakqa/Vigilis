@@ -6,13 +6,13 @@
 
 1. Read `AGENTS.md`, then this file, then `docs/DESIGN.md`. The design is locked — don't
    re-litigate it; just build the next ticket.
-2. **M1, M2 done; M3 in progress — Triage (`TRE-38`) is done.** Next: **`TRE-39` (Heal)** — take a
-   `dom-drift` verdict, rewrite the spec's stale selector to the suggested one, re-run to verify
-   green, and open a PR. ⚠️ Heal opens **real pull requests** — confirm scope/permissions before
-   building. Then `TRE-40` (seeded-drift demo + real-bug negative case) and `TRE-41` (CI wiring:
-   on-failure triage → conditional heal-PR job).
-3. Done: M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), and M3 ~~TRE-38 (Triage)~~. `argus triage <url>
-   --spec … ` returns a structured `real-bug` / `dom-drift` / `flake` verdict.
+2. **M1, M2 done; M3 — Triage + Heal both done.** The self-healing loop is built:
+   `argus heal <url> --spec …` triages, and only on `dom-drift` rewrites the locator, verifies
+   green, and **opens a real PR** (full-auto, user-approved). Next: **`TRE-40`** — the seeded-drift
+   demo (mutate a sample-shop `data-testid` → the committed spec fails → run heal → watch the PR
+   open) **+ a real-bug negative case** (heal refuses). Then **`TRE-41`** — CI wiring (on-failure
+   triage → conditional heal-PR job) closes M3.
+3. Done: M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 ~~TRE-38 (Triage)~~ + ~~TRE-39 (Heal)~~.
 4. **Before claiming any task done, run and pass:**
    ```bash
    pnpm lint && pnpm typecheck && pnpm test && pnpm build
@@ -26,13 +26,12 @@
 
 - **M0 (Foundations) is complete and verified.** The monorepo builds, typechecks, lints, and
   tests green. The `argus` CLI runs with placeholder commands.
-- **M1 + M2 complete; M3 underway.** M1: `argus generate <url> --run` writes + runs a green spec on
-  any app. M2: the **`QA Gate`** workflow runs generated specs against sample-shop on every push
-  (green; uploads trace/screenshots on failure). **M3 so far — Triage (`TRE-38`):** `argus triage
-  <url> --spec …` reads the failing spec, inspects the live DOM, and returns a structured
-  `real-bug` / `dom-drift` / `flake` verdict (with a suggested selector for drift). Core suite:
-  **52 passing tests**.
-- **Next: `TRE-39` (Heal)** — rewrite the drifted locator, verify green, open a PR.
+- **M1 + M2 complete; M3 — Triage + Heal done.** The full self-healing loop works:
+  `argus heal <url> --spec …` triages a failure and, **only on `dom-drift`**, rewrites the stale
+  locator, **re-runs to verify green (independent of the agent)**, and opens a real PR.
+  `real-bug` is refused (gate stays blocked). M1/M2 unchanged (generate + the `QA Gate`). Core
+  suite: **55 passing tests**.
+- **Next: `TRE-40`** (seeded-drift demo + real-bug negative case), then `TRE-41` (CI wiring) — closes M3.
 - **Pushed to GitHub** (2026-06-12): `main` tracks `origin/main`, CI runs on push. No blocking chores.
 
 ## What exists right now
@@ -42,7 +41,7 @@
 pnpm install     # ✓ 292 packages
 pnpm lint        # ✓ eslint clean
 pnpm typecheck   # ✓ tsc --noEmit, all 4 packages
-pnpm test        # ✓ vitest — core 52/52 pass (incl. 4 real-chromium); mcp/cli pass-with-no-tests
+pnpm test        # ✓ vitest — core 55/55 pass (incl. 4 real-chromium); mcp/cli pass-with-no-tests
 pnpm build       # ✓ tsup (core/mcp/cli) + next build (sample-shop: 5 routes + middleware)
 node packages/cli/dist/index.js --help     # ✓ prints command surface (now incl. `smoke`)
 pnpm --filter @argus/sample-shop dev        # ✓ serves login → products → cart on :3100
@@ -237,8 +236,22 @@ Spec: `docs/superpowers/specs/2026-06-12-triage-behavior-design.md`.
 - **`argus triage <url> --spec … [--error …] [--report …]`** — prints the verdict + rationale +
   suggested selector; exits non-zero on `real-bug` (gate stays blocked), zero on drift/flake.
 
-Next (`TRE-39`, Heal): consume a `dom-drift` verdict's `suggestedSelector`, rewrite the spec,
-re-run to verify green, and open a PR. **Opens real PRs — checkpoint before building.**
+## Done: `TRE-39` (Heal behavior) — M3 part 2
+
+Spec: `docs/superpowers/specs/2026-06-12-heal-behavior-design.md`.
+- **`heal()`** (`behaviors/heal.ts`) — agent rewrites the stale locator to the verdict's
+  `suggestedSelector` (`fs_write`), then the behavior **independently re-runs the spec**
+  (`ctx.runner.run`) — `verified = changed && failed === 0`. The agent's claim is never trusted.
+- **`createHealPr()`** (`runtime/git.ts`) — deterministic `git checkout -b → add → commit → push →
+  gh pr create` (injectable exec, unit-tested). The outward action lives in the harness, not an
+  agent tool.
+- **`argus heal <url> --spec … [--no-pr]`** — triages first; **`real-bug` → refused (exit 1)**,
+  `flake` → no-op, only `dom-drift` heals → verify → open a real PR (or `--no-pr` for a local
+  branch). Full-auto PR opening was user-approved.
+
+Next (`TRE-40`): seed a `data-testid` drift in sample-shop, let the committed spec fail, run the
+heal flow, and watch the PR open — plus a real-bug case proving Heal refuses. **Running it live
+opens a real PR / costs API — checkpoint before the live demo.**
 
 ## Process notes
 - Design is locked in `docs/DESIGN.md`. Tickets in Linear mirror `docs/ROADMAP.md`.
