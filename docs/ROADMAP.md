@@ -51,3 +51,4 @@ The agent core + a controllable target app + autonomous test generation.
 | `TRE-43` | MCP usage docs + Claude Desktop/Code config snippet | ⬜ |
 | `TRE-44` | README polish: architecture diagram, quickstart, "use it on your own app" | ⬜ |
 | `TRE-45` | Record demo GIFs: generate, CI gate red→green, self-heal PR | ⬜ |
+| `TRE-46` | Treeship showcase: optional, decoupled provenance receipts over the loop (zero-dep CLI `wrap`; optional SDK observer behind a flag) | ⬜ |
