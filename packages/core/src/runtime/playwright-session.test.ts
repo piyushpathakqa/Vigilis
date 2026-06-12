@@ -49,8 +49,10 @@ describe('PlaywrightBrowserSession (chromium)', () => {
     await handle!.session.click('[data-testid="go"]');
   });
 
-  it.skipIf(!hasBrowser)('snapshots the page html', async () => {
-    await handle!.page.setContent(HTML);
-    expect(await handle!.session.snapshot()).toContain('data-testid="title"');
+  it.skipIf(!hasBrowser)('snapshots cleaned page html (testids in, scripts out)', async () => {
+    await handle!.page.setContent(`${HTML}<script>window.__SECRET__ = 42;</script>`);
+    const snap = await handle!.session.snapshot();
+    expect(snap).toContain('data-testid="title"');
+    expect(snap).not.toContain('__SECRET__');
   });
 });

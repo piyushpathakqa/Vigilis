@@ -1,8 +1,7 @@
 import { chromium } from 'playwright';
 import type { Browser, Page } from 'playwright';
 import type { BrowserSession, DomMatch } from '../tools/types';
-
-const SNAPSHOT_LIMIT = 20000;
+import { trimHtml } from './html';
 
 export class PlaywrightBrowserSession implements BrowserSession {
   constructor(private readonly page: Page) {}
@@ -17,8 +16,7 @@ export class PlaywrightBrowserSession implements BrowserSession {
     await this.page.locator(selector).first().fill(text);
   }
   async snapshot(): Promise<string> {
-    const html = await this.page.content();
-    return html.length > SNAPSHOT_LIMIT ? html.slice(0, SNAPSHOT_LIMIT) : html;
+    return trimHtml(await this.page.content());
   }
   async query(selector: string): Promise<DomMatch[]> {
     return this.page.locator(selector).evaluateAll((els) =>
