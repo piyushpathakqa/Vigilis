@@ -6,17 +6,16 @@
 
 1. Read `AGENTS.md`, then this file, then `docs/DESIGN.md`. The design is locked — don't
    re-litigate it; just build the next ticket.
-2. **Next ticket: `TRE-34`** — prompt & context engineering for Generate: replace the v1
-   `GENERATE_SYSTEM` (in `packages/core/src/behaviors/generate.ts`) with a tuned prompt + better
-   DOM snapshots (the current `browser_snapshot` is raw truncated HTML). `TRE-30`–`TRE-33` are
-   done — see [What exists right now](#what-exists-right-now).
-3. Work the M1 order: ~~`TRE-30`~~ → ~~`TRE-31`~~ → ~~`TRE-32`~~ → ~~`TRE-33` (Generate)~~ →
-   `TRE-34` (prompts). That closes M1.
+2. **M1 is complete.** Next milestone: **M2 (`TRE-24`)** — CLI hardening + GitHub Actions gate:
+   `TRE-35` (CLI commands), `TRE-36` (Actions: build sample-shop + run Playwright as a required
+   gate), `TRE-37` (artifact pipeline → trace/screenshots/logs for Triage). The `AgentObserver`
+   seam (TRE-32) and `PlaywrightTestRunner` are the hooks TRE-37 builds on.
+3. M1 order (all done): ~~`TRE-30`~~ → ~~`TRE-31`~~ → ~~`TRE-32`~~ → ~~`TRE-33`~~ → ~~`TRE-34`~~.
 4. **Before claiming any task done, run and pass:**
    ```bash
    pnpm lint && pnpm typecheck && pnpm test && pnpm build
    ```
-5. Commit per ticket with a message like `M1: <what> (TRE-34)`. If `pnpm` is missing:
+5. Commit per ticket with a message like `M2: <what> (TRE-36)`. If `pnpm` is missing:
    `corepack enable && corepack prepare pnpm@9.15.0 --activate`.
 
 ---
@@ -25,12 +24,12 @@
 
 - **M0 (Foundations) is complete and verified.** The monorepo builds, typechecks, lints, and
   tests green. The `argus` CLI runs with placeholder commands.
-- **M1 nearly done: `TRE-30`–`TRE-33` complete and verified.** sample-shop + Tool Registry +
-  hand-rolled `runAgentLoop` + real Playwright runtime + the **Generate behavior**: `generate()`
-  drives the loop to write a runnable Playwright spec, and `argus generate <url> --run` writes it
-  AND runs it green. Core suite: **43 passing tests** (incl. 4 real-chromium). Only `TRE-34`
-  (prompt/context tuning) remains in M1.
-- **Next task: `TRE-34`** — tune the Generate system prompt + DOM context.
+- **M1 is COMPLETE (`TRE-30`–`TRE-34`) and verified.** sample-shop + Tool Registry + hand-rolled
+  `runAgentLoop` + real Playwright runtime + the **Generate behavior** with a tuned prompt and a
+  cleaned (`trimHtml`) DOM snapshot. `argus generate <url> --run [--base-url …]` explores **any**
+  app and writes + runs a green Playwright spec. Core suite: **47 passing tests** (incl. 4
+  real-chromium). Pushed to GitHub; CI green.
+- **Next milestone: M2** — CLI + GitHub Actions deployment gate (`TRE-35/36/37`).
 - **Pushed to GitHub** (2026-06-12): `main` tracks `origin/main`, CI runs on push. No blocking chores.
 
 ## What exists right now
@@ -40,7 +39,7 @@
 pnpm install     # ✓ 292 packages
 pnpm lint        # ✓ eslint clean
 pnpm typecheck   # ✓ tsc --noEmit, all 4 packages
-pnpm test        # ✓ vitest — core 43/43 pass (incl. 4 real-chromium); mcp/cli pass-with-no-tests
+pnpm test        # ✓ vitest — core 47/47 pass (incl. 4 real-chromium); mcp/cli pass-with-no-tests
 pnpm build       # ✓ tsup (core/mcp/cli) + next build (sample-shop: 5 routes + middleware)
 node packages/cli/dist/index.js --help     # ✓ prints command surface (now incl. `smoke`)
 pnpm --filter @argus/sample-shop dev        # ✓ serves login → products → cart on :3100
@@ -52,7 +51,7 @@ pnpm --filter @argus/sample-shop dev        # ✓ serves login → products → 
 ### Package inventory
 | Package | State | Notes |
 |---------|-------|-------|
-| `@argus/core` | **loop + runtime + Generate (`TRE-31`–`TRE-33`)** | Tool Registry (10 Zod tools) + hand-rolled `runAgentLoop` + `AgentObserver`/`ConsoleObserver` + real `PlaywrightBrowserSession`/`PlaywrightTestRunner` + the **`generate()` behavior** (`specPathForUrl` → loop writes a runnable spec, captures `fs_write` paths). `@anthropic-ai/sdk@^0.104.1` + `playwright@^1.60.0`. Triage/Heal land in M3. |
+| `@argus/core` | **M1 complete (`TRE-31`–`TRE-34`)** | Tool Registry (10 Zod tools) + hand-rolled `runAgentLoop` + `AgentObserver`/`ConsoleObserver` + real `PlaywrightBrowserSession`/`PlaywrightTestRunner` + `trimHtml` cleaned snapshots + the **`generate()` behavior** (tuned prompt, deterministic path, `fs_write` capture). `@anthropic-ai/sdk@^0.104.1` + `playwright@^1.60.0`. Triage/Heal land in M3. |
 | `@argus/mcp` | stub | `describeServer()` placeholder. Real stdio MCP server = `TRE-42` (M4). |
 | `@argus/cli` | **`generate` + `smoke` live** | `argus generate <url> [--run]` writes a runnable spec (and runs it); `argus smoke <url>` watches the loop. `author/triage/heal` are still placeholders (M3). |
 | `@argus/sample-shop` | **built (`TRE-30`)** | Next.js App Router app: `/login` (server-action gate, demo/demo) → `/products` (static Server Component catalog) → `/cart` (client context, live badge). `src/middleware.ts` enforces the gate. In-memory state, no DB. Stable `data-testid`s documented in its README — the contract M3 drifts for the self-heal demo. Runs on port 3100. |
@@ -183,11 +182,26 @@ node --env-file=.env packages/cli/dist/index.js generate http://localhost:3100/l
 Writes `tests/generated/login.spec.ts` and runs it green against sample-shop (~$0.50 on Opus, or
 add `--model claude-haiku-4-5` for ~10¢). Needs an API key + chromium.
 
-## Next: M1 — `TRE-34` (Generate prompt & context engineering)
+## Done: `TRE-34` (Generate prompt & context engineering) — closes M1
 
-Tune the v1 `GENERATE_SYSTEM` and improve the DOM context the agent sees (today `browser_snapshot`
-is raw truncated HTML — a trimmed, structured snapshot or accessibility tree would write better
-specs for less cost). Closes M1.
+Spec: `docs/superpowers/specs/2026-06-12-generate-context-design.md`.
+- **`trimHtml`** (`packages/core/src/runtime/html.ts`, exported, unit-tested) — strips
+  scripts/styles/links/comments and collapses whitespace; `browser_snapshot` now returns this
+  cleaned HTML (token-efficient, keeps the title + `data-testid`s). Verified via the chromium
+  session test (script content stripped).
+- **`GENERATE_SYSTEM`** tightened: web-first auto-waiting assertions only (no `waitForTimeout`),
+  prove login by asserting a post-login element (not a URL regex), one focused deterministic test.
+
+Also shipped in the same sweep (a TRE-44 slice): **`argus generate --base-url <url>`** + an
+env-driven `playwright.config.ts` baseURL, so `--run` works against **any** app (auto-starts
+sample-shop only when targeting `:3100`). And the AI-generated `tests/generated/login.spec.ts` is
+committed as a demo artifact (excluded from lint; not run by CI).
+
+## Bonus: a real generated test (committed)
+
+`tests/generated/login.spec.ts` was written by `argus generate … --model claude-haiku-4-5` (4
+steps, ~$0.03) and passes against sample-shop (`2 passed, 0 failed`). It logs in with discovered
+`demo`/`demo` creds and asserts via `getByTestId` — a tangible "AI wrote my test" artifact.
 
 ## Process notes
 - Design is locked in `docs/DESIGN.md`. Tickets in Linear mirror `docs/ROADMAP.md`.

@@ -15,7 +15,7 @@ Stand up the monorepo so every later package has a home.
 | `TRE-28` | Build pipeline (tsup) + Vitest + lint/typecheck CI stub | ✅ |
 | `TRE-29` | Repo meta: README skeleton, MIT LICENSE, .env.example, .gitignore, initial commit | ✅ |
 
-## M1 — Core + sample-shop + Generate · `TRE-23` (first wow)
+## M1 — Core + sample-shop + Generate · `TRE-23` ✅ (first wow)
 The agent core + a controllable target app + autonomous test generation.
 
 | Ticket | Title | Status |
@@ -24,7 +24,10 @@ The agent core + a controllable target app + autonomous test generation.
 | `TRE-31` | Tool Registry: browser / dom / fs / playwright tool definitions | ✅ |
 | `TRE-32` | @argus/core: Claude agent loop (Messages API + tool-use orchestration) | ✅ |
 | `TRE-33` | Generate behavior: explore app → emit runnable Playwright specs | ✅ |
-| `TRE-34` | Prompt & context engineering for Generate (system prompt + DOM snapshot) | 🔜 **next** |
+| `TRE-34` | Prompt & context engineering for Generate (system prompt + DOM snapshot) | ✅ |
+
+**M1 complete** ✅ — Argus writes runnable Playwright specs from a URL (`argus generate <url> --run`),
+on any app (`--base-url`). Next milestone: **M2 (`TRE-24`)** — CLI + GitHub Actions gate.
 
 ## M2 — CLI + GitHub Actions gate · `TRE-24` (CI/CD story)
 
