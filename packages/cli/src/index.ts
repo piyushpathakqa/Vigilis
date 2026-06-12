@@ -5,16 +5,19 @@
  * M0 scaffold: wires up the command surface with placeholder actions. Real
  * behaviors land in M1–M3 (generate: TRE-33, triage: TRE-38, heal: TRE-39).
  */
+import { readFile } from 'node:fs/promises';
 import { Command } from 'commander';
 import {
   ConsoleObserver,
   createAnthropicClient,
   createDefaultRegistry,
   createPlaywrightSession,
+  extractFailures,
   generate,
   PlaywrightTestRunner,
   resolveModel,
   runAgentLoop,
+  triage,
 } from '@argus/core';
 
 const program = new Command();
@@ -106,11 +109,76 @@ program
 
 program
   .command('triage')
-  .argument('<runDir>', 'Path to a failed run directory')
-  .description('Classify a failure: real bug, DOM drift, or flake')
-  .action((runDir: string) => {
-    console.log(`[argus] triage ${runDir} — not implemented yet (M3, TRE-38).`);
-  });
+  .argument('<url>', 'URL of the app under test')
+  .option('--spec <path>', 'the failing spec file')
+  .option('--error <text>', 'the Playwright failure message')
+  .option('--report <path>', 'a Playwright JSON report to extract the first failure from')
+  .option('--model <id>', 'model id (default: primary/Opus)')
+  .description(
+    'Classify a failed test: real-bug, DOM drift, or flake (needs ANTHROPIC_API_KEY + chromium)',
+  )
+  .action(
+    async (
+      url: string,
+      opts: { spec?: string; error?: string; report?: string; model?: string },
+    ) => {
+      let specPath = opts.spec;
+      let errorText = opts.error;
+      if (opts.report) {
+        const report = JSON.parse(await readFile(opts.report, 'utf8'));
+        const failures = extractFailures(report);
+        if (failures.length === 0) {
+          console.log('[argus] no failures found in the report.');
+          return;
+        }
+        specPath = failures[0]!.specPath;
+        errorText = failures[0]!.error;
+        console.log(`[argus] triaging: ${failures[0]!.title} (${specPath})`);
+      }
+      if (!specPath) {
+        console.error('[argus] provide --spec <path> or --report <playwright.json>');
+        process.exitCode = 1;
+        return;
+      }
+
+      const model = opts.model ?? resolveModel('primary');
+      const { session, close } = await createPlaywrightSession({ headless: true });
+      const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
+      try {
+        const result = await triage({
+          client: createAnthropicClient(),
+          specPath,
+          url,
+          errorText,
+          ctx: { workspaceRoot: process.cwd(), browser: session, runner },
+          model,
+          observer: new ConsoleObserver(),
+        });
+        const v = result.verdict;
+        if (!v) {
+          console.log('\n[argus] no verdict produced.');
+          process.exitCode = 1;
+        } else {
+          console.log(`\n[argus] verdict: ${v.verdict} (${v.confidence})`);
+          console.log(`[argus] rationale: ${v.rationale}`);
+          if (v.suggestedSelector) {
+            console.log(`[argus] suggested selector: ${v.suggestedSelector}`);
+          }
+          // real-bug must block the gate; drift/flake are recoverable.
+          if (v.verdict === 'real-bug') process.exitCode = 1;
+        }
+        const price = PRICES[model];
+        const cost = price
+          ? `$${((result.run.usage.inputTokens / 1e6) * price.in + (result.run.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
+          : 'n/a';
+        console.log(
+          `[argus] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
+        );
+      } finally {
+        await close();
+      }
+    },
+  );
 
 program
   .command('heal')
