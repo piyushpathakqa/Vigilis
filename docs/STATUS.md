@@ -2,6 +2,23 @@
 
 > **Read this to resume work with zero context loss.** Last updated: 2026-06-12.
 
+## ▶ To continue right now (start here)
+
+1. Read `AGENTS.md`, then this file, then `docs/DESIGN.md`. The design is locked — don't
+   re-litigate it; just build the next ticket.
+2. **Next ticket: `TRE-30`** — build the `sample-shop` Next.js app. Full spec in the
+   [Next: M1](#next-m1--tre-30-sample-shop-nextjs-app) section below.
+3. Work the M1 order: `TRE-30` (app) → `TRE-31` (Tool Registry) → `TRE-32` (agent loop) →
+   `TRE-33` (Generate) → `TRE-34` (prompts).
+4. **Before claiming any task done, run and pass:**
+   ```bash
+   pnpm lint && pnpm typecheck && pnpm test && pnpm build
+   ```
+5. Commit per ticket with a message like `M1: <what> (TRE-30)`. If `pnpm` is missing:
+   `corepack enable && corepack prepare pnpm@9.15.0 --activate`.
+
+---
+
 ## TL;DR
 
 - **M0 (Foundations) is complete and verified.** The monorepo builds, typechecks, lints, and
