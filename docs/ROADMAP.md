@@ -41,14 +41,18 @@ on any app (`--base-url`).
 on every push/PR (red on failure, with the trace uploaded). Next milestone: **M3 (`TRE-25`)** —
 Triage + self-healing PRs.
 
-## M3 — Triage + Heal · `TRE-25` (self-healing showcase)
+## M3 — Triage + Heal · `TRE-25` ✅ (self-healing showcase)
 
 | Ticket | Title | Status |
 |--------|-------|--------|
 | `TRE-38` | Triage behavior: classify bug vs drift vs flake | ✅ |
 | `TRE-39` | Heal behavior: rewrite locator, verify green, open a PR | ✅ |
-| `TRE-40` | Demo scenario: seeded data-testid drift + a real-bug negative case | 🔜 **next** |
-| `TRE-41` | CI wiring: on-failure triage job → conditional heal-PR job | ⬜ |
+| `TRE-40` | Demo scenario: seeded data-testid drift + a real-bug negative case | ✅ |
+| `TRE-41` | CI wiring: on-failure triage job → conditional heal-PR job | ✅ (manual-dispatch `self-heal.yml`; auto-trigger documented) |
+
+**M3 complete** ✅ — Triage + self-healing. `argus heal` fixes DOM drift (→ PR) and refuses real
+bugs; sample-shop has seeded drift/bug toggles + `docs/DEMO.md`. Next: **M4 (`TRE-26`)** — MCP
+server + README/demo polish.
 
 ## M4 — MCP server + README/demo polish · `TRE-26` (others can use it)
 

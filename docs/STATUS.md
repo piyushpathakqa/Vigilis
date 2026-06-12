@@ -6,13 +6,13 @@
 
 1. Read `AGENTS.md`, then this file, then `docs/DESIGN.md`. The design is locked — don't
    re-litigate it; just build the next ticket.
-2. **M1, M2 done; M3 — Triage + Heal both done.** The self-healing loop is built:
-   `argus heal <url> --spec …` triages, and only on `dom-drift` rewrites the locator, verifies
-   green, and **opens a real PR** (full-auto, user-approved). Next: **`TRE-40`** — the seeded-drift
-   demo (mutate a sample-shop `data-testid` → the committed spec fails → run heal → watch the PR
-   open) **+ a real-bug negative case** (heal refuses). Then **`TRE-41`** — CI wiring (on-failure
-   triage → conditional heal-PR job) closes M3.
-3. Done: M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 ~~TRE-38 (Triage)~~ + ~~TRE-39 (Heal)~~.
+2. **M0–M3 are complete.** Next milestone: **M4 (`TRE-26`)** — "others can use it":
+   `TRE-42` (real `@argus/mcp` stdio MCP server exposing the registry + behaviors),
+   `TRE-43` (MCP usage docs + Claude Desktop/Code config), `TRE-44` (README polish + "use it on
+   your own app" — note `--base-url` already shipped), `TRE-45` (demo GIFs). Plus the optional
+   **TRE-46** (Treeship showcase).
+3. Done: M0, M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 (~~TRE-38/39/40/41~~). To **run** the
+   self-heal demo live, see `docs/DEMO.md` (opens a real PR / costs API — user-run).
 4. **Before claiming any task done, run and pass:**
    ```bash
    pnpm lint && pnpm typecheck && pnpm test && pnpm build
@@ -26,12 +26,10 @@
 
 - **M0 (Foundations) is complete and verified.** The monorepo builds, typechecks, lints, and
   tests green. The `argus` CLI runs with placeholder commands.
-- **M1 + M2 complete; M3 — Triage + Heal done.** The full self-healing loop works:
-  `argus heal <url> --spec …` triages a failure and, **only on `dom-drift`**, rewrites the stale
-  locator, **re-runs to verify green (independent of the agent)**, and opens a real PR.
-  `real-bug` is refused (gate stays blocked). M1/M2 unchanged (generate + the `QA Gate`). Core
-  suite: **55 passing tests**.
-- **Next: `TRE-40`** (seeded-drift demo + real-bug negative case), then `TRE-41` (CI wiring) — closes M3.
+- **M0–M3 COMPLETE.** Generate (writes tests) → QA Gate (CI red/green) → Triage (classify) → Heal
+  (fix DOM drift → PR, refuse real bugs). sample-shop has seeded drift/bug toggles + `docs/DEMO.md`
+  so the self-heal is reproducible. Core suite: **55 passing tests**; CI + QA Gate green.
+- **Next milestone: M4 (`TRE-26`)** — MCP server + README/demo polish (others can use it).
 - **Pushed to GitHub** (2026-06-12): `main` tracks `origin/main`, CI runs on push. No blocking chores.
 
 ## What exists right now
@@ -249,9 +247,18 @@ Spec: `docs/superpowers/specs/2026-06-12-heal-behavior-design.md`.
   `flake` → no-op, only `dom-drift` heals → verify → open a real PR (or `--no-pr` for a local
   branch). Full-auto PR opening was user-approved.
 
-Next (`TRE-40`): seed a `data-testid` drift in sample-shop, let the committed spec fail, run the
-heal flow, and watch the PR open — plus a real-bug case proving Heal refuses. **Running it live
-opens a real PR / costs API — checkpoint before the live demo.**
+## Done: `TRE-40` + `TRE-41` (self-heal demo + CI) — closes M3
+
+Spec: `docs/superpowers/specs/2026-06-12-heal-demo-design.md`. Runbook: `docs/DEMO.md`.
+- **Seeded scenarios** (`apps/sample-shop/src/lib/demo.ts`, both default OFF):
+  `NEXT_PUBLIC_ARGUS_DEMO_DRIFT=1` renames the login submit testid `login-submit` → `submit-btn`
+  (the committed spec then fails → drift → heal); `NEXT_PUBLIC_ARGUS_DEMO_BUG=1` makes login
+  reject valid creds (→ real-bug → heal refuses). Verified: default suite green + committed spec
+  still passes; with the flag, `/login` renders `data-testid="submit-btn"`.
+- **`.github/workflows/self-heal.yml`** — `workflow_dispatch` (manual) job that runs `argus heal`
+  on given `url`/`spec`, **secret-gated** (`ANTHROPIC_API_KEY`) and non-auto-firing. Comment
+  documents flipping it to `workflow_run`-on-QA-Gate-failure for full auto.
+- **`docs/DEMO.md`** — the drift + real-bug runbooks (user-run; opens a real PR / costs API).
 
 ## Process notes
 - Design is locked in `docs/DESIGN.md`. Tickets in Linear mirror `docs/ROADMAP.md`.
