@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SESSION_COOKIE, isValidLogin } from '@/lib/auth';
+import { DEMO_BUG } from '@/lib/demo';
 
 export interface LoginState {
   error: string | null;
@@ -16,6 +17,11 @@ export interface LoginState {
 export async function login(_prev: LoginState, formData: FormData): Promise<LoginState> {
   const username = String(formData.get('username') ?? '');
   const password = String(formData.get('password') ?? '');
+
+  // Seeded real-bug for the Argus demo: login is genuinely broken (TRE-40).
+  if (DEMO_BUG) {
+    return { error: 'Invalid username or password.' };
+  }
 
   if (!isValidLogin(username, password)) {
     return { error: 'Invalid username or password.' };

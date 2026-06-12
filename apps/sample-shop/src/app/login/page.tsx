@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { DEMO_PASSWORD, DEMO_USERNAME } from '@/lib/auth';
+import { SUBMIT_TESTID } from '@/lib/demo';
 import { login, type LoginState } from './actions';
 
 const initialState: LoginState = { error: null };
@@ -48,7 +49,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <button type="submit" disabled={pending} data-testid="login-submit">
+        <button type="submit" disabled={pending} data-testid={SUBMIT_TESTID}>
           {pending ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
