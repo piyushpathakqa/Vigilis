@@ -28,8 +28,8 @@ without a browser. The Playwright-backed context is injected later by TRE-32.
 
 | Decision | Choice | Why |
 |----------|--------|-----|
-| Schema library | **Zod (v3)** | One schema per tool → runtime input validation + TS inference; v3 matches `@modelcontextprotocol/sdk@^1`. Single source of truth for both adapters. |
-| JSON Schema for Anthropic | **`zod-to-json-schema`** | Anthropic `tool.input_schema` is JSON Schema; derive it from the Zod schema rather than hand-writing. |
+| Schema library | **Zod (v4)** | One schema per tool → runtime input validation + TS inference. `@modelcontextprotocol/sdk@^1` accepts `zod ^3.25 \|\| ^4.0`, and v4 is already in the tree. Single source of truth for both adapters. |
+| JSON Schema for Anthropic | **native `z.toJSONSchema()` (zod 4)** | Anthropic `tool.input_schema` is JSON Schema; zod 4 generates it natively, so no `zod-to-json-schema` dependency. Strip the emitted `$schema` key. |
 | Handler execution model | **Real handlers over an injected `ToolContext`** | Handlers do real work (fs, dom, browser, run) but depend on injected interfaces, so they're testable with fakes and the real Playwright impl lands in TRE-32. |
 | DOM/browser injection point | **Single `BrowserSession` interface** | Both `browser_*` and `dom_*` tools route through it — one seam to fake/implement. |
 
@@ -195,10 +195,10 @@ Reject traversal (`../…`, absolute escapes) with an `isError` result. Security
 ## 10. Dependencies
 
 Add to `packages/core/package.json`:
-- `zod` (`^3`)
-- `zod-to-json-schema` (`^3`)
+- `zod` (`^4`)
 
-Not added: `playwright` / `@playwright/test` (TRE-32 owns the real session + runner).
+Not added: `zod-to-json-schema` (zod 4 has native `z.toJSONSchema`), and
+`playwright` / `@playwright/test` (TRE-32 owns the real session + runner).
 
 ## 11. Done when
 
