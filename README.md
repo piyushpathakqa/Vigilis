@@ -66,6 +66,15 @@ node --env-file=.env packages/cli/dist/index.js smoke http://localhost:3100/logi
 It prints a step-by-step trace and a token/cost line (~$0.05–0.15 per run on the fast model).
 Requires a real Anthropic **API** key (a Max subscription doesn't fund the API).
 
+Or have it **write a test and run it green**:
+
+```bash
+node --env-file=.env packages/cli/dist/index.js generate http://localhost:3100/login --run
+```
+
+It explores the app, writes `tests/generated/login.spec.ts`, and runs it against sample-shop
+(`3 passed, 0 failed`). Defaults to Opus for quality; add `--model claude-haiku-4-5` for ~10¢ runs.
+
 _Full CLI / MCP usage docs land with milestones M2 and M4._
 
 ## Repo layout

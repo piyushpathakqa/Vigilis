@@ -23,8 +23,8 @@ The agent core + a controllable target app + autonomous test generation.
 | `TRE-30` | sample-shop: Next.js target app (login + products + cart) | ✅ |
 | `TRE-31` | Tool Registry: browser / dom / fs / playwright tool definitions | ✅ |
 | `TRE-32` | @argus/core: Claude agent loop (Messages API + tool-use orchestration) | ✅ |
-| `TRE-33` | Generate behavior: explore app → emit runnable Playwright specs | 🔜 **next** |
-| `TRE-34` | Prompt & context engineering for Generate (system prompt + DOM snapshot) | ⬜ |
+| `TRE-33` | Generate behavior: explore app → emit runnable Playwright specs | ✅ |
+| `TRE-34` | Prompt & context engineering for Generate (system prompt + DOM snapshot) | 🔜 **next** |
 
 ## M2 — CLI + GitHub Actions gate · `TRE-24` (CI/CD story)
 
