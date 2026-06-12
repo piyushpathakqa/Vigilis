@@ -1,0 +1,46 @@
+name: QA Gate
+
+# The Argus deployment gate: run the agent-generated Playwright specs against
+# sample-shop. A failing spec turns this check red (and uploads the trace).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  playwright:
+    name: Playwright gate (sample-shop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright gate
+        run: pnpm exec playwright test
+
+      - name: Upload report + artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
