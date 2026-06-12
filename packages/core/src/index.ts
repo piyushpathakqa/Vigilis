@@ -1,8 +1,8 @@
 /**
  * @argus/core — the agent core and shared Tool Registry.
  *
- * M0 scaffold: this currently exposes only configuration defaults. The agent
- * loop (TRE-32), Tool Registry (TRE-31), and behaviors (TRE-33+) land in M1.
+ * Exposes model config and the QA Tool Registry (TRE-31). The agent loop
+ * (TRE-32) and behaviors (TRE-33+) land later in M1.
  */
 
 /** Default Claude models, overridable via environment variables. */
@@ -19,3 +19,5 @@ export type ModelTier = keyof typeof MODELS;
 export function resolveModel(tier: ModelTier = 'primary'): string {
   return MODELS[tier];
 }
+
+export * from './tools/index';

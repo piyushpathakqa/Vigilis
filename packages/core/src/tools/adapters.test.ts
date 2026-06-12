@@ -14,7 +14,7 @@ describe('registry adapters', () => {
   it('toAnthropic emits {name, description, input_schema} without $schema', () => {
     const r = new ToolRegistry();
     r.register(tool);
-    const [t] = r.toAnthropic();
+    const t = r.toAnthropic()[0]!;
     expect(t.name).toBe('nav');
     expect(t.description).toBe('Navigate');
     expect(t.input_schema.type).toBe('object');
@@ -26,7 +26,7 @@ describe('registry adapters', () => {
   it('toMcp exposes the Zod raw shape', () => {
     const r = new ToolRegistry();
     r.register(tool);
-    const [t] = r.toMcp();
+    const t = r.toMcp()[0]!;
     expect(t.name).toBe('nav');
     expect(Object.keys(t.inputSchema)).toEqual(['url', 'wait']);
   });
