@@ -1,7 +1,21 @@
+import { GridBackground } from '@/components/GridBackground';
+import { Hero } from '@/components/Hero';
+import { LoopSection } from '@/components/LoopSection';
+import { ArchSection } from '@/components/ArchSection';
+import { Advantages } from '@/components/Advantages';
+import { Provenance } from '@/components/Provenance';
+import { Footer } from '@/components/Footer';
+
 export default function Home() {
   return (
-    <main className="grid min-h-screen place-items-center">
-      <h1 className="gradient-text text-5xl font-bold">ARGUS</h1>
+    <main className="relative">
+      <GridBackground />
+      <Hero />
+      <LoopSection />
+      <ArchSection />
+      <Advantages />
+      <Provenance />
+      <Footer />
     </main>
   );
 }
