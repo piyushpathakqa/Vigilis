@@ -6,12 +6,13 @@
 
 1. Read `AGENTS.md`, then this file, then `docs/DESIGN.md`. The design is locked — don't
    re-litigate it; just build the next ticket.
-2. **M0–M3 complete; M4 nearly done.** Shipped this sweep: `TRE-42` (real `argus-mcp` stdio
-   server), `TRE-43` (`docs/MCP.md`), `TRE-44` (README polish). **Remaining: `TRE-45`** — record
-   demo GIFs (generate, CI red→green, self-heal PR) — **needs a human to record**; and the
-   **optional `TRE-46`** (Treeship showcase, see [[treeship-showcase]] memory / the Linear ticket).
-3. Done: M0, M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 (~~TRE-38–41~~), M4 (~~TRE-42/43/44~~).
-   Live demos (open real PRs / cost API) are user-run — see `docs/DEMO.md` and `docs/MCP.md`.
+2. **M0–M3 complete; M4 all but the GIFs.** Shipped: `TRE-42` (`argus-mcp` server),
+   `TRE-43` (`docs/MCP.md`), `TRE-44` (README), `TRE-46` (Treeship — merged; `argus heal` seals a
+   signed provenance receipt by default). **Only remaining ticket: `TRE-45`** — record demo GIFs
+   (generate, CI red→green, self-heal PR), which **needs a human**.
+3. Done: M0, M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 (~~TRE-38–41~~),
+   M4 (~~TRE-42/43/44~~ + ~~TRE-46~~; TRE-45 = GIFs). Live demos (open real PRs / cost API) are
+   user-run — see `docs/DEMO.md`, `docs/MCP.md`, `docs/TREESHIP.md`.
 4. **Before claiming any task done, run and pass:**
    ```bash
    pnpm lint && pnpm typecheck && pnpm test && pnpm build
@@ -25,11 +26,11 @@
 
 - **M0 (Foundations) is complete and verified.** The monorepo builds, typechecks, lints, and
   tests green. The `argus` CLI runs with placeholder commands.
-- **M0–M3 complete; M4 nearly done.** Full loop: Generate → QA Gate (CI red/green) → Triage → Heal
-  (PR on drift, refuse real bugs). **M4:** `argus-mcp` stdio server exposes the QA tools over MCP
-  (`docs/MCP.md`); README polished. Suites: **core 55 + mcp 2** passing; CI + QA Gate green.
-- **Remaining:** `TRE-45` demo GIFs (human-recorded) and optional `TRE-46` (Treeship). The product
-  is functionally whole.
+- **M0–M3 complete; M4 all but the demo GIFs.** Full loop: Generate → QA Gate (CI red/green) →
+  Triage → Heal (PR on drift, refuse real bugs). **M4:** `argus-mcp` MCP server (`docs/MCP.md`);
+  README polished; **Treeship merged** — `argus heal` seals a signed provenance receipt by default
+  (optional `@treeship/sdk`, zero hard dep; `docs/TREESHIP.md`). Suites: **core 57 + mcp 2** passing.
+- **Remaining:** `TRE-45` demo GIFs (human-recorded). The product is functionally whole.
 - **Pushed to GitHub** (2026-06-12): `main` tracks `origin/main`, CI runs on push. No blocking chores.
 
 ## What exists right now
@@ -271,9 +272,11 @@ Spec: `docs/superpowers/specs/2026-06-12-mcp-server-design.md`.
   Claude Desktop config snippets + the tool table.
 - **`TRE-44`** — README: CI + QA Gate badges, self-heal demo, "use it on your own app"
   (`--base-url`), MCP pointer, roadmap marked through M3.
+- **`TRE-46`** — Treeship provenance, **merged** (PR #1): `argus heal` wraps the triage→heal flow in
+  a signed `treeship` session by default (`--no-receipt` to opt out), attesting each tool call +
+  model decision via the optional `@treeship/sdk` (dynamic import, zero hard dep). `docs/TREESHIP.md`.
 - **Remaining:** `TRE-45` (demo GIFs — record `argus generate`, the red→green gate, and a self-heal
-  PR; needs a person) and optional `TRE-46` (Treeship — see `docs/superpowers/specs/` is N/A; the
-  plan lives in the Linear ticket + the [[treeship-showcase]] memory).
+  PR; **needs a person**).
 
 ## Process notes
 - Design is locked in `docs/DESIGN.md`. Tickets in Linear mirror `docs/ROADMAP.md`.
