@@ -1,6 +1,6 @@
 # Argus — Status & Handoff
 
-> **Read this to resume work with zero context loss.** Last updated: 2026-06-12.
+> **Read this to resume work with zero context loss.** Last updated: 2026-06-13.
 
 ## ▶ To continue right now (start here)
 
@@ -13,6 +13,8 @@
 3. Done: M0, M1 (~~TRE-30–34~~), M2 (~~TRE-35/36/37~~), M3 (~~TRE-38–41~~),
    M4 (~~TRE-42/43/44~~ + ~~TRE-46~~; TRE-45 = GIFs). Live demos (open real PRs / cost API) are
    user-run — see `docs/DEMO.md`, `docs/MCP.md`, `docs/TREESHIP.md`.
+   **Landing page shipped + deployed live:** <https://argus-web-psi.vercel.app> (`apps/web`) —
+   see the "Landing page (`apps/web`)" section below.
 4. **Before claiming any task done, run and pass:**
    ```bash
    pnpm lint && pnpm typecheck && pnpm test && pnpm build
@@ -288,9 +290,14 @@ Spec: `docs/superpowers/specs/2026-06-13-landing-page-design.md`. Plan:
   Generate→Gate→Triage→Heal). Sections: Hero · Loop · Architecture · Advantages · Provenance ·
   Footer. Dev: `pnpm --filter @argus/web dev` (→ :3200). Re-render the video:
   `pnpm --filter @argus/web render` (Remotion fetches its own headless Chrome).
-- **Deploy** = a separate Vercel project from this same repo, **Root Directory `apps/web`**
-  (`apps/web/vercel.json` pins framework/build/install). One-time user step (interactive):
-  `cd apps/web && vercel link` (or set Root Directory in the dashboard), then `vercel --prod`.
+- **Deployed (live):** <https://argus-web-psi.vercel.app> — Vercel project `argus-web`
+  (`piyushpathakqas-projects`), a separate project from this same repo with **Root Directory
+  `apps/web`** (set on the project; `apps/web/vercel.json` pins framework/build/install). The
+  `.vercel` link lives at the **repo root** (gitignored) so the whole monorepo uploads and Vercel
+  installs from the root `pnpm-lock.yaml`. **Re-deploy:** `vercel deploy --prod` from the repo
+  root. (Deploying from inside `apps/web` fails — it uploads only that folder with no lockfile;
+  that's why Root Directory + root-level link is required.) Git auto-deploy on push is **not** yet
+  wired — deploys are currently manual via the CLI.
 
 ## Process notes
 - Design is locked in `docs/DESIGN.md`. Tickets in Linear mirror `docs/ROADMAP.md`.

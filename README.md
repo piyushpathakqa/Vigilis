@@ -7,6 +7,8 @@
 [![CI](https://github.com/piyushpathakqa/argus/actions/workflows/ci.yml/badge.svg)](https://github.com/piyushpathakqa/argus/actions/workflows/ci.yml)
 [![QA Gate](https://github.com/piyushpathakqa/argus/actions/workflows/qa.yml/badge.svg)](https://github.com/piyushpathakqa/argus/actions/workflows/qa.yml)
 
+**🌐 Live site → [argus-web-psi.vercel.app](https://argus-web-psi.vercel.app)** · the landing page (`apps/web`), built with Next.js, Framer Motion & a pre-rendered Remotion hero.
+
 > [!NOTE]
 > **M0–M3 complete, M4 in progress.** The full loop runs as code: generate a test from a URL → gate
 > it in CI → triage a failure → self-heal DOM drift with a PR (while refusing real bugs). See
@@ -131,6 +133,7 @@ argus/
 - ✅ **M2 — CLI + GitHub Actions gate** · the `QA Gate` check runs generated specs (red/green)
 - ✅ **M3 — Triage + Heal** · `argus heal` fixes DOM drift with a PR, refuses real bugs
 - 🚧 **M4 — MCP server + polish** · `argus-mcp` is live ([`docs/MCP.md`](./docs/MCP.md)); demo GIFs next
+- ✅ **Landing page** · [`apps/web`](./apps/web) deployed to Vercel → [argus-web-psi.vercel.app](https://argus-web-psi.vercel.app)
 
 ## License
 
