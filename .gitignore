@@ -19,6 +19,9 @@ blob-report/
 # Argus run artifacts
 .argus/
 
+# Treeship provenance receipts (local; share via `treeship hub push`)
+.treeship/
+
 # Env / secrets
 .env
 .env.local

@@ -5,14 +5,17 @@
  * M0 scaffold: wires up the command surface with placeholder actions. Real
  * behaviors land in M1–M3 (generate: TRE-33, triage: TRE-38, heal: TRE-39).
  */
+import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { Command } from 'commander';
 import {
+  composeObservers,
   ConsoleObserver,
   createAnthropicClient,
   createDefaultRegistry,
   createHealPr,
   createPlaywrightSession,
+  createTreeshipObserver,
   extractFailures,
   generate,
   heal,
@@ -29,6 +32,15 @@ const PRICES: Record<string, { in: number; out: number }> = {
   'claude-sonnet-4-6': { in: 3, out: 15 },
   'claude-haiku-4-5': { in: 1, out: 5 },
 };
+
+/** Run a `treeship` CLI subcommand, ignoring failures (e.g. CLI not installed). */
+function treeshipCli(args: string[]): Promise<void> {
+  return new Promise((resolve) => {
+    const child = spawn('treeship', args, { stdio: 'ignore' });
+    child.on('error', () => resolve());
+    child.on('close', () => resolve());
+  });
+}
 
 const SMOKE_SYSTEM =
   'You are exploring a web app to understand it. Use the browser and dom tools to ' +
@@ -188,6 +200,7 @@ program
   .requiredOption('--spec <path>', 'the failing spec file')
   .option('--error <text>', 'the Playwright failure message')
   .option('--no-pr', 'leave the verified fix on a local branch; do not push/open a PR')
+  .option('--no-receipt', 'skip the Treeship provenance receipt')
   .option('--model <id>', 'model id (default: primary/Opus)')
   .description(
     'Triage a failure and, only for DOM drift, rewrite the locator, verify green, and open a PR',
@@ -195,12 +208,21 @@ program
   .action(
     async (
       url: string,
-      opts: { spec: string; error?: string; pr: boolean; model?: string },
+      opts: { spec: string; error?: string; pr: boolean; receipt: boolean; model?: string },
     ) => {
       const model = opts.model ?? resolveModel('primary');
+      const slug = (opts.spec.split('/').pop() ?? 'spec').replace(/\.spec\.ts$/, '');
       const { session, close } = await createPlaywrightSession({ headless: true });
       const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
       const ctx = { workspaceRoot: process.cwd(), browser: session, runner };
+
+      // Provenance is ON by default: wrap the whole self-heal in one signed Treeship
+      // session. A no-op if the `treeship` CLI isn't installed (the observer is null).
+      // Opt out with --no-receipt.
+      const tree = opts.receipt === false ? null : await createTreeshipObserver({ label: 'heal' });
+      if (tree) await treeshipCli(['session', 'start', '--name', `argus heal ${slug}`]);
+      const observer = composeObservers(new ConsoleObserver(), tree);
+
       try {
         // 1. Triage — Heal only ever runs on dom-drift.
         const t = await triage({
@@ -210,7 +232,7 @@ program
           errorText: opts.error,
           ctx,
           model,
-          observer: new ConsoleObserver(),
+          observer,
         });
         const v = t.verdict;
         console.log(`\n[argus] verdict: ${v ? `${v.verdict} (${v.confidence})` : 'none'}`);
@@ -235,7 +257,7 @@ program
           suggestedSelector: v.suggestedSelector,
           ctx,
           model,
-          observer: new ConsoleObserver(),
+          observer,
         });
         if (!h.verified || h.changedFiles.length === 0) {
           console.log('[argus] could not produce a verified green fix; no PR opened.');
@@ -245,7 +267,6 @@ program
         console.log(`[argus] verified green · changed: ${h.changedFiles.join(', ')}`);
 
         // 3. Open the PR (unless --no-pr).
-        const slug = (opts.spec.split('/').pop() ?? 'spec').replace(/\.spec\.ts$/, '');
         const branch = `argus/heal-${slug}-${Date.now().toString(36)}`;
         if (opts.pr === false) {
           console.log(`[argus] --no-pr: fix is on disk. Open it with:`);
@@ -272,6 +293,15 @@ program
         });
         console.log(`\n[argus] opened PR: ${pr.url}`);
       } finally {
+        // Seal the provenance session (records every tool call + decision above).
+        await tree?.flush();
+        if (tree) {
+          await treeshipCli(['session', 'close']);
+          console.log(
+            '\n[argus] provenance receipt sealed — verify with `treeship verify last`, ' +
+              'or open the latest ~/.treeship/sessions/*.treeship/preview.html.',
+          );
+        }
         await close();
       }
     },

@@ -62,4 +62,4 @@ server + README/demo polish.
 | `TRE-43` | MCP usage docs + Claude Desktop/Code config snippet (`docs/MCP.md`) | ✅ |
 | `TRE-44` | README polish: badges, quickstart, "use it on your own app" (`--base-url`) | ✅ |
 | `TRE-45` | Record demo GIFs: generate, CI gate red→green, self-heal PR | ⬜ (needs a human to record) |
-| `TRE-46` | Treeship showcase: optional, decoupled provenance receipts over the loop | ⬜ (optional) |
+| `TRE-46` | Treeship showcase: optional, decoupled provenance receipts over the loop | 🌿 Tier-1 on `feat/treeship-showcase` (`docs/TREESHIP.md` + `scripts/heal-with-receipt.sh`); Tier-2 SDK observer deferred |
