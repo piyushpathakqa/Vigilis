@@ -38,15 +38,29 @@ You can wrap any Argus step the same way — e.g. the CI gate:
 
 Receipts land in `.treeship/` (gitignored). Nothing here runs automatically — it's a user-run demo.
 
-## Tier 2 — optional SDK observer (not built; design)
+## Tier 2 — SDK observer (implemented, behind a flag)
 
-For per-step receipts (one per tool call / behavior handoff) without shelling out, the
-`@treeship/sdk` would hook the **`AgentObserver`** seam already built into the loop
-(`packages/core/src/agent/observer.ts`): a `TreeshipObserver implements AgentObserver` that emits a
-receipt on `onToolCall`/`onToolResult`/`onLoopEnd`, activated only behind an env flag
-(e.g. `TREESHIP_ENABLED=1`) via dynamic import — so core keeps zero hard dependency. Deferred
-because the `@treeship/sdk` API isn't yet verified (their published docs are CLI-focused); confirm
-the SDK surface against the repo before implementing.
+Per-step signed receipts via `@treeship/sdk@^0.12.0` (an **optional** dependency of `@argus/core`),
+hooking the **`AgentObserver`** seam already built into the loop:
+
+- `createTreeshipObserver({ label })` (`packages/core/src/agent/treeship-observer.ts`) dynamically
+  imports the SDK, verifies the CLI with `Ship.checkCli()`, and returns an observer that attests
+  **each tool call** (`attest.action`, e.g. `heal.tool.fs_write`) and **each model decision**
+  (`attest.decision` with token usage) as a **chained** receipt (each links to the prior via
+  `parentId`). Returns `null` if the SDK/CLI is absent — so core keeps **no hard dependency**.
+- Because loop callbacks are synchronous and attestation is async (the SDK shells out to the CLI),
+  the observer serializes attestations into an ordered chain and exposes `flush()`.
+
+Enable it with `TREESHIP_ENABLED=1`. The `argus heal` command wires it in (composed with the
+console observer) and prints the receipt-chain head:
+
+```bash
+TREESHIP_ENABLED=1 node --env-file=.env packages/cli/dist/index.js heal \
+  http://localhost:3100/login --spec tests/generated/login.spec.ts
+# … [argus] provenance receipt: art_… — 'treeship verify last' / 'treeship hub push last'
+```
+The same observer composes into `generate`/`triage`/`smoke` via `composeObservers(...)`. Requires
+the `treeship` CLI installed (`curl -fsSL treeship.dev/setup | sh` + `treeship init`).
 
 ## Why it's worth it (and the caveats)
 

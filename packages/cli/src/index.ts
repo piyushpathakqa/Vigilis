@@ -8,11 +8,13 @@
 import { readFile } from 'node:fs/promises';
 import { Command } from 'commander';
 import {
+  composeObservers,
   ConsoleObserver,
   createAnthropicClient,
   createDefaultRegistry,
   createHealPr,
   createPlaywrightSession,
+  createTreeshipObserver,
   extractFailures,
   generate,
   heal,
@@ -228,6 +230,11 @@ program
 
         // 2. Heal — rewrite the locator and verify green independently.
         console.log(`\n[argus] healing drift → ${v.suggestedSelector}`);
+        // Optional signed provenance over the heal (TREESHIP_ENABLED=1; see docs/TREESHIP.md).
+        const tree =
+          process.env.TREESHIP_ENABLED === '1'
+            ? await createTreeshipObserver({ label: 'heal' })
+            : null;
         const h = await heal({
           client: createAnthropicClient(),
           specPath: opts.spec,
@@ -235,8 +242,14 @@ program
           suggestedSelector: v.suggestedSelector,
           ctx,
           model,
-          observer: new ConsoleObserver(),
+          observer: composeObservers(new ConsoleObserver(), tree),
         });
+        await tree?.flush();
+        if (tree?.headId) {
+          console.log(
+            `[argus] provenance receipt: ${tree.headId} — 'treeship verify last' / 'treeship hub push last'`,
+          );
+        }
         if (!h.verified || h.changedFiles.length === 0) {
           console.log('[argus] could not produce a verified green fix; no PR opened.');
           process.exitCode = 1;

@@ -13,9 +13,11 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup src/index.ts --format esm --dts --clean --external @treeship/sdk",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -23,5 +25,8 @@
     "@anthropic-ai/sdk": "^0.104.1",
     "playwright": "^1.60.0",
     "zod": "^4.4.3"
+  },
+  "optionalDependencies": {
+    "@treeship/sdk": "^0.12.0"
   }
 }
