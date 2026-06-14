@@ -40,3 +40,9 @@ pnpm-debug.log*
 
 # Superpowers brainstorm scratch
 .superpowers/
+
+# Vercel
+.vercel
+
+# Next.js build output (all apps)
+**/.next/
