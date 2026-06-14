@@ -27,8 +27,8 @@ Total runtime: **8–10 minutes**, then Q&A.
 |---|---|---|
 | Framing | Slides | problem → "trust is the un-commoditizable part" |
 | A — self-heal | Recorded clip | `sample-shop` drift → `argus heal` → green → PR |
-| **Receipt** | **Live (clickable)** | <https://treeship.dev/receipt/ssn_b965f6f0a82f1294> |
-| B — refuse real bug | Recorded clip | `sample-shop` real-bug → `argus heal` refuses → stays red |
+| **Receipt** | **Live (clickable)** | <https://treeship.dev/receipt/ssn_b965f6f0a82f1294> (drift heal) |
+| B — refuse real bug | Recorded clip | `sample-shop` real-bug → `argus heal` refuses → stays red · receipt <https://treeship.dev/receipt/ssn_3834e1bcc2651d7d> |
 | Where it runs | Live or screenshot | GitHub QA Gate check (red→green) + MCP |
 | Coverage + pilot ask | Slide | web now · mobile next · CTV = wrap existing |
 
@@ -122,10 +122,10 @@ This is the demo. Slow down here.
 - **Slide deck:** [`pitch/auditable-ai-qa.html`](./pitch/auditable-ai-qa.html) — open in a browser, **F** = fullscreen, **S** = speaker notes (talk track embedded), arrows to navigate. PDF handout: [`pitch/auditable-ai-qa.pdf`](./pitch/auditable-ai-qa.pdf). *Present from the HTML for best fidelity.*
 - Landing page: <https://argus-web-psi.vercel.app>
 - Live verified receipt (drift heal): <https://treeship.dev/receipt/ssn_b965f6f0a82f1294>
+- Live verified receipt (real-bug refusal): <https://treeship.dev/receipt/ssn_3834e1bcc2651d7d>
 - Repo: <https://github.com/piyushpathakqa/argus> · technical runbook: [`DEMO.md`](./DEMO.md) · MCP: [`MCP.md`](./MCP.md) · provenance: [`TREESHIP.md`](./TREESHIP.md)
 
 ## Still to produce (see "next steps")
 
-- A clean **real-bug refusal receipt** to show in Scenario B (we only have the drift heal receipt so far).
-- The two recorded clips (A and B).
+- The two recorded clips (A and B) — fallbacks for the live runs.
 - Optional: regenerate the drift receipt on a longer run so the activity **density chart** renders (needs ≥3 active 30s windows; the current Haiku run is ~40s / 2 windows).
