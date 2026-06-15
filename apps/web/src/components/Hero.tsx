@@ -15,11 +15,19 @@ export function Hero() {
       <motion.div {...fade(0)}>
         <EyeOrb />
       </motion.div>
-      <motion.h1 {...fade(0.1)} className="gradient-text mt-8 text-6xl font-bold tracking-tight">
+      <motion.p
+        {...fade(0.08)}
+        className="mt-8 font-mono text-xs uppercase tracking-[0.28em] text-[var(--color-cyan)]"
+      >
+        The trust layer for autonomous testing
+      </motion.p>
+      <motion.h1 {...fade(0.1)} className="gradient-text mt-3 text-6xl font-bold tracking-tight">
         ARGUS
       </motion.h1>
-      <motion.p {...fade(0.2)} className="mt-4 max-w-xl text-lg text-[var(--color-muted)]">
-        The agent that writes, gates &amp; self-heals your Playwright tests.
+      <motion.p {...fade(0.2)} className="mt-4 max-w-2xl text-lg text-[var(--color-muted)]">
+        Self-healing Playwright tests you can{' '}
+        <span className="text-[var(--color-ink)]">verify</span> — every fix sealed in a signed,
+        tamper-evident receipt, and it never masks a real bug.
       </motion.p>
       <motion.div {...fade(0.3)} className="mt-8 flex gap-4">
         <a

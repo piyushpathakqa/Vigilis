@@ -14,8 +14,38 @@ export function Provenance() {
         <div>
           <h2 className="text-3xl font-bold">Self-healing QA you can audit.</h2>
           <p className="mt-4 text-[var(--color-muted)]">
-            Every heal runs inside a signed Treeship session — each step, artifact and verdict is captured in a
-            tamper-evident chain. When Argus opens a PR, you get a receipt, not a black box.
+            Every run is sealed inside a signed Treeship session — each tool call, decision and verdict
+            captured in a tamper-evident chain, signed by an independent notary. You get a receipt, not a
+            black box.
+          </p>
+          <div className="glass mt-5 flex items-start gap-3 rounded-xl p-4">
+            <span aria-hidden className="text-lg">🛡️</span>
+            <p className="text-sm text-[var(--color-muted)]">
+              <span className="font-semibold text-[var(--color-ink)]">Never a false green.</span> Argus
+              heals cosmetic drift but <span className="text-[var(--color-ink)]">refuses to heal a real
+              bug</span> — and the receipt proves which call it made, and why.
+            </p>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="https://treeship.dev/receipt/ssn_b965f6f0a82f1294"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black"
+            >
+              Verify a heal receipt ▸
+            </a>
+            <a
+              href="https://treeship.dev/receipt/ssn_3834e1bcc2651d7d"
+              target="_blank"
+              rel="noreferrer"
+              className="glass rounded-lg px-4 py-2 text-sm font-semibold"
+            >
+              Verify a refusal receipt ▸
+            </a>
+          </div>
+          <p className="mt-3 text-xs text-[var(--color-muted)]">
+            Real, live receipts — public, no login, independently verifiable.
           </p>
         </div>
         <motion.pre
@@ -32,7 +62,7 @@ export function Provenance() {
             {'\n'}verify   → 12 passed (green)
             {'\n'}pr       → #42 opened
             {'\n'}
-            {'\n'}<span className="text-[var(--color-violet)]">✓ verified · 21 artifacts · chain intact</span>
+            {'\n'}<span className="text-[var(--color-violet)]">✓ verified · chain intact · independently signed</span>
           </code>
         </motion.pre>
       </div>
