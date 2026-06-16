@@ -40,7 +40,7 @@ describe('createTreeshipObserver', () => {
 
     // tool calls recorded with the label prefix
     expect(action).toHaveBeenCalledTimes(2);
-    expect(action.mock.calls[0]?.[0]).toMatchObject({ actor: 'agent://argus', action: 'heal.tool.fs_read', parentId: undefined });
+    expect(action.mock.calls[0]?.[0]).toMatchObject({ actor: 'agent://vigilis', action: 'heal.tool.fs_read', parentId: undefined });
     // second call chains to the first artifact
     expect(action.mock.calls[1]?.[0]).toMatchObject({ action: 'heal.tool.fs_write', parentId: 'art_1' });
     // the model decision is attested with token usage

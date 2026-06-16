@@ -21,7 +21,7 @@ export function Provenance() {
           <div className="glass mt-5 flex items-start gap-3 rounded-xl p-4">
             <span aria-hidden className="text-lg">🛡️</span>
             <p className="text-sm text-[var(--color-muted)]">
-              <span className="font-semibold text-[var(--color-ink)]">Never a false green.</span> Argus
+              <span className="font-semibold text-[var(--color-ink)]">Never a false green.</span> Vigilis
               heals cosmetic drift but <span className="text-[var(--color-ink)]">refuses to heal a real
               bug</span> — and the receipt proves which call it made, and why.
             </p>

@@ -148,18 +148,18 @@ export interface AgentObserver {
 /** Logs a compact line per loop event. Used by `argus smoke`. */
 export class ConsoleObserver implements AgentObserver {
   onLoopStart(e: { system: string; model: string }): void {
-    console.log(`[argus] loop start · model=${e.model}`);
+    console.log(`[vigilis] loop start · model=${e.model}`);
   }
   onToolCall(e: { step: number; name: string; input: unknown }): void {
-    console.log(`[argus]  → ${e.name} ${JSON.stringify(e.input)}`);
+    console.log(`[vigilis]  → ${e.name} ${JSON.stringify(e.input)}`);
   }
   onToolResult(e: { step: number; name: string; result: ToolResult }): void {
     const flag = e.result.isError ? '✗' : '✓';
     const preview = e.result.content.slice(0, 80).replace(/\s+/g, ' ');
-    console.log(`[argus]  ${flag} ${e.name}: ${preview}`);
+    console.log(`[vigilis]  ${flag} ${e.name}: ${preview}`);
   }
   onLoopEnd(e: { steps: number; stopReason: AgentStopReason }): void {
-    console.log(`[argus] loop end · ${e.steps} steps · ${e.stopReason}`);
+    console.log(`[vigilis] loop end · ${e.steps} steps · ${e.stopReason}`);
   }
 }
 ```
@@ -863,7 +863,7 @@ program
         ? `$${((result.usage.inputTokens / 1e6) * price.in + (result.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
         : 'n/a';
       console.log(
-        `\n[argus] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
+        `\n[vigilis] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
       );
     } finally {
       await close();

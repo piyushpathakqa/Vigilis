@@ -1,4 +1,4 @@
-# Argus — Status & Handoff
+# Vigilis — Status & Handoff
 
 > **Read this to resume work with zero context loss.** Last updated: 2026-06-13.
 
@@ -55,7 +55,7 @@ pnpm --filter @argus/sample-shop dev        # ✓ serves login → products → 
 | Package | State | Notes |
 |---------|-------|-------|
 | `@argus/core` | **M1 complete (`TRE-31`–`TRE-34`)** | Tool Registry (10 Zod tools) + hand-rolled `runAgentLoop` + `AgentObserver`/`ConsoleObserver` + real `PlaywrightBrowserSession`/`PlaywrightTestRunner` + `trimHtml` cleaned snapshots + the **`generate()` behavior** (tuned prompt, deterministic path, `fs_write` capture). `@anthropic-ai/sdk@^0.104.1` + `playwright@^1.60.0`. Triage/Heal land in M3. |
-| `@argus/mcp` | **built (`TRE-42`)** | Real stdio MCP server (`argus-mcp` bin): `createArgusMcpServer` exposes all 10 registry tools over MCP, routing each call to `registry.execute` against a lazily-launched Playwright context. In-memory client/server test. Config: `docs/MCP.md`. |
+| `@argus/mcp` | **built (`TRE-42`)** | Real stdio MCP server (`argus-mcp` bin): `createVigilisMcpServer` exposes all 10 registry tools over MCP, routing each call to `registry.execute` against a lazily-launched Playwright context. In-memory client/server test. Config: `docs/MCP.md`. |
 | `@argus/cli` | **generate/triage/heal + smoke live** | `argus generate <url> [--run]` writes+runs a spec; `argus triage <url> --spec …` classifies a failure; `argus heal <url> --spec …` self-heals DOM drift → PR; `argus smoke <url>` watches the loop. Only `author` remains a placeholder. |
 | `@argus/sample-shop` | **built (`TRE-30`)** | Next.js App Router app: `/login` (server-action gate, demo/demo) → `/products` (static Server Component catalog) → `/cart` (client context, live badge). `src/middleware.ts` enforces the gate. In-memory state, no DB. Stable `data-testid`s documented in its README — the contract M3 drifts for the self-heal demo. Runs on port 3100. |
 
@@ -96,7 +96,7 @@ Built in `apps/sample-shop` (Next.js 15 App Router, React 19, port 3100):
 - `/cart` — `'use client'` page over a React-context cart; line items, qty, total, remove/clear,
   empty state. Header badge `cart-count` updates live.
 - `src/middleware.ts` — login gate: unauth → `/login`, authed-on-`/login` → `/products`.
-- Stable `data-testid`s on every key element (table in the app README) — the contract Argus's
+- Stable `data-testid`s on every key element (table in the app README) — the contract Vigilis's
   generated tests rely on and M3 (`TRE-40`) drifts for the self-heal demo.
 
 Verified: `pnpm lint && pnpm typecheck && pnpm build` green; dev server serves the full
@@ -266,7 +266,7 @@ Spec: `docs/superpowers/specs/2026-06-12-heal-demo-design.md`. Runbook: `docs/DE
 ## Done: M4 (mostly) — `TRE-42/43/44`
 
 Spec: `docs/superpowers/specs/2026-06-12-mcp-server-design.md`.
-- **`TRE-42`** — real `@argus/mcp` stdio server. `createArgusMcpServer({ getContext })` registers
+- **`TRE-42`** — real `@argus/mcp` stdio server. `createVigilisMcpServer({ getContext })` registers
   all 10 registry tools over MCP (via `toMcp()`); each routes to `registry.execute` against a
   lazily-launched Playwright context. `argus-mcp` bin builds; in-memory client/server test (lists
   10 tools + routes a call). No API key needed (the client LLM reasons); needs chromium.

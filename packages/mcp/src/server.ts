@@ -1,16 +1,16 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createDefaultRegistry, type ToolContext } from '@argus/core';
 
-export interface ArgusMcpOptions {
+export interface VigilisMcpOptions {
   /** Supplies the live tool context (browser session + runner + workspace). */
   getContext: () => Promise<ToolContext> | ToolContext;
 }
 
 /**
- * Build the Argus MCP server: every QA tool from the shared registry, exposed
+ * Build the Vigilis MCP server: every QA tool from the shared registry, exposed
  * over MCP. Each call routes to `registry.execute` against the provided context.
  */
-export function createArgusMcpServer(opts: ArgusMcpOptions): McpServer {
+export function createVigilisMcpServer(opts: VigilisMcpOptions): McpServer {
   const registry = createDefaultRegistry();
   const server = new McpServer({ name: 'argus-mcp', version: '0.0.0' });
 

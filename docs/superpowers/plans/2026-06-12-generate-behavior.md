@@ -401,23 +401,23 @@ program
         });
 
         console.log(
-          '\n[argus] wrote: ' + (result.writtenFiles.join(', ') || '(no file written)'),
+          '\n[vigilis] wrote: ' + (result.writtenFiles.join(', ') || '(no file written)'),
         );
         const price = PRICES[model];
         const cost = price
           ? `$${((result.run.usage.inputTokens / 1e6) * price.in + (result.run.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
           : 'n/a';
         console.log(
-          `[argus] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
+          `[vigilis] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
         );
 
         if (opts.run && result.writtenFiles.includes(result.specPath)) {
-          console.log(`\n[argus] running ${result.specPath} …`);
+          console.log(`\n[vigilis] running ${result.specPath} …`);
           const tr = await runner.run(result.specPath);
-          console.log(`[argus] ${tr.summary} (artifacts: ${tr.artifactsDir})`);
+          console.log(`[vigilis] ${tr.summary} (artifacts: ${tr.artifactsDir})`);
           if (tr.failed > 0) process.exitCode = 1;
         } else if (opts.run) {
-          console.log('[argus] --run skipped: no spec file was written');
+          console.log('[vigilis] --run skipped: no spec file was written');
         }
       } finally {
         await close();

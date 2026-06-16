@@ -9,7 +9,7 @@ export interface TreeshipObserver extends AgentObserver {
 }
 
 export interface TreeshipObserverOptions {
-  /** Actor URI for the receipts. Default `agent://argus`. */
+  /** Actor URI for the receipts. Default `agent://vigilis`. */
   actor?: string;
   /** Namespaces the recorded actions, e.g. `heal` → `heal.tool.fs_write`. */
   label?: string;
@@ -37,7 +37,7 @@ function sessionEvent(args: string[]): Promise<void> {
 }
 
 /**
- * Map an Argus tool call to the Treeship timeline event that best describes its
+ * Map a Vigilis tool call to the Treeship timeline event that best describes its
  * side effect, so the receipt reads as "wrote file / read file / hit network /
  * called tool" rather than an opaque blob. File and network targets are pulled
  * from the tool input when present.
@@ -70,7 +70,7 @@ function toolEventArgs(name: string, input: unknown): string[] {
  *      ledger, and activity-density chart.
  *
  * Returns `null` when `@treeship/sdk` or the `treeship` CLI is unavailable, so
- * Argus never hard-depends on Treeship. Attestations are serialized into an
+ * Vigilis never hard-depends on Treeship. Attestations are serialized into an
  * ordered chain (each links to the previous via `parentId`); the loop calls
  * observer methods synchronously, so call `flush()` afterward to drain the queue.
  */
@@ -84,14 +84,14 @@ export async function createTreeshipObserver(
     ship = mod.ship();
   } catch (err) {
     console.warn(
-      '[argus] Treeship provenance disabled:',
+      '[vigilis] Treeship provenance disabled:',
       err instanceof Error ? err.message : String(err),
     );
     return null;
   }
 
-  const actor = opts.actor ?? 'agent://argus';
-  const agentName = opts.agentName ?? 'argus';
+  const actor = opts.actor ?? 'agent://vigilis';
+  const agentName = opts.agentName ?? 'vigilis';
   const prefix = opts.label ? `${opts.label}.` : '';
 
   let chain: Promise<void> = Promise.resolve();
@@ -118,7 +118,7 @@ export async function createTreeshipObserver(
         ]);
       } catch (err) {
         console.warn(
-          '[argus] treeship attest failed:',
+          '[vigilis] treeship attest failed:',
           err instanceof Error ? err.message : String(err),
         );
       }

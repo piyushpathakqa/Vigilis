@@ -16,7 +16,7 @@ playwright-report/
 blob-report/
 .cache/
 
-# Argus run artifacts
+# Vigilis run artifacts
 .argus/
 
 # Treeship provenance receipts (local; share via `treeship hub push`)

@@ -26,7 +26,7 @@ const OPUS_TIER = /opus|sonnet-4-6|fable/;
 
 function healSystem(specPath: string, selector: string): string {
   return [
-    'You are Argus, fixing a DOM-drift Playwright test failure (NOT a real bug).',
+    'You are Vigilis, fixing a DOM-drift Playwright test failure (NOT a real bug).',
     `The spec at ${specPath} uses a stale locator that no longer matches the page.`,
     `The correct current selector is: ${selector}`,
     '',

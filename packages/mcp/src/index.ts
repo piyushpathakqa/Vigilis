@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /**
- * @argus/mcp — stdio MCP server exposing the Argus QA tool registry.
+ * @argus/mcp — stdio MCP server exposing the Vigilis QA tool registry.
  *
  * Run via the `argus-mcp` bin (e.g. from a Claude Desktop / Claude Code MCP
  * config). The client LLM drives the tools; the server holds the live browser.
  */
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { createArgusMcpServer } from './server';
+import { createVigilisMcpServer } from './server';
 import { createLazyContext } from './context';
 
 async function main(): Promise<void> {
   const lazy = createLazyContext();
-  const server = createArgusMcpServer({ getContext: lazy.getContext });
+  const server = createVigilisMcpServer({ getContext: lazy.getContext });
 
   const shutdown = async (): Promise<void> => {
     await lazy.close();

@@ -2,10 +2,11 @@
   "name": "@argus/cli",
   "version": "0.0.0",
   "private": true,
-  "description": "Argus CLI: argus author|generate|triage|heal.",
+  "description": "Vigilis CLI: vigilis author|generate|triage|heal.",
   "type": "module",
   "license": "MIT",
   "bin": {
+    "vigilis": "./dist/index.js",
     "argus": "./dist/index.js"
   },
   "files": ["dist"],

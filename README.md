@@ -1,4 +1,4 @@
-# 👁️ Argus — Agentic QA Framework
+# 👁️ Vigilis — Agentic QA Framework
 
 > An agentic QA framework that **authors, generates, triages, and self-heals** Playwright
 > tests for any web app — usable from Claude Code/Desktop as an **MCP server** or from CI as a
@@ -18,13 +18,13 @@
 
 ## Why
 
-Test suites are expensive to write and brittle to maintain. Argus puts a Claude agent in the
+Test suites are expensive to write and brittle to maintain. Vigilis puts a Claude agent in the
 loop to do the slow parts: explore an app and write real Playwright tests, then — when the UI
 drifts — diagnose the failure and open a fix PR, while still refusing to paper over genuine bugs.
 
 ## The idea: one core, two consumers
 
-Argus defines its QA tools **once** and exposes them **twice**.
+Vigilis defines its QA tools **once** and exposes them **twice**.
 
 ```
                      ┌──────────────────────────────┐
@@ -82,7 +82,7 @@ It explores the app, writes `tests/generated/login.spec.ts`, and runs it against
 
 ### See it self-heal
 
-Seed a DOM drift, then watch Argus triage and fix it (full runbook: [`docs/DEMO.md`](./docs/DEMO.md)):
+Seed a DOM drift, then watch Vigilis triage and fix it (full runbook: [`docs/DEMO.md`](./docs/DEMO.md)):
 
 ```bash
 NEXT_PUBLIC_ARGUS_DEMO_DRIFT=1 pnpm --filter @argus/sample-shop dev   # renames a data-testid
@@ -90,16 +90,16 @@ node --env-file=.env packages/cli/dist/index.js heal \
   http://localhost:3100/login --spec tests/generated/login.spec.ts    # → dom-drift → fix → PR
 ```
 On `dom-drift` it rewrites the locator, **re-runs to verify green**, and opens a PR. On a real bug
-(`NEXT_PUBLIC_ARGUS_DEMO_BUG=1`) it refuses and blocks the gate — Argus improves signal, it doesn't
+(`NEXT_PUBLIC_ARGUS_DEMO_BUG=1`) it refuses and blocks the gate — Vigilis improves signal, it doesn't
 hide failures.
 
 ### Use it in your own Playwright project
 
-`argus init` scaffolds an `argus.config.json` so `generate`/`triage`/`heal` pick up your
+`argus init` scaffolds an `vigilis.config.json` so `generate`/`triage`/`heal` pick up your
 project's defaults (`baseUrl`, `testDir`, `model`) — explicit flags always override it:
 
 ```bash
-node --env-file=.env packages/cli/dist/index.js init   # detects playwright.config.*, writes argus.config.json
+node --env-file=.env packages/cli/dist/index.js init   # detects playwright.config.*, writes vigilis.config.json
 node --env-file=.env packages/cli/dist/index.js generate https://your-app.com/login --run
 ```
 

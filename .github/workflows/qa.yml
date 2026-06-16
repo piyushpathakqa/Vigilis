@@ -1,6 +1,6 @@
 name: QA Gate
 
-# The Argus deployment gate: run the agent-generated Playwright specs against
+# The Vigilis deployment gate: run the agent-generated Playwright specs against
 # sample-shop. A failing spec turns this check red (and uploads the trace).
 on:
   push:

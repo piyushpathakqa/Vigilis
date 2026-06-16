@@ -1,7 +1,7 @@
-# Argus — Roadmap & Linear ticket map
+# Vigilis — Roadmap & Linear ticket map
 
 Tracked in **Linear**: team "Trek baba" (key `TRE`), project
-[Argus — Agentic QA Framework](https://linear.app/trek-baba/project/argus-agentic-qa-framework-029125b28072).
+[Vigilis — Agentic QA Framework](https://linear.app/trek-baba/project/argus-agentic-qa-framework-029125b28072).
 
 Epics are milestones (M0–M4). Each has sub-issues with concrete "Done when" criteria.
 Status legend: ✅ done · 🔜 next · ⬜ not started.
@@ -26,7 +26,7 @@ The agent core + a controllable target app + autonomous test generation.
 | `TRE-33` | Generate behavior: explore app → emit runnable Playwright specs | ✅ |
 | `TRE-34` | Prompt & context engineering for Generate (system prompt + DOM snapshot) | ✅ |
 
-**M1 complete** ✅ — Argus writes runnable Playwright specs from a URL (`argus generate <url> --run`),
+**M1 complete** ✅ — Vigilis writes runnable Playwright specs from a URL (`argus generate <url> --run`),
 on any app (`--base-url`).
 
 ## M2 — CLI + GitHub Actions gate · `TRE-24` ✅ (CI/CD story)

@@ -5,7 +5,7 @@ import { Space_Grotesk } from 'next/font/google';
 
 const display = Space_Grotesk({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
 
-const title = 'Argus — The trust layer for autonomous testing';
+const title = 'Vigilis — The trust layer for autonomous testing';
 const description =
   'Self-healing Playwright tests you can verify — every fix sealed in a signed, tamper-evident receipt, and it never masks a real bug.';
 
@@ -19,9 +19,9 @@ export const metadata: Metadata = {
     title,
     description,
     url: 'https://argusqa.dev',
-    siteName: 'Argus',
+    siteName: 'Vigilis',
     type: 'website',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Argus — the trust layer for autonomous testing' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Vigilis — the trust layer for autonomous testing' }],
   },
   twitter: {
     card: 'summary_large_image',

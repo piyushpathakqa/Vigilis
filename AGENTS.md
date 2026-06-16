@@ -5,7 +5,7 @@
 
 ## What this project is
 
-**Argus** is an **agentic QA framework**: a Claude agent that **authors, generates, triages,
+**Vigilis** is an **agentic QA framework**: a Claude agent that **authors, generates, triages,
 and self-heals Playwright tests** for any web app. It ships two ways from one core:
 
 - **MCP server** (`@argus/mcp`) — drive it from Claude Desktop/Code
@@ -53,7 +53,7 @@ node packages/cli/dist/index.js --help   # run the CLI after build
 
 ## Work tracking
 
-Tracked in **Linear** (team "Trek baba", key `TRE`), project "Argus — Agentic QA Framework".
+Tracked in **Linear** (team "Trek baba", key `TRE`), project "Vigilis — Agentic QA Framework".
 Milestones are epics TRE-22 (M0) → TRE-26 (M4); tasks are TRE-27..46. See `docs/ROADMAP.md`.
 
 ## Current status (short version)

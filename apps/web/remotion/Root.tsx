@@ -1,10 +1,10 @@
 import { Composition } from 'remotion';
-import { ArgusLoop } from './ArgusLoop';
+import { VigilisLoop } from './VigilisLoop';
 
 export const RemotionRoot = () => (
   <Composition
-    id="ArgusLoop"
-    component={ArgusLoop}
+    id="VigilisLoop"
+    component={VigilisLoop}
     durationInFrames={540}
     fps={30}
     width={1920}

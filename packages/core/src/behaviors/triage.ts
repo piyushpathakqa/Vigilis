@@ -30,7 +30,7 @@ export interface TriageResult {
 }
 
 const TRIAGE_SYSTEM = [
-  'You are Argus triaging a FAILED Playwright test. Classify the failure as exactly one of:',
+  'You are Vigilis triaging a FAILED Playwright test. Classify the failure as exactly one of:',
   '- dom-drift: the target element still exists but its locator/data-testid changed',
   '  (the spec\'s selector no longer matches; a different current selector does);',
   '- real-bug: the expected element or behaviour is genuinely missing or broken',

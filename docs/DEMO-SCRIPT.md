@@ -1,4 +1,4 @@
-# Argus — live demo run-of-show + transcript
+# Vigilis — live demo run-of-show + transcript
 
 > Read-while-you-present script. **[DO]** = what you do · **[SAY]** = say it roughly verbatim · **[SHOW]** = what's on screen.
 > ~10 min. Timed against a real machine: red test ~12s · drift heal ~26s · real-bug refusal ~58s.
@@ -28,7 +28,7 @@ treeship --version
 
 ---
 
-## 1 · Scenario A — you break it, Argus heals it (~3 min)
+## 1 · Scenario A — you break it, Vigilis heals it (~3 min)
 
 > Primary path = **live edit** (the audience sees the cause). The env-flag path is the no-touch fallback at the bottom.
 
@@ -57,7 +57,7 @@ node --env-file=.env packages/cli/dist/index.js heal \
   http://localhost:3100/login --spec tests/generated/login.spec.ts \
   --model claude-haiku-4-5 --no-pr
 ```
-**[SAY] (while it scrolls)** "— I point Argus at it. It reads the spec, drives the live page, and works out what changed. It doesn't patch blindly — it triages first."
+**[SAY] (while it scrolls)** "— I point Vigilis at it. It reads the spec, drives the live page, and works out what changed. It doesn't patch blindly — it triages first."
 
 **[SHOW]** verdict: `dom-drift` — rationale names `login-submit` → `submit-btn`
 **[SAY]** "There — DOM drift. It figured out the new id by reading the live DOM, rewrites the locator, re-runs the test itself to confirm it's genuinely green, done. ~30 seconds, zero human time. That's the wedge — but it's not the point."
@@ -76,7 +76,7 @@ git checkout apps/sample-shop/src/app/login/page.tsx tests/generated/login.spec.
 **[SAY]** "Because that heal didn't happen in a black box. Every step was recorded into a signed receipt. Here's the real one."
 
 **[DO]** open tab → `https://treeship.dev/receipt/ssn_b965f6f0a82f1294`
-**[SAY]** "Live, public, no login. Every tool call and decision, in order. Here's the triage verdict and the exact reason it gave. The whole chain is hashed — change one step and every hash after it breaks, so tampering is obvious. And it's signed by an independent system — Treeship, built by Zerker Lab — not by Argus itself. An agent vouching for its own logs is marking its own homework. This is a separate notary. So you don't trust me —"
+**[SAY]** "Live, public, no login. Every tool call and decision, in order. Here's the triage verdict and the exact reason it gave. The whole chain is hashed — change one step and every hash after it breaks, so tampering is obvious. And it's signed by an independent system — Treeship, built by Zerker Lab — not by Vigilis itself. An agent vouching for its own logs is marking its own homework. This is a separate notary. So you don't trust me —"
 
 **[DO]** (optional) Terminal: `treeship verify ssn_b965f6f0a82f1294`  → "Verified. This receipt is authentic."
 **[SAY]** "— you verify it. One honest line: this proves *what happened* — verifiably, auditably. It doesn't claim the agent's judgment is perfect. Which is exactly why this next part matters."
@@ -88,7 +88,7 @@ git checkout apps/sample-shop/src/app/login/page.tsx tests/generated/login.spec.
 ```bash
 NEXT_PUBLIC_ARGUS_DEMO_BUG=1 pnpm --filter @argus/sample-shop dev
 ```
-**[SAY]** "Same setup — but now I've planted a real bug: login rejects valid credentials. The app is genuinely broken. The test goes red exactly like before. Watch what Argus does differently."
+**[SAY]** "Same setup — but now I've planted a real bug: login rejects valid credentials. The app is genuinely broken. The test goes red exactly like before. Watch what Vigilis does differently."
 
 **[DO]** Terminal 2: same `heal …` command
 **[SAY] (while it scrolls)** "It investigates the same way — reads the spec, drives the live page…"
@@ -107,7 +107,7 @@ NEXT_PUBLIC_ARGUS_DEMO_BUG=1 pnpm --filter @argus/sample-shop dev
 ---
 
 ## 5 · Close + ask (~1 min)
-**[SAY]** "So — self-healing is becoming free; every tool will have it. The part that isn't free is trust: proof you can hand to a client, or to their auditor. That's what Argus is."
+**[SAY]** "So — self-healing is becoming free; every tool will have it. The part that isn't free is trust: proof you can hand to a client, or to their auditor. That's what Vigilis is."
 
 **[SAY — pitch close]** "I'd love to run this on one of your web clients as a pilot. I handle the integration end-to-end — near-zero lift on your side. We agree two metrics up front: test-maintenance hours saved, and how your client reacts to the report. If it doesn't deliver, nothing's lost."
 

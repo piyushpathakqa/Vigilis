@@ -1,12 +1,12 @@
 /**
- * argus.config.json — per-project defaults so a dev can drop Argus into their
+ * vigilis.config.json — per-project defaults so a dev can drop Vigilis into their
  * own Playwright repo. Explicit CLI flags always override these values; the
  * config only supplies defaults, and only when the file is actually present.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface ArgusConfig {
+export interface VigilisConfig {
   /** Base URL the app under test is served from. */
   baseUrl: string;
   /** Directory where Playwright specs live / are written. */
@@ -19,9 +19,9 @@ export interface ArgusConfig {
   receipt: boolean;
 }
 
-export const CONFIG_FILE = 'argus.config.json';
+export const CONFIG_FILE = 'vigilis.config.json';
 
-export const DEFAULT_CONFIG: ArgusConfig = {
+export const DEFAULT_CONFIG: VigilisConfig = {
   baseUrl: 'http://localhost:3000',
   testDir: 'tests',
   model: 'claude-haiku-4-5',
@@ -42,23 +42,23 @@ export function detectPlaywrightConfig(cwd = process.cwd()): string | null {
 }
 
 /**
- * Load argus.config.json from `cwd`, merged over defaults. `found` is false when
+ * Load vigilis.config.json from `cwd`, merged over defaults. `found` is false when
  * the file is missing or unreadable — callers use it so config never silently
  * changes behavior unless the user actually created the file.
  */
-export function loadArgusConfig(cwd = process.cwd()): { config: ArgusConfig; found: boolean } {
+export function loadVigilisConfig(cwd = process.cwd()): { config: VigilisConfig; found: boolean } {
   const path = join(cwd, CONFIG_FILE);
   if (!existsSync(path)) return { config: { ...DEFAULT_CONFIG }, found: false };
   try {
-    const parsed = JSON.parse(readFileSync(path, 'utf8')) as Partial<ArgusConfig>;
+    const parsed = JSON.parse(readFileSync(path, 'utf8')) as Partial<VigilisConfig>;
     return { config: { ...DEFAULT_CONFIG, ...parsed }, found: true };
   } catch {
     return { config: { ...DEFAULT_CONFIG }, found: false };
   }
 }
 
-/** Write argus.config.json. No-op (written:false) if it exists and `force` is not set. */
-export function writeArgusConfig(
+/** Write vigilis.config.json. No-op (written:false) if it exists and `force` is not set. */
+export function writeVigilisConfig(
   cwd = process.cwd(),
   opts: { force?: boolean } = {},
 ): { written: boolean; path: string } {

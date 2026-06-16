@@ -22,7 +22,7 @@ export function Hero() {
         The trust layer for autonomous testing
       </motion.p>
       <motion.h1 {...fade(0.1)} className="gradient-text mt-3 text-6xl font-bold tracking-tight">
-        ARGUS
+        VIGILIS
       </motion.h1>
       <motion.p {...fade(0.2)} className="mt-4 max-w-2xl text-lg text-[var(--color-muted)]">
         Self-healing Playwright tests you can{' '}

@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Argus landing page (Next.js, Vercel).",
+  "description": "Vigilis landing page (Next.js, Vercel).",
   "license": "MIT",
   "scripts": {
     "dev": "next dev -p 3200",
     "build": "next build",
     "start": "next start -p 3200",
     "typecheck": "tsc --noEmit",
-    "render": "remotion render remotion/index.ts ArgusLoop public/argus-loop.mp4 --codec=h264"
+    "render": "remotion render remotion/index.ts VigilisLoop public/argus-loop.mp4 --codec=h264"
   },
   "dependencies": {
     "next": "^15.1.6",

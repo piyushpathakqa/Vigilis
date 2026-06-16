@@ -2,7 +2,7 @@
   "name": "@argus/core",
   "version": "0.0.0",
   "private": true,
-  "description": "Argus agent core: Claude agent loop + shared QA Tool Registry.",
+  "description": "Vigilis agent core: Claude agent loop + shared QA Tool Registry.",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",

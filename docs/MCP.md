@@ -1,6 +1,6 @@
-# Using Argus as an MCP server
+# Using Vigilis as an MCP server
 
-`@argus/mcp` exposes Argus's QA tools over the Model Context Protocol, so you can drive the **exact
+`@argus/mcp` exposes Vigilis's QA tools over the Model Context Protocol, so you can drive the **exact
 tools the agent uses** — `browser_*`, `dom_*`, `fs_*`, `playwright_run` — from Claude Desktop or
 Claude Code. Your client's model becomes the agent loop; the server holds the live browser.
 
@@ -60,4 +60,4 @@ Restart Claude Desktop; "argus" appears in the tools menu.
 
 In your MCP client, ask: *"Navigate to http://localhost:3100/login, list the data-testids, log in
 with demo/demo, then write a Playwright spec for the flow to tests/generated/login.spec.ts."* The
-client will call the Argus tools to do it — the same tools `argus generate` uses, now driven by you.
+client will call the Vigilis tools to do it — the same tools `argus generate` uses, now driven by you.

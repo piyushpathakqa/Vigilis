@@ -1,12 +1,12 @@
-# Argus × Treeship — provenance for autonomous QA (TRE-46)
+# Vigilis × Treeship — provenance for autonomous QA (TRE-46)
 
-> **Optional, decoupled.** Argus has **no hard dependency** on Treeship: `@treeship/sdk` is an
+> **Optional, decoupled.** Vigilis has **no hard dependency** on Treeship: `@treeship/sdk` is an
 > optional dependency, loaded dynamically, and everything degrades to a no-op if the `treeship`
 > CLI isn't installed.
 
 [Treeship](https://www.treeship.dev) is a local-first "trust layer": it produces **Ed25519-signed,
 offline-verifiable receipts** of agent actions, with SHA-256-hashed inputs/outputs chained
-tamper-evidently. Argus is an agent that **autonomously rewrites tests and opens PRs** — so the
+tamper-evidently. Vigilis is an agent that **autonomously rewrites tests and opens PRs** — so the
 natural question is *"can I trust what it did?"* Treeship answers it: a signed, independently
 verifiable record of exactly what the heal agent ran and produced.
 
@@ -27,7 +27,7 @@ treeship init
 # heal — a receipt is produced automatically
 node --env-file=.env packages/cli/dist/index.js heal \
   http://localhost:3100/login --spec tests/generated/login.spec.ts
-# … [argus] provenance receipt sealed — verify it with `treeship verify last`,
+# … [vigilis] provenance receipt sealed — verify it with `treeship verify last`,
 #    or publish a public, shareable receipt URL with `treeship session report`
 ```
 
@@ -56,7 +56,7 @@ build (dynamically imported; it pulls a `.wasm` core).
 
 ## Wrapping other commands (zero-code)
 
-Any Argus command can also be wrapped with the CLI directly, no code involved — useful for the CI
+Any Vigilis command can also be wrapped with the CLI directly, no code involved — useful for the CI
 gate or generation:
 ```bash
 treeship session start --name "argus gate"
@@ -72,4 +72,4 @@ treeship session close
 - **Founder collaboration + a differentiated portfolio bullet** ("cryptographic agent-action
   provenance over a QA agent").
 - **Caveats:** additive, not core; Treeship is niche; the live receipt needs the `treeship` CLI
-  installed. Argus runs fully without it.
+  installed. Vigilis runs fully without it.

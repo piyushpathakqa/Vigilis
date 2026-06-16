@@ -17,8 +17,8 @@ describe('trimHtml', () => {
   });
 
   it('keeps the title, body markup, and data-testids', () => {
-    const out = trimHtml('<html><head><title>Argus Shop</title></head><body><button data-testid="go">Go</button></body></html>');
-    expect(out).toContain('Argus Shop');
+    const out = trimHtml('<html><head><title>Vigilis Shop</title></head><body><button data-testid="go">Go</button></body></html>');
+    expect(out).toContain('Vigilis Shop');
     expect(out).toContain('data-testid="go"');
     expect(out).toContain('Go');
   });

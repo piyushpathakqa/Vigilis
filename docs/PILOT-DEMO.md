@@ -1,4 +1,4 @@
-# Pilot Demo — "Auditable AI QA, powered by Argus"
+# Pilot Demo — "Auditable AI QA, powered by Vigilis"
 
 > **Audience:** decision-makers at a QA services firm evaluating a pilot.
 > **Goal:** prove the one-pager's three claims are *real, running, verifiable* software — and land one web pilot.
@@ -75,7 +75,7 @@ This is the demo. Slow down here.
   - **The decision + rationale** — *why* it concluded "dom-drift," captured, not narrated after the fact.
   - **Side-effect ledger** — exactly which files it wrote, which URLs it hit.
   - **"Chain intact · verified"** — each step is hashed and chained to the one before it; change any step and every hash after it breaks. **Tamper-evident.**
-  - **Signed by an independent notary (Treeship)** — "Argus signing its own logs would be marking its own homework. This is signed by a *separate* system, so the proof is credible to a third party."
+  - **Signed by an independent notary (Treeship)** — "Vigilis signing its own logs would be marking its own homework. This is signed by a *separate* system, so the proof is credible to a third party."
 - The killer move — hand them the keys:
   > "Don't take my word for any of this. **You** verify it." → run `treeship verify <session>` live (prints *"Verified. This receipt is authentic."*), or point out anyone with the public key can.
 - Land it: "**This** is the client-facing deliverable. Faster cycles are nice. A report your client can hand to *their* auditor is a premium service tier."
@@ -94,7 +94,7 @@ This is the demo. Slow down here.
 
 ### 4. Where it runs (~1 min) — *live or screenshot*
 
-- GitHub **QA Gate**: Argus runs as a *required* check — failing tests block the deploy (show a green run and a red run).
+- GitHub **QA Gate**: Vigilis runs as a *required* check — failing tests block the deploy (show a green run and a red run).
 - **MCP**: the same engine drives from Claude Desktop/Code — "your engineers can ask Claude to generate or heal a test in-editor."
 - "Same core, two surfaces: CI and Claude."
 

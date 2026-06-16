@@ -14,7 +14,7 @@ describe('createHealPr', () => {
       cwd: '/ws',
       branch: 'argus/heal-login-abc',
       files: ['tests/generated/login.spec.ts'],
-      title: 'Argus: heal DOM drift',
+      title: 'Vigilis: heal DOM drift',
       body: 'old → new',
       exec,
     });

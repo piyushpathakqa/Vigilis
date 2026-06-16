@@ -1,6 +1,6 @@
-# Argus — self-healing demo (TRE-40)
+# Vigilis — self-healing demo (TRE-40)
 
-Two seeded scenarios prove the core guardrail: **Argus heals DOM drift, but refuses real bugs.**
+Two seeded scenarios prove the core guardrail: **Vigilis heals DOM drift, but refuses real bugs.**
 Both are off by default (env toggles in `sample-shop`), so normal runs and CI are unaffected.
 
 Prerequisites: `pnpm build`, `npx playwright install chromium`, and `.env` with a real
@@ -25,7 +25,7 @@ node --env-file=.env packages/cli/dist/index.js heal \
   --model claude-haiku-4-5
 ```
 Expected: a `dom-drift` verdict, the spec rewritten to `submit-btn`, an independent green re-run,
-and `[argus] opened PR: https://github.com/.../pull/N`. Use `--no-pr` to keep the fix local.
+and `[vigilis] opened PR: https://github.com/.../pull/N`. Use `--no-pr` to keep the fix local.
 
 ## 2. Real bug → refuse to heal (gate stays blocked)
 
@@ -40,8 +40,8 @@ node --env-file=.env packages/cli/dist/index.js heal \
   http://localhost:3100/login --spec tests/generated/login.spec.ts \
   --model claude-haiku-4-5
 ```
-Expected: a `real-bug` verdict, **no PR**, and a non-zero exit — Argus blocks the gate instead of
-hiding the failure. This is the line that makes Argus trustworthy: it improves signal, it doesn't
+Expected: a `real-bug` verdict, **no PR**, and a non-zero exit — Vigilis blocks the gate instead of
+hiding the failure. This is the line that makes Vigilis trustworthy: it improves signal, it doesn't
 paper over bugs.
 
 ## In CI

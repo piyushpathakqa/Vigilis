@@ -2,7 +2,7 @@
   "name": "@argus/mcp",
   "version": "0.0.0",
   "private": true,
-  "description": "Argus MCP server: exposes the Tool Registry + behaviors over MCP.",
+  "description": "Vigilis MCP server: exposes the Tool Registry + behaviors over MCP.",
   "type": "module",
   "license": "MIT",
   "bin": {

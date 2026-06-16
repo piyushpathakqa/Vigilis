@@ -1,4 +1,4 @@
-# Argus — Design Document
+# Vigilis — Design Document
 
 > The validated design from the brainstorming session. This is the "why", not just the "what".
 > If you're about to make an architectural change, read this first and keep it updated.
@@ -17,7 +17,7 @@ portfolio piece (README, demo GIFs, sample app).
 
 ## 2. The core insight: one core, two consumers
 
-Argus defines its QA tools **once** and exposes them **twice**. This is the part that reads as
+Vigilis defines its QA tools **once** and exposes them **twice**. This is the part that reads as
 senior architecture rather than four disconnected demos.
 
 ```

@@ -1,6 +1,6 @@
-# Argus — Cursor context pointer
+# Vigilis — Cursor context pointer
 
-This is Argus, an agentic QA framework (Claude authors/generates/triages/self-heals Playwright
+This is Vigilis, an agentic QA framework (Claude authors/generates/triages/self-heals Playwright
 tests; ships as an MCP server + CLI; gated in GitHub Actions).
 
 Before doing anything, read these in order:

@@ -12,8 +12,8 @@ import {
   CONFIG_FILE,
   detectPlaywrightConfig,
   hasAnthropicKey,
-  loadArgusConfig,
-  writeArgusConfig,
+  loadVigilisConfig,
+  writeVigilisConfig,
 } from './config';
 import {
   composeObservers,
@@ -73,30 +73,30 @@ const SMOKE_SYSTEM =
   'Do not write any files.';
 
 program
-  .name('argus')
+  .name('vigilis')
   .description('Agentic QA: author, generate, triage, and self-heal Playwright tests.')
   .version('0.0.0');
 
 program
   .command('init')
-  .description('Scaffold argus.config.json so you can use Argus in your own Playwright project')
-  .option('--force', 'overwrite an existing argus.config.json')
+  .description('Scaffold vigilis.config.json so you can use Vigilis in your own Playwright project')
+  .option('--force', 'overwrite an existing vigilis.config.json')
   .action((opts: { force?: boolean }) => {
     const cwd = process.cwd();
 
     const pw = detectPlaywrightConfig(cwd);
     if (pw) {
-      console.log(`[argus] detected Playwright project (${pw})`);
+      console.log(`[vigilis] detected Playwright project (${pw})`);
     } else {
       console.log(
-        '[argus] no playwright.config.* found here. Argus writes standard Playwright specs — ' +
+        '[vigilis] no playwright.config.* found here. Vigilis writes standard Playwright specs — ' +
           'run `npm init playwright@latest` first if you need a Playwright setup.',
       );
     }
 
-    const { written, path } = writeArgusConfig(cwd, { force: opts.force });
-    if (written) console.log(`[argus] wrote ${path}`);
-    else console.log(`[argus] ${CONFIG_FILE} already exists — left untouched (use --force to overwrite).`);
+    const { written, path } = writeVigilisConfig(cwd, { force: opts.force });
+    if (written) console.log(`[vigilis] wrote ${path}`);
+    else console.log(`[vigilis] ${CONFIG_FILE} already exists — left untouched (use --force to overwrite).`);
 
     console.log('\nNext steps:');
     let n = 1;
@@ -124,7 +124,7 @@ program
       url: string,
       opts: { model?: string; run?: boolean; baseUrl?: string; out: string; maxSteps: string },
     ) => {
-      const { config, found } = loadArgusConfig(process.cwd());
+      const { config, found } = loadVigilisConfig(process.cwd());
       const model = opts.model ?? (found ? config.model : undefined) ?? resolveModel('primary');
       const { session, close } = await createPlaywrightSession({ headless: true });
       const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
@@ -141,14 +141,14 @@ program
         });
 
         console.log(
-          '\n[argus] wrote: ' + (result.writtenFiles.join(', ') || '(no file written)'),
+          '\n[vigilis] wrote: ' + (result.writtenFiles.join(', ') || '(no file written)'),
         );
         const price = PRICES[model];
         const cost = price
           ? `$${((result.run.usage.inputTokens / 1e6) * price.in + (result.run.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
           : 'n/a';
         console.log(
-          `[argus] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
+          `[vigilis] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
         );
 
         if (opts.run && result.writtenFiles.includes(result.specPath)) {
@@ -156,12 +156,12 @@ program
           // origin of the target URL — so `--run` works on any app.
           const baseUrl = opts.baseUrl ?? (found ? config.baseUrl : undefined) ?? new URL(url).origin;
           process.env.ARGUS_BASE_URL = baseUrl;
-          console.log(`\n[argus] running ${result.specPath} against ${baseUrl} …`);
+          console.log(`\n[vigilis] running ${result.specPath} against ${baseUrl} …`);
           const tr = await runner.run(result.specPath);
-          console.log(`[argus] ${tr.summary} (artifacts: ${tr.artifactsDir})`);
+          console.log(`[vigilis] ${tr.summary} (artifacts: ${tr.artifactsDir})`);
           if (tr.failed > 0) process.exitCode = 1;
         } else if (opts.run) {
-          console.log('[argus] --run skipped: no spec file was written');
+          console.log('[vigilis] --run skipped: no spec file was written');
         }
       } finally {
         await close();
@@ -174,7 +174,7 @@ program
   .argument('<intent>', 'Plain-English description of what to test')
   .description('Compile an intent into a structured test plan')
   .action((intent: string) => {
-    console.log(`[argus] author "${intent}" — not implemented yet (M1, TRE-?).`);
+    console.log(`[vigilis] author "${intent}" — not implemented yet (M1, TRE-?).`);
   });
 
 program
@@ -198,20 +198,20 @@ program
         const report = JSON.parse(await readFile(opts.report, 'utf8'));
         const failures = extractFailures(report);
         if (failures.length === 0) {
-          console.log('[argus] no failures found in the report.');
+          console.log('[vigilis] no failures found in the report.');
           return;
         }
         specPath = failures[0]!.specPath;
         errorText = failures[0]!.error;
-        console.log(`[argus] triaging: ${failures[0]!.title} (${specPath})`);
+        console.log(`[vigilis] triaging: ${failures[0]!.title} (${specPath})`);
       }
       if (!specPath) {
-        console.error('[argus] provide --spec <path> or --report <playwright.json>');
+        console.error('[vigilis] provide --spec <path> or --report <playwright.json>');
         process.exitCode = 1;
         return;
       }
 
-      const cfg = loadArgusConfig(process.cwd());
+      const cfg = loadVigilisConfig(process.cwd());
       const model = opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
       const { session, close } = await createPlaywrightSession({ headless: true });
       const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
@@ -227,13 +227,13 @@ program
         });
         const v = result.verdict;
         if (!v) {
-          console.log('\n[argus] no verdict produced.');
+          console.log('\n[vigilis] no verdict produced.');
           process.exitCode = 1;
         } else {
-          console.log(`\n[argus] verdict: ${v.verdict} (${v.confidence})`);
-          console.log(`[argus] rationale: ${v.rationale}`);
+          console.log(`\n[vigilis] verdict: ${v.verdict} (${v.confidence})`);
+          console.log(`[vigilis] rationale: ${v.rationale}`);
           if (v.suggestedSelector) {
-            console.log(`[argus] suggested selector: ${v.suggestedSelector}`);
+            console.log(`[vigilis] suggested selector: ${v.suggestedSelector}`);
           }
           // real-bug must block the gate; drift/flake are recoverable.
           if (v.verdict === 'real-bug') process.exitCode = 1;
@@ -243,7 +243,7 @@ program
           ? `$${((result.run.usage.inputTokens / 1e6) * price.in + (result.run.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
           : 'n/a';
         console.log(
-          `[argus] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
+          `[vigilis] ${result.run.steps} steps · ${result.run.usage.inputTokens} in / ${result.run.usage.outputTokens} out · ~${cost} (${model})`,
         );
       } finally {
         await close();
@@ -275,7 +275,7 @@ program
         model?: string;
       },
     ) => {
-      const cfg = loadArgusConfig(process.cwd());
+      const cfg = loadVigilisConfig(process.cwd());
       const model = opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
       const slug = (opts.spec.split('/').pop() ?? 'spec').replace(/\.spec\.ts$/, '');
       const { session, close } = await createPlaywrightSession({ headless: true });
@@ -301,21 +301,21 @@ program
           observer,
         });
         const v = t.verdict;
-        console.log(`\n[argus] verdict: ${v ? `${v.verdict} (${v.confidence})` : 'none'}`);
-        if (v) console.log(`[argus] rationale: ${v.rationale}`);
+        console.log(`\n[vigilis] verdict: ${v ? `${v.verdict} (${v.confidence})` : 'none'}`);
+        if (v) console.log(`[vigilis] rationale: ${v.rationale}`);
 
         if (!v || v.verdict !== 'dom-drift' || !v.suggestedSelector) {
           if (v?.verdict === 'real-bug') {
-            console.log('[argus] real bug — refusing to heal; the gate stays blocked.');
+            console.log('[vigilis] real bug — refusing to heal; the gate stays blocked.');
             process.exitCode = 1;
           } else {
-            console.log('[argus] not a healable DOM drift; nothing to do.');
+            console.log('[vigilis] not a healable DOM drift; nothing to do.');
           }
           return;
         }
 
         // 2. Heal — rewrite the locator and verify green independently.
-        console.log(`\n[argus] healing drift → ${v.suggestedSelector}`);
+        console.log(`\n[vigilis] healing drift → ${v.suggestedSelector}`);
         const h = await heal({
           client: createAnthropicClient(),
           specPath: opts.spec,
@@ -326,23 +326,23 @@ program
           observer,
         });
         if (!h.verified || h.changedFiles.length === 0) {
-          console.log('[argus] could not produce a verified green fix; no PR opened.');
+          console.log('[vigilis] could not produce a verified green fix; no PR opened.');
           process.exitCode = 1;
           return;
         }
-        console.log(`[argus] verified green · changed: ${h.changedFiles.join(', ')}`);
+        console.log(`[vigilis] verified green · changed: ${h.changedFiles.join(', ')}`);
 
         // 3. Open the PR (unless --no-pr).
         const branch = `argus/heal-${slug}-${Date.now().toString(36)}`;
         if (opts.pr === false) {
-          console.log(`[argus] --no-pr: fix is on disk. Open it with:`);
+          console.log(`[vigilis] --no-pr: fix is on disk. Open it with:`);
           console.log(`  git checkout -b ${branch} && git add ${h.changedFiles.join(' ')} && \\`);
-          console.log(`  git commit -m "Argus: heal DOM drift" && gh pr create --fill`);
+          console.log(`  git commit -m "Vigilis: heal DOM drift" && gh pr create --fill`);
           return;
         }
-        const title = `Argus: heal DOM drift in ${slug}`;
+        const title = `Vigilis: heal DOM drift in ${slug}`;
         const body = [
-          `Argus triaged a failing Playwright test as **dom-drift** and self-healed it.`,
+          `Vigilis triaged a failing Playwright test as **dom-drift** and self-healed it.`,
           ``,
           `- **Spec:** \`${opts.spec}\``,
           `- **New selector:** \`${v.suggestedSelector}\``,
@@ -357,7 +357,7 @@ program
           title,
           body,
         });
-        console.log(`\n[argus] opened PR: ${pr.url}`);
+        console.log(`\n[vigilis] opened PR: ${pr.url}`);
       } finally {
         // Seal the provenance session (records every tool call + decision above).
         await tree?.flush();
@@ -365,11 +365,11 @@ program
           await treeshipCli(['session', 'close']);
           const url = opts.publish === false ? null : await publishReceipt();
           if (url) {
-            console.log(`\n[argus] 🔏 provenance receipt: ${url}`);
-            console.log('[argus] public, no login, independently verifiable.');
+            console.log(`\n[vigilis] 🔏 provenance receipt: ${url}`);
+            console.log('[vigilis] public, no login, independently verifiable.');
           } else {
             console.log(
-              '\n[argus] provenance receipt sealed — verify it with `treeship verify last`, ' +
+              '\n[vigilis] provenance receipt sealed — verify it with `treeship verify last`, ' +
                 'or publish a shareable URL with `treeship session report` ' +
                 '(needs `treeship hub attach` once).',
             );
@@ -415,7 +415,7 @@ program
         ? `$${((result.usage.inputTokens / 1e6) * price.in + (result.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
         : 'n/a';
       console.log(
-        `\n[argus] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
+        `\n[vigilis] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
       );
     } finally {
       await close();

@@ -1,6 +1,6 @@
-# Argus launch — LinkedIn teaser series
+# Vigilis launch — LinkedIn teaser series
 
-A 5-post arc that sets up the *problem* before revealing Argus, so the launch lands on primed soil.
+A 5-post arc that sets up the *problem* before revealing Vigilis, so the launch lands on primed soil.
 
 **Posting notes**
 - LinkedIn does **not** render Markdown. When you paste, drop the `**bold**` markers (or replace emphasis with CAPS / line breaks).
@@ -120,11 +120,11 @@ Arc: **1 problem → 2 the shift → 3 the uncomfortable question → 4 the prin
 
 ---
 
-## Post 5 — The reveal (Argus)
+## Post 5 — The reveal (Vigilis)
 
-> So I built it. Meet **Argus** — the trust layer for autonomous testing.
+> So I built it. Meet **Vigilis** — the trust layer for autonomous testing.
 >
-> Argus is an AI agent that writes, gates, and self-heals Playwright tests — but the point isn't the healing. The point is that every single thing it does is **verifiable**.
+> Vigilis is an AI agent that writes, gates, and self-heals Playwright tests — but the point isn't the healing. The point is that every single thing it does is **verifiable**.
 >
 > What it does:
 > • Generates real Playwright tests from a URL

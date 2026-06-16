@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { ToolContext } from '@argus/core';
-import { createArgusMcpServer } from './server';
+import { createVigilisMcpServer } from './server';
 
 // Minimal fake context — only the bits the exercised tool touches.
 const fakeCtx = {
@@ -22,14 +22,14 @@ const fakeCtx = {
 } as unknown as ToolContext;
 
 async function connect() {
-  const server = createArgusMcpServer({ getContext: () => fakeCtx });
+  const server = createVigilisMcpServer({ getContext: () => fakeCtx });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   const client = new Client({ name: 'test', version: '0.0.0' });
   await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
   return client;
 }
 
-describe('createArgusMcpServer', () => {
+describe('createVigilisMcpServer', () => {
   it('exposes the 10 registry tools', async () => {
     const client = await connect();
     const { tools } = await client.listTools();

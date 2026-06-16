@@ -230,7 +230,7 @@ function Heal({ local, dur }: { local: number; dur: number }) {
   );
 }
 
-export const ArgusLoop = () => {
+export const VigilisLoop = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const seg = 135;

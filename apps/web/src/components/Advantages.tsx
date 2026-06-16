@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 
 const ITEMS = [
   { t: 'AI writes real tests', d: 'It explores your app and emits runnable Playwright specs — not brittle boilerplate.' },
-  { t: 'Failing tests block deploy', d: 'Argus runs as a required GitHub check, so regressions never reach production.' },
+  { t: 'Failing tests block deploy', d: 'Vigilis runs as a required GitHub check, so regressions never reach production.' },
   { t: 'Self-healing PRs', d: 'DOM drift is fixed automatically and verified green before a PR — real bugs are never hidden.' },
   { t: 'Signed provenance receipts', d: 'Every heal is wrapped in a Treeship session: an auditable, signed chain of artifacts.' },
   { t: 'Drive it from Claude', d: 'The same tools ship as an MCP server — generate, triage and heal straight from your agent.' },
@@ -14,7 +14,7 @@ const ITEMS = [
 export function Advantages() {
   return (
     <section className="mx-auto max-w-5xl px-6 py-24">
-      <h2 className="text-center text-3xl font-bold">Why Argus</h2>
+      <h2 className="text-center text-3xl font-bold">Why Vigilis</h2>
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {ITEMS.map((it, i) => (
           <motion.div

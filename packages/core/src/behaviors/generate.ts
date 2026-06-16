@@ -41,7 +41,7 @@ export interface GenerateResult {
 }
 
 const GENERATE_SYSTEM = [
-  'You are Argus, a senior SDET. Your job is to write ONE runnable Playwright end-to-end test',
+  'You are Vigilis, a senior SDET. Your job is to write ONE runnable Playwright end-to-end test',
   'for the web app at the given URL.',
   '',
   'Process:',
