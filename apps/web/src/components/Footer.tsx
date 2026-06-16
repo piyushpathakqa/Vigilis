@@ -4,11 +4,27 @@ export function Footer() {
       <h2 className="text-2xl font-bold">Get started in seconds</h2>
       <pre className="glass mt-6 overflow-x-auto rounded-xl p-6 font-mono text-sm leading-relaxed">
         <code>
-          git clone https://github.com/piyushpathakqa/Vigilis
-          {'\n'}cd Vigilis &amp;&amp; pnpm install &amp;&amp; pnpm build
-          {'\n'}node packages/cli/dist/index.js generate &lt;your-app-url&gt; --run
+          <span className="text-[var(--color-muted)]"># in your Playwright project</span>
+          {'\n'}npm i -D vigilis
+          {'\n'}npx vigilis init
+          {'\n'}npx vigilis generate https://your-app.com --run
+          {'\n'}
+          {'\n'}<span className="text-[var(--color-muted)]"># or drive it from Claude (MCP)</span>
+          {'\n'}npx -y vigilis-mcp
         </code>
       </pre>
+      <p className="mt-3 text-xs text-[var(--color-muted)]">
+        On npm:{' '}
+        <a
+          className="underline hover:text-[var(--color-ink)]"
+          href="https://www.npmjs.com/package/vigilis"
+          target="_blank"
+          rel="noreferrer"
+        >
+          vigilis
+        </a>{' '}
+        · MIT · needs an Anthropic API key + chromium.
+      </p>
       <nav className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[var(--color-muted)]">
         <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/Vigilis">
           GitHub

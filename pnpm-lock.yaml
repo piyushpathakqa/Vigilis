@@ -133,12 +133,29 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@argus/core':
-        specifier: workspace:*
-        version: link:../core
+      '@anthropic-ai/sdk':
+        specifier: ^0.104.1
+        version: 0.104.1(zod@4.4.3)
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.4
         version: 1.29.0(zod@4.4.3)
+      '@playwright/test':
+        specifier: ^1.60.0
+        version: 1.60.0
+      playwright:
+        specifier: ^1.60.0
+        version: 1.60.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    optionalDependencies:
+      '@treeship/sdk':
+        specifier: ^0.12.0
+        version: 0.12.0
+    devDependencies:
+      '@argus/core':
+        specifier: workspace:*
+        version: link:../core
 
 packages:
 

@@ -1,21 +1,54 @@
 {
-  "name": "@argus/mcp",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Vigilis MCP server: exposes the Tool Registry + behaviors over MCP.",
+  "name": "vigilis-mcp",
+  "version": "0.1.0",
+  "description": "Vigilis MCP server — drive the Vigilis QA tools (generate/triage/heal Playwright tests) from Claude Desktop/Code over the Model Context Protocol.",
   "type": "module",
   "license": "MIT",
+  "author": "Piyush Pathak",
+  "homepage": "https://vigilis.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piyushpathakqa/Vigilis.git",
+    "directory": "packages/mcp"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "playwright",
+    "qa",
+    "testing",
+    "ai",
+    "agent",
+    "claude",
+    "vigilis"
+  ],
   "bin": {
+    "vigilis-mcp": "./dist/index.js",
     "argus-mcp": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": ["dist", "README.md"],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --clean",
+    "build": "tsup src/index.ts --format esm --clean --external @treeship/sdk",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@argus/core": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.0.4"
+    "@anthropic-ai/sdk": "^0.104.1",
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@playwright/test": "^1.60.0",
+    "playwright": "^1.60.0",
+    "zod": "^4.4.3"
+  },
+  "optionalDependencies": {
+    "@treeship/sdk": "^0.12.0"
+  },
+  "devDependencies": {
+    "@argus/core": "workspace:*"
   }
 }

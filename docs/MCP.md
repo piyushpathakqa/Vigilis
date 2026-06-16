@@ -1,31 +1,24 @@
 # Using Vigilis as an MCP server
 
-`@argus/mcp` exposes Vigilis's QA tools over the Model Context Protocol, so you can drive the **exact
-tools the agent uses** — `browser_*`, `dom_*`, `fs_*`, `playwright_run` — from Claude Desktop or
-Claude Code. Your client's model becomes the agent loop; the server holds the live browser.
+The [`vigilis-mcp`](https://www.npmjs.com/package/vigilis-mcp) package exposes Vigilis's QA tools
+over the Model Context Protocol, so you can drive the **exact tools the agent uses** — `browser_*`,
+`dom_*`, `fs_*`, `playwright_run` — from Claude Desktop or Claude Code. Your client's model becomes
+the agent loop; the server holds the live browser.
 
 > No `ANTHROPIC_API_KEY` is needed for the MCP server itself — it only executes tools (the
 > reasoning happens in your client). It does launch headless Chromium on the first browser/DOM
 > tool call, so run `npx playwright install chromium` once.
 
-## Build
-
-```bash
-pnpm install
-pnpm build                       # produces packages/mcp/dist/index.js (the `argus-mcp` bin)
-npx playwright install chromium  # one-time, for the browser tools
-```
-
 ## Claude Code
 
 ```bash
-claude mcp add argus -- node /ABSOLUTE/PATH/TO/argus/packages/mcp/dist/index.js
+claude mcp add vigilis -- npx -y vigilis-mcp
 ```
 Or commit a project `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "argus": { "command": "node", "args": ["packages/mcp/dist/index.js"] }
+    "vigilis": { "command": "npx", "args": ["-y", "vigilis-mcp"] }
   }
 }
 ```
@@ -33,18 +26,19 @@ Or commit a project `.mcp.json`:
 ## Claude Desktop
 
 Edit `claude_desktop_config.json` (macOS:
-`~/Library/Application Support/Claude/claude_desktop_config.json`):
+`~/Library/Application Support/Claude/claude_desktop_config.json`), then restart:
 ```json
 {
   "mcpServers": {
-    "argus": {
-      "command": "node",
-      "args": ["/ABSOLUTE/PATH/TO/argus/packages/mcp/dist/index.js"]
-    }
+    "vigilis": { "command": "npx", "args": ["-y", "vigilis-mcp"] }
   }
 }
 ```
-Restart Claude Desktop; "argus" appears in the tools menu.
+"vigilis" then appears in the tools menu — ask Claude to *generate a test for a URL* or *triage a
+failing spec* and it drives the tools.
+
+> Prefer pinning from a clone? `npx playwright install chromium` then point `command` at
+> `node` + the built `packages/mcp/dist/index.js`. The `npx -y vigilis-mcp` form needs no checkout.
 
 ## Tools exposed
 
