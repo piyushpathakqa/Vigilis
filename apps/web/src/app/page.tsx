@@ -4,6 +4,7 @@ import { LoopSection } from '@/components/LoopSection';
 import { ArchSection } from '@/components/ArchSection';
 import { Advantages } from '@/components/Advantages';
 import { Provenance } from '@/components/Provenance';
+import { InstallSection } from '@/components/InstallSection';
 import { Footer } from '@/components/Footer';
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
       <ArchSection />
       <Advantages />
       <Provenance />
+      <InstallSection />
       <Footer />
     </main>
   );
