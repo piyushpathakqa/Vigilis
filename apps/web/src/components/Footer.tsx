@@ -4,19 +4,19 @@ export function Footer() {
       <h2 className="text-2xl font-bold">Get started in seconds</h2>
       <pre className="glass mt-6 overflow-x-auto rounded-xl p-6 font-mono text-sm leading-relaxed">
         <code>
-          git clone https://github.com/piyushpathakqa/argus
-          {'\n'}cd argus &amp;&amp; pnpm install &amp;&amp; pnpm build
+          git clone https://github.com/piyushpathakqa/Vigilis
+          {'\n'}cd Vigilis &amp;&amp; pnpm install &amp;&amp; pnpm build
           {'\n'}node packages/cli/dist/index.js generate &lt;your-app-url&gt; --run
         </code>
       </pre>
       <nav className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[var(--color-muted)]">
-        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/argus">
+        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/Vigilis">
           GitHub
         </a>
-        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/argus/blob/main/docs/DEMO.md">
+        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/Vigilis/blob/main/docs/DEMO.md">
           Demo
         </a>
-        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/argus/blob/main/docs/MCP.md">
+        <a className="hover:text-[var(--color-ink)]" href="https://github.com/piyushpathakqa/Vigilis/blob/main/docs/MCP.md">
           MCP
         </a>
         <a

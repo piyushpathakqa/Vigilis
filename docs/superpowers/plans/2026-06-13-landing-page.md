@@ -248,7 +248,7 @@ export function Hero() {
         The agent that writes, gates &amp; self-heals your Playwright tests.
       </motion.p>
       <motion.div {...fade(0.3)} className="mt-8 flex gap-4">
-        <a href="https://github.com/piyushpathakqa/argus" className="rounded-lg bg-white px-5 py-2.5 font-semibold text-black">View on GitHub ▸</a>
+        <a href="https://github.com/piyushpathakqa/Vigilis" className="rounded-lg bg-white px-5 py-2.5 font-semibold text-black">View on GitHub ▸</a>
         <a href="#loop" className="glass rounded-lg px-5 py-2.5 font-semibold">See the loop</a>
       </motion.div>
       <motion.div {...fade(0.45)} className="glass mt-14 w-full overflow-hidden rounded-xl">

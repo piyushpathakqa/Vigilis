@@ -142,7 +142,7 @@ Arc: **1 problem → 2 the shift → 3 the uncomfortable question → 4 the prin
 >
 > It's open source. CLI + an MCP server so you can drive it from Claude.
 > • Site: https://vigilis.dev
-> • Code: https://github.com/piyushpathakqa/argus
+> • Code: https://github.com/piyushpathakqa/Vigilis
 >
 > Self-healing is becoming free. Trust is the part that isn't.
 >

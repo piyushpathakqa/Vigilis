@@ -123,7 +123,7 @@ This is the demo. Slow down here.
 - Landing page: <https://vigilis.dev>
 - Live verified receipt (drift heal): <https://treeship.dev/receipt/ssn_b965f6f0a82f1294>
 - Live verified receipt (real-bug refusal): <https://treeship.dev/receipt/ssn_3834e1bcc2651d7d>
-- Repo: <https://github.com/piyushpathakqa/argus> · technical runbook: [`DEMO.md`](./DEMO.md) · MCP: [`MCP.md`](./MCP.md) · provenance: [`TREESHIP.md`](./TREESHIP.md)
+- Repo: <https://github.com/piyushpathakqa/Vigilis> · technical runbook: [`DEMO.md`](./DEMO.md) · MCP: [`MCP.md`](./MCP.md) · provenance: [`TREESHIP.md`](./TREESHIP.md)
 
 ## Still to produce (see "next steps")
 

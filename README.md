@@ -4,8 +4,8 @@
 > tests for any web app — usable from Claude Code/Desktop as an **MCP server** or from CI as a
 > **CLI** — with the whole loop running as a deployment gate in **GitHub Actions**.
 
-[![CI](https://github.com/piyushpathakqa/argus/actions/workflows/ci.yml/badge.svg)](https://github.com/piyushpathakqa/argus/actions/workflows/ci.yml)
-[![QA Gate](https://github.com/piyushpathakqa/argus/actions/workflows/qa.yml/badge.svg)](https://github.com/piyushpathakqa/argus/actions/workflows/qa.yml)
+[![CI](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml)
+[![QA Gate](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml)
 
 **🌐 Live site → [vigilis.dev](https://vigilis.dev)** · the landing page (`apps/web`), built with Next.js, Framer Motion & a pre-rendered Remotion hero.
 

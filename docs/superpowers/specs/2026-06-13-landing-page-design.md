@@ -62,7 +62,7 @@ Components that use `motion` or browser APIs are client components (`'use client
 - Architecture: one `@argus/core` (agent loop + tool registry) → two consumers (`@argus/cli`, `@argus/mcp`).
 - Advantages: AI writes real tests · failing tests block deploy · self-healing PRs that don't hide
   bugs · **signed Treeship provenance receipts** · drive the tools from Claude via MCP.
-- Links: GitHub `https://github.com/piyushpathakqa/argus`; docs in-repo.
+- Links: GitHub `https://github.com/piyushpathakqa/Vigilis`; docs in-repo.
 
 ## 5. Animation
 

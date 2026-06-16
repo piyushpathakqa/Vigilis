@@ -70,7 +70,7 @@ pnpm --filter @argus/sample-shop dev        # ✓ serves login → products → 
 ### Git
 - Local repo initialized, branch `main`, one commit:
   `M0: scaffold pnpm/TypeScript monorepo (TRE-27, TRE-28, TRE-29)`.
-- Remote `origin` → `https://github.com/piyushpathakqa/argus.git` — **pushed** (2026-06-12), `main`
+- Remote `origin` → `https://github.com/piyushpathakqa/Vigilis.git` — **pushed** (2026-06-12), `main`
   tracks `origin/main`. GitHub Actions CI runs on push.
 
 ## Open chores
@@ -81,7 +81,7 @@ _None blocking._ (The earlier GitHub-push chore is resolved: the `gh` token was 
 ## Environment setup (for a fresh machine / Cursor)
 ```bash
 corepack enable && corepack prepare pnpm@9.15.0 --activate   # if pnpm missing
-cd argus
+cd Vigilis
 pnpm install
 cp .env.example .env        # add ANTHROPIC_API_KEY
 ```

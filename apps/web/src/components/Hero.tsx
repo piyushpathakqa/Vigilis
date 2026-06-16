@@ -31,7 +31,7 @@ export function Hero() {
       </motion.p>
       <motion.div {...fade(0.3)} className="mt-8 flex gap-4">
         <a
-          href="https://github.com/piyushpathakqa/argus"
+          href="https://github.com/piyushpathakqa/Vigilis"
           className="rounded-lg bg-white px-5 py-2.5 font-semibold text-black"
         >
           View on GitHub ▸
