@@ -298,8 +298,8 @@ program
         if (tree) {
           await treeshipCli(['session', 'close']);
           console.log(
-            '\n[argus] provenance receipt sealed — verify with `treeship verify last`, ' +
-              'or open the latest ~/.treeship/sessions/*.treeship/preview.html.',
+            '\n[argus] provenance receipt sealed — verify it with `treeship verify last`, ' +
+              'or publish a public, shareable receipt URL with `treeship session report`.',
           );
         }
         await close();

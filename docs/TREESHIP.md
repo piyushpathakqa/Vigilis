@@ -27,16 +27,18 @@ treeship init
 # heal — a receipt is produced automatically
 node --env-file=.env packages/cli/dist/index.js heal \
   http://localhost:3100/login --spec tests/generated/login.spec.ts
-# … [argus] provenance receipt sealed — verify with `treeship verify last`,
-#    or open the latest ~/.treeship/sessions/*.treeship/preview.html
+# … [argus] provenance receipt sealed — verify it with `treeship verify last`,
+#    or publish a public, shareable receipt URL with `treeship session report`
 ```
 
 View / verify / share the receipt:
 ```bash
-treeship verify last                                 # ✓ signature valid  ✓ chain valid
-open ~/.treeship/sessions/<latest>.treeship/preview.html   # rendered timeline + agent graph
-treeship hub push last                               # → https://treeship.dev/verify/<id> (after `treeship hub attach`)
+treeship verify last            # ✓ signature valid  ✓ chain valid
+treeship session report         # → public https://treeship.dev/receipt/<id> (after `treeship hub attach`)
 ```
+> Prefer the hosted receipt (`treeship session report`) for sharing and demos — it renders
+> server-side and needs no login. (The local `~/.treeship/sessions/*.treeship/preview.html`
+> is a convenience file and can fail to render on some CLI versions.)
 
 Opt out with `--no-receipt`. If the `treeship` CLI isn't installed, heal runs normally and simply
 skips the receipt (a warning, no failure).
