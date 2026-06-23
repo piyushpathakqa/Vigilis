@@ -1,6 +1,9 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import type { TestRunner, TestRunResult } from '../tools/types';
 import { defaultExec } from './exec';
-import type { Exec, ExecResult } from './exec';
+import type { Exec } from './exec';
 
 export interface CypressStats {
   tests?: number;
@@ -44,34 +47,64 @@ export function parseCypressJson(report: CypressMochaReport, artifactsDir: strin
   return { passed, failed, summary: parts.join(', '), artifactsDir };
 }
 
-/** Cypress prints the JSON among other output; grab the outermost JSON object. */
-export function extractJsonBlob(stdout: string): string {
-  const start = stdout.indexOf('{');
-  const end = stdout.lastIndexOf('}');
-  return start >= 0 && end > start ? stdout.slice(start, end + 1) : '{}';
-}
-
 export interface CypressTestRunnerOptions {
   cwd: string;
   exec?: Exec;
   artifactsDir?: string;
+  /** Injectable for tests — defaults to fs.readFile(path, 'utf8') */
+  readReport?: (path: string) => Promise<string>;
 }
 
-/** Runs `npx cypress run --reporter json [--spec <path>]` and parses the result. */
+/** Runs `npx cypress run --reporter json --reporter-options output=<file> [--spec <path>]`
+ *  and parses the result from the written file.
+ *
+ *  Fail-closed: if the report file cannot be read or parsed, or has no `stats`,
+ *  returns `{ passed: 0, failed: 1, ... }` so the gate stays blocked.
+ */
 export class CypressTestRunner implements TestRunner {
   constructor(private readonly opts: CypressTestRunnerOptions) {}
 
   async run(specPath?: string): Promise<TestRunResult> {
     const exec = this.opts.exec ?? defaultExec;
     const artifactsDir = this.opts.artifactsDir ?? 'cypress/screenshots';
-    const args = ['cypress', 'run', '--reporter', 'json', ...(specPath ? ['--spec', specPath] : [])];
-    const { stdout } = await exec('npx', args, { cwd: this.opts.cwd });
-    let report: CypressMochaReport = {};
+    const readReport = this.opts.readReport ?? ((p: string) => readFile(p, 'utf8'));
+
+    const reportPath = join(tmpdir(), 'vigilis-cypress-report.json');
+    const args = [
+      'cypress',
+      'run',
+      '--reporter',
+      'json',
+      '--reporter-options',
+      `output=${reportPath}`,
+      ...(specPath ? ['--spec', specPath] : []),
+    ];
+
+    await exec('npx', args, { cwd: this.opts.cwd });
+
+    let report: CypressMochaReport;
     try {
-      report = JSON.parse(extractJsonBlob(stdout)) as CypressMochaReport;
+      const raw = await readReport(reportPath);
+      report = JSON.parse(raw) as CypressMochaReport;
     } catch {
-      report = {};
+      return {
+        passed: 0,
+        failed: 1,
+        summary: 'cypress produced no parseable report (treated as failure)',
+        artifactsDir,
+      };
     }
+
+    // Fail-closed: if parsed JSON has no stats, treat as a failure — not 0/0 green.
+    if (!report.stats) {
+      return {
+        passed: 0,
+        failed: 1,
+        summary: 'cypress produced no parseable report (treated as failure)',
+        artifactsDir,
+      };
+    }
+
     return parseCypressJson(report, artifactsDir);
   }
 }
