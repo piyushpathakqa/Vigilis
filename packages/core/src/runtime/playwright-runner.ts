@@ -1,5 +1,6 @@
 import type { TestRunner, TestRunResult } from '../tools/types';
 import { defaultExec } from './exec';
+import type { Exec } from './exec';
 // Re-export so existing callers that import Exec/ExecResult/defaultExec from this module keep working.
 export type { Exec, ExecResult } from './exec';
 export { defaultExec } from './exec';
