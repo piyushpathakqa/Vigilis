@@ -29,24 +29,25 @@ export interface TriageResult {
   run: AgentRunResult;
 }
 
-const TRIAGE_SYSTEM = [
-  'You are Vigilis triaging a FAILED Playwright test. Classify the failure as exactly one of:',
-  '- dom-drift: the target element still exists but its locator/data-testid changed',
-  '  (the spec\'s selector no longer matches; a different current selector does);',
-  '- real-bug: the expected element or behaviour is genuinely missing or broken',
-  '  (no equivalent selector exists; the user flow does not work);',
-  '- flake: transient/non-deterministic (would pass on a re-run).',
-  '',
-  'Process:',
-  '1. Read the failing spec with fs_read to see what it expected.',
-  '2. Navigate to the live app and inspect it with dom_testids, dom_query, browser_snapshot.',
-  '3. Compare the spec\'s expectations against what is actually live.',
-  '4. Call report_verdict EXACTLY ONCE with your conclusion. For dom-drift, set',
-  '   suggestedSelector to the correct current selector.',
-  '',
-  'Be conservative: only say dom-drift when a clear replacement selector exists. If the',
-  'feature is actually broken or missing, it is a real-bug (which must block the gate).',
-].join('\n');
+const triageSystem = (framework: string): string =>
+  [
+    `You are Vigilis triaging a FAILED ${framework} test. Classify the failure as exactly one of:`,
+    '- dom-drift: the target element still exists but its locator/data-testid changed',
+    '  (the spec\'s selector no longer matches; a different current selector does);',
+    '- real-bug: the expected element or behaviour is genuinely missing or broken',
+    '  (no equivalent selector exists; the user flow does not work);',
+    '- flake: transient/non-deterministic (would pass on a re-run).',
+    '',
+    'Process:',
+    '1. Read the failing spec with fs_read to see what it expected.',
+    '2. Navigate to the live app and inspect it with dom_testids, dom_query, browser_snapshot.',
+    '3. Compare the spec\'s expectations against what is actually live.',
+    '4. Call report_verdict EXACTLY ONCE with your conclusion. For dom-drift, set',
+    '   suggestedSelector to the correct current selector.',
+    '',
+    'Be conservative: only say dom-drift when a clear replacement selector exists. If the',
+    'feature is actually broken or missing, it is a real-bug (which must block the gate).',
+  ].join('\n');
 
 const OPUS_TIER = /opus|sonnet-4-6|fable/;
 
@@ -76,14 +77,14 @@ export async function triage(opts: TriageOptions): Promise<TriageResult> {
   };
 
   const prompt = [
-    `A Playwright test failed. Spec: ${specPath}. App under test: ${url}.`,
+    `A ${ctx.adapter.name} test failed. Spec: ${specPath}. App under test: ${url}.`,
     errorText ? `Failure: ${errorText}` : 'Failure message unavailable.',
     'Triage it and call report_verdict.',
   ].join('\n');
 
   const run = await runAgentLoop({
     client,
-    system: TRIAGE_SYSTEM,
+    system: triageSystem(ctx.adapter.name),
     prompt,
     registry,
     ctx,
