@@ -56,7 +56,7 @@ export function Provenance() {
           transition={{ duration: 0.5 }}
         >
           <code>
-            <span className="text-[var(--color-cyan)]">$ argus heal --spec checkout.spec.ts</span>
+            <span className="text-[var(--color-cyan)]">$ vigilis heal --spec checkout.spec.ts</span>
             {'\n'}triage   → dom-drift (locator stale)
             {'\n'}heal     → rewrote getByRole(&apos;button&apos;)
             {'\n'}verify   → 12 passed (green)

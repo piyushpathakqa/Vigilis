@@ -3,11 +3,11 @@
 import { motion } from 'motion/react';
 
 const STAGES = [
-  { k: 'Generate', d: 'Point it at a URL → it explores the app and writes a runnable Playwright spec.' },
-  { k: 'Gate', d: 'The spec runs in CI as a required check — failing tests block the deploy.' },
-  { k: 'Triage', d: 'On failure it classifies the cause: real bug vs DOM drift vs flake.' },
-  { k: 'Heal', d: 'For drift it rewrites the locator, verifies green, and opens a PR — never masking real bugs.' },
-  { k: 'Verify', d: 'Every run is sealed into a signed, tamper-evident receipt — independently verifiable, not "trust me".' },
+  { k: 'Generate', d: 'URL in, Playwright spec out.' },
+  { k: 'Gate', d: 'Runs in CI — failing tests block the deploy.' },
+  { k: 'Triage', d: 'Classifies every failure: real bug, DOM drift, or flake.' },
+  { k: 'Heal', d: 'Safe drift gets a verified fix PR. Real regressions do not.' },
+  { k: 'Evidence', d: 'Every automated change includes evidence: what failed, what changed, and why.' },
 ];
 
 export function LoopSection() {
