@@ -4,23 +4,13 @@ import type { AnthropicLike } from '../agent/client';
 import type { AgentObserver } from '../agent/observer';
 import type { ToolRegistry } from '../tools/registry';
 import type { ToolContext } from '../tools/types';
+import { PlaywrightAdapter } from '../framework/playwright-adapter';
 
-/** Map a URL to a deterministic spec path under `outDir`. */
+const defaultAdapter = new PlaywrightAdapter();
+
+/** @deprecated prefer ctx.adapter.specPathForUrl — kept for back-compat. */
 export function specPathForUrl(url: string, outDir = 'tests/generated'): string {
-  let pathname = '/';
-  try {
-    pathname = new URL(url).pathname;
-  } catch {
-    pathname = '/';
-  }
-  const slug =
-    pathname
-      .split('/')
-      .filter(Boolean)
-      .join('-')
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '') || 'home';
-  return `${outDir}/${slug}.spec.ts`;
+  return defaultAdapter.specPathForUrl(url, outDir);
 }
 
 export interface GenerateOptions {
@@ -40,8 +30,8 @@ export interface GenerateResult {
   run: AgentRunResult;
 }
 
-const GENERATE_SYSTEM = [
-  'You are Vigilis, a senior SDET. Your job is to write ONE runnable Playwright end-to-end test',
+const GENERATE_SYSTEM_HEAD = [
+  'You are Vigilis, a senior SDET. Your job is to write ONE runnable end-to-end test',
   'for the web app at the given URL.',
   '',
   'Process:',
@@ -50,18 +40,6 @@ const GENERATE_SYSTEM = [
   '3. Exercise the primary user flow (e.g. log in, then add an item to the cart).',
   '4. Write exactly one spec file to the EXACT path you are given, using fs_write.',
   '',
-  'The spec MUST:',
-  "- import { test, expect } from '@playwright/test';",
-  '- use getByTestId(...) locators (never brittle text or CSS-structure selectors);',
-  '- use web-first assertions that auto-wait — expect(locator).toBeVisible(),',
-  '  toHaveText(...), toHaveValue(...). NEVER use page.waitForTimeout or fixed sleeps;',
-  '- prove a successful login by asserting an element that only appears AFTER login',
-  '  (e.g. a post-login nav or cart testid) — do NOT assert on a URL regex;',
-  '- include meaningful assertions on the primary flow (e.g. the cart count changes);',
-  '- be one focused, deterministic test, self-contained and runnable with no manual edits;',
-  "- baseURL is preconfigured, so use page.goto('/...') relative paths.",
-  '',
-  'Keep exploration focused to limit cost. After writing the file, briefly report what you wrote.',
 ].join('\n');
 
 const OPUS_TIER = /opus|sonnet-4-6|fable/;
@@ -78,7 +56,8 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResult> {
     maxSteps = 20,
     observer,
   } = opts;
-  const specPath = specPathForUrl(url, outDir);
+  const specPath = ctx.adapter.specPathForUrl(url, outDir);
+  const system = `${GENERATE_SYSTEM_HEAD}\n${ctx.adapter.generateGuidance()}\n\nKeep exploration focused to limit cost. After writing the file, briefly report what you wrote.`;
   const writtenFiles: string[] = [];
 
   const composed: AgentObserver = {
@@ -94,8 +73,8 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResult> {
 
   const run = await runAgentLoop({
     client,
-    system: GENERATE_SYSTEM,
-    prompt: `Generate a Playwright test for the app at ${url}. Write the spec to exactly: ${specPath}`,
+    system,
+    prompt: `Generate a ${ctx.adapter.name} test for the app at ${url}. Write the spec to exactly: ${specPath}`,
     registry,
     ctx,
     model,
