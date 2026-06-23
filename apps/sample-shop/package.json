@@ -20,10 +20,6 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "cypress": "^13",
-    "mocha": "^10",
-    "selenium-webdriver": "^4",
-    "tsx": "^4"
+    "@types/react-dom": "^19.0.3"
   }
 }
