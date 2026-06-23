@@ -5,6 +5,7 @@ import { ArchSection } from '@/components/ArchSection';
 import { Advantages } from '@/components/Advantages';
 import { Provenance } from '@/components/Provenance';
 import { InstallSection } from '@/components/InstallSection';
+import { Ecosystem } from '@/components/Ecosystem';
 import { Footer } from '@/components/Footer';
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <Advantages />
       <Provenance />
       <InstallSection />
+      <Ecosystem />
       <Footer />
     </main>
   );

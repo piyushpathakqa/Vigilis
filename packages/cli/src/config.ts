@@ -17,6 +17,8 @@ export interface VigilisConfig {
   openPr: boolean;
   /** Whether a Treeship provenance receipt is produced. */
   receipt: boolean;
+  /** Chosen framework; omit to auto-detect. */
+  framework?: 'playwright' | 'cypress' | 'selenium';
 }
 
 export const CONFIG_FILE = 'vigilis.config.json';

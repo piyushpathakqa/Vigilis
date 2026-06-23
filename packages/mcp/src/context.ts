@@ -1,8 +1,4 @@
-import {
-  createPlaywrightSession,
-  PlaywrightTestRunner,
-  type ToolContext,
-} from '@argus/core';
+import { createPlaywrightSession, resolveAdapter, type ToolContext } from '@argus/core';
 
 export interface LazyContext {
   getContext: () => Promise<ToolContext>;
@@ -22,10 +18,12 @@ export function createLazyContext(): LazyContext {
       if (!ctx) {
         const handle = await createPlaywrightSession({ headless: true });
         close = handle.close;
+        const adapter = await resolveAdapter(process.cwd());
         ctx = {
           workspaceRoot: process.cwd(),
           browser: handle.session,
-          runner: new PlaywrightTestRunner({ cwd: process.cwd() }),
+          runner: adapter.createRunner({ cwd: process.cwd() }),
+          adapter,
         };
       }
       return ctx;

@@ -1,0 +1,1 @@
+{ "extension": ["ts"], "spec": "tests/selenium/**/*.test.ts", "require": "tsx", "timeout": 30000 }

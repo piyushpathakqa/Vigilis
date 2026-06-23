@@ -2,6 +2,11 @@ export { PlaywrightBrowserSession, createPlaywrightSession } from './playwright-
 export type { PlaywrightSessionHandle } from './playwright-session';
 export { PlaywrightTestRunner, parsePlaywrightJson, extractFailures } from './playwright-runner';
 export type { Exec, ExecResult, PlaywrightJsonReport, PlaywrightFailure } from './playwright-runner';
+export { CypressTestRunner, parseCypressJson, extractCypressFailures } from './cypress-runner';
+export type { CypressMochaReport, CypressFailure } from './cypress-runner';
+export { parseMochaJson, extractMochaFailures, reportHasNoStats } from './mocha-json';
+export type { MochaReport, MochaFailure } from './mocha-json';
+export { SeleniumTestRunner } from './selenium-runner';
 export { trimHtml } from './html';
 export { createHealPr } from './git';
 export type { CreateHealPrOptions, GitExec } from './git';

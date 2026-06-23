@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vigilis — header options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --canvas:#05060a; --ink:#e6edf3; --muted:#9fb3d1;
+    --cyan:#22d3ee; --indigo:#6366f1; --violet:#a78bfa;
+    --sans:"Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--canvas); color:var(--ink); font-family:var(--sans);
+    background-image:
+      radial-gradient(1100px 520px at 50% -8%, rgba(99,102,241,.20), transparent 60%),
+      linear-gradient(rgba(99,102,241,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,.045) 1px, transparent 1px);
+    background-size:auto, 56px 56px, 56px 56px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:64px 32px 96px}
+
+  .gradient-text{
+    background:linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .glass{
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:16px;
+  }
+
+  /* page intro */
+  .pagehead{margin-bottom:8px}
+  .pagehead h0{font-size:13px; letter-spacing:.28em; text-transform:uppercase; color:var(--cyan); font-family:var(--mono); font-weight:500}
+  .pagehead p{color:var(--muted); margin-top:10px; max-width:640px; line-height:1.6; font-size:15px}
+
+  /* nav bar mock */
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px; margin:28px 0 0; border-radius:14px;
+  }
+  .brandrow{display:flex; align-items:baseline; gap:12px}
+  .wordmark{font-weight:700; font-size:18px; letter-spacing:-.01em}
+  .navtag{font-family:var(--mono); font-size:11px; color:var(--muted); border-left:1px solid rgba(255,255,255,.14); padding-left:12px}
+  .navlinks{display:flex; gap:22px; font-size:13px; color:var(--muted)}
+  .navlinks .pill{background:#fff;color:#000;border-radius:8px;padding:6px 12px;font-weight:600}
+
+  /* option card */
+  .opt{margin-top:26px; overflow:hidden}
+  .opt > .tag{
+    display:flex; align-items:center; gap:10px;
+    padding:12px 22px; border-bottom:1px solid rgba(255,255,255,.08);
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+  }
+  .opt > .tag b{color:var(--ink); font-weight:600; font-family:var(--sans)}
+  .opt > .tag .rec{background:linear-gradient(90deg,var(--cyan),var(--violet)); color:#04121a; font-weight:700; border-radius:999px; padding:2px 10px; font-size:11px}
+
+  .hero{padding:52px 40px 56px; text-align:center}
+  .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--cyan)}
+  .smallmark{font-family:var(--sans); font-weight:700; letter-spacing:.32em; font-size:14px; color:var(--muted); text-transform:uppercase}
+  .h1big{font-size:44px; font-weight:700; line-height:1.08; letter-spacing:-.02em; margin:14px auto 0; max-width:760px}
+  .h1brand{font-size:64px; font-weight:700; letter-spacing:-.02em; margin-top:6px}
+  .sub{color:var(--muted); font-size:17px; line-height:1.6; max-width:640px; margin:18px auto 0}
+  .sub b{color:var(--ink); font-weight:500}
+
+  .pills{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:24px auto 0; max-width:680px}
+  .pills span{
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:6px 12px;
+  }
+  .pills span em{color:var(--cyan); font-style:normal}
+
+  .cta{display:flex; gap:14px; justify-content:center; margin-top:28px}
+  .cta a{border-radius:10px; padding:11px 18px; font-weight:600; font-size:14px; text-decoration:none}
+  .cta .solid{background:#fff; color:#000}
+  .cta .ghost{border:1px solid rgba(255,255,255,.16); color:var(--ink)}
+
+  .note{margin-top:14px; padding:14px 22px; font-size:13px; color:var(--muted); line-height:1.6; border-top:1px solid rgba(255,255,255,.06)}
+  .note b{color:var(--ink)}
+
+  .divider{margin:64px 0 0; border:0; border-top:1px solid rgba(255,255,255,.08)}
+  .sectionlabel{margin-top:48px; font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="pagehead">
+    <h0>Vigilis · header / hero options</h0>
+    <p>Three concrete alternatives to “the trust layer for autonomous testing.” Each one leads with <b>what Vigilis actually is and what’s built in</b> — trust/receipts become a proof point, not the headline. Pick a direction (or mix the headline of one with the sub of another) and I’ll wire it into the live site.</p>
+  </div>
+
+  <!-- ============ OPTION A ============ -->
+  <div class="opt glass">
+    <div class="tag"><span class="rec">Recommended</span> <b>Option&nbsp;A — plain category.</b> Says exactly what it is in one breath. Brand stays a small wordmark; the sentence does the work.</div>
+    <div class="hero">
+      <div class="kicker">Open-source QA agent · CLI + MCP</div>
+      <div class="h1brand gradient-text" style="margin-top:10px">Vigilis</div>
+      <div class="h1big">The AI agent that writes your Playwright tests — and fixes the ones your UI breaks.</div>
+      <p class="sub">Point it at your app. It <b>generates the specs</b>, runs them as a <b>CI gate</b>, and <b>self-heals the locators</b> that break from harmless UI changes — without ever hiding a real bug. Every fix ships with a signed receipt you can verify.</p>
+      <div class="pills">
+        <span><em>›</em> Generate specs</span>
+        <span><em>›</em> Gate deploys</span>
+        <span><em>›</em> Triage failures</span>
+        <span><em>›</em> Self-heal locators</span>
+        <span><em>›</em> Signed receipts</span>
+      </div>
+      <div class="cta"><a class="solid" href="#">View on GitHub ▸</a><a class="ghost" href="#">See the loop</a></div>
+    </div>
+    <div class="note"><b>Nav tagline:</b> “Vigilis · Playwright QA agent”. <b>Page title:</b> “Vigilis — the Playwright QA agent that writes and heals your tests”.</div>
+  </div>
+
+  <!-- ============ OPTION B ============ -->
+  <div class="opt glass">
+    <div class="tag"><b>Option&nbsp;B — outcome headline.</b> Leads with the pain it removes. Punchier; the sub grounds it in specifics.</div>
+    <div class="hero">
+      <div class="smallmark">Vigilis</div>
+      <div class="h1big gradient-text">Playwright tests that write — and repair — themselves.</div>
+      <p class="sub">Stop rewriting brittle end-to-end tests. Vigilis generates specs from your live app, <b>blocks deploys when something is actually broken</b>, and auto-rewrites the locators that break from UI changes. Each repair comes with a <b>signed, tamper-evident receipt</b>.</p>
+      <div class="pills">
+        <span>Writes specs from your app</span>
+        <span>Blocks real failures in CI</span>
+        <span>Heals drift automatically</span>
+        <span>Receipt for every fix</span>
+      </div>
+      <div class="cta"><a class="solid" href="#">View on GitHub ▸</a><a class="ghost" href="#">See the loop</a></div>
+    </div>
+    <div class="note"><b>Nav tagline:</b> “Self-healing Playwright tests”. <b>Page title:</b> “Vigilis — self-healing Playwright tests you can verify”.</div>
+  </div>
+
+  <!-- ============ OPTION C ============ -->
+  <div class="opt glass">
+    <div class="tag"><b>Option&nbsp;C — category definition.</b> Names a clear category and lists what’s built in. Closest to Revaz’s “say what it means and what is built in.”</div>
+    <div class="hero">
+      <div class="smallmark">Vigilis</div>
+      <div class="h1big">The self-maintaining QA layer for <span class="gradient-text">Playwright.</span></div>
+      <p class="sub">An agent that <b>generates, gates, triages, heals, and verifies</b> your end-to-end tests — so your suite keeps up with your UI instead of rotting. Built in: a CI deploy gate, locator self-healing, and tamper-evident receipts. Never masks a real bug.</p>
+      <div class="pills">
+        <span><em>01</em> Generate</span>
+        <span><em>02</em> Gate</span>
+        <span><em>03</em> Triage</span>
+        <span><em>04</em> Heal</span>
+        <span><em>05</em> Verify</span>
+      </div>
+      <div class="cta"><a class="solid" href="#">View on GitHub ▸</a><a class="ghost" href="#">See the loop</a></div>
+    </div>
+    <div class="note"><b>Nav tagline:</b> “Self-maintaining QA for Playwright”. <b>Page title:</b> “Vigilis — the self-maintaining QA layer for Playwright”.</div>
+  </div>
+
+  <!-- ============ ZERKER BRAND ============ -->
+  <div class="sectionlabel">Open question · “put under Zerker brand”</div>
+  <p style="color:var(--muted); margin-top:12px; max-width:680px; line-height:1.6; font-size:15px">Revaz &amp; Sylvain’s gut feel. Two lightweight ways to show the relationship without re-domaining — here’s what each looks like in the nav:</p>
+
+  <div class="nav glass" style="margin-top:18px">
+    <div class="brandrow">
+      <span class="wordmark gradient-text">Vigilis</span>
+      <span class="navtag">a Zerker Lab project</span>
+    </div>
+    <div class="navlinks"><span>Loop</span><span>Install</span><span>Verify</span><span class="pill">GitHub</span></div>
+  </div>
+  <p style="color:var(--muted); margin-top:10px; font-size:13px; font-family:var(--mono)">↑ light endorsement — Vigilis keeps its own name &amp; domain, “a Zerker Lab project” sits beside the wordmark.</p>
+
+  <div class="nav glass" style="margin-top:22px">
+    <div class="brandrow">
+      <span class="wordmark" style="color:var(--muted)">Zerker</span>
+      <span class="wordmark gradient-text">/ Vigilis</span>
+    </div>
+    <div class="navlinks"><span>Loop</span><span>Install</span><span>Verify</span><span class="pill">GitHub</span></div>
+  </div>
+  <p style="color:var(--muted); margin-top:10px; font-size:13px; font-family:var(--mono)">↑ stronger lockup — Vigilis presented as part of the Zerker family (“Zerker / Vigilis”).</p>
+
+</div>
+</body>
+</html>

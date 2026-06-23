@@ -45,6 +45,7 @@ describe('createVigilisMcpServer', () => {
         'fs_read',
         'fs_write',
         'playwright_run',
+        'test_run',
       ].sort(),
     );
     await client.close();

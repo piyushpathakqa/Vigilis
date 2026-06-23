@@ -24,18 +24,10 @@ export interface HealResult {
 
 const OPUS_TIER = /opus|sonnet-4-6|fable/;
 
-function healSystem(specPath: string, selector: string): string {
+function healSystem(adapterGuidance: string): string {
   return [
-    'You are Vigilis, fixing a DOM-drift Playwright test failure (NOT a real bug).',
-    `The spec at ${specPath} uses a stale locator that no longer matches the page.`,
-    `The correct current selector is: ${selector}`,
-    '',
-    'Steps:',
-    '1. Read the spec with fs_read.',
-    '2. Replace ONLY the stale locator(s) with the correct selector. Do not change the test\'s',
-    '   intent, assertions, or flow — locators only.',
-    '3. Write the fixed spec back with fs_write to the same path.',
-    '4. Run it with playwright_run to check it now passes; if not, inspect the DOM and adjust.',
+    'You are Vigilis, fixing a DOM-drift test failure (NOT a real bug).',
+    adapterGuidance,
     '',
     'Report briefly when done.',
   ].join('\n');
@@ -73,7 +65,7 @@ export async function heal(opts: HealOptions): Promise<HealResult> {
 
   const run = await runAgentLoop({
     client,
-    system: healSystem(specPath, suggestedSelector),
+    system: healSystem(ctx.adapter.healGuidance(specPath, suggestedSelector)),
     prompt: `Fix the drifted locator in ${specPath} (app: ${url}) to use ${suggestedSelector}, then verify it passes.`,
     registry,
     ctx,

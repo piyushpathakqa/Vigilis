@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 
 const ITEMS = [
-  { t: 'AI writes real tests', d: 'It explores your app and emits runnable Playwright specs — not brittle boilerplate.' },
+  { t: 'AI writes real tests', d: 'It explores your app and emits runnable Playwright, Cypress, or Selenium specs — not brittle boilerplate.' },
   { t: 'Failing tests block deploy', d: 'Vigilis runs as a required GitHub check, so regressions never reach production.' },
   { t: 'Self-healing PRs', d: 'DOM drift is fixed automatically and verified green before a PR — real bugs are never hidden.' },
   { t: 'Signed provenance receipts', d: 'Every heal is wrapped in a Treeship session: an auditable, signed chain of artifacts.' },

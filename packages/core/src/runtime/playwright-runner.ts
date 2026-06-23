@@ -1,5 +1,9 @@
-import { spawn } from 'node:child_process';
 import type { TestRunner, TestRunResult } from '../tools/types';
+import { defaultExec } from './exec';
+import type { Exec } from './exec';
+// Re-export so existing callers that import Exec/ExecResult/defaultExec from this module keep working.
+export type { Exec, ExecResult } from './exec';
+export { defaultExec } from './exec';
 
 export interface PlaywrightStats {
   expected?: number;
@@ -68,24 +72,6 @@ export function parsePlaywrightJson(
   if (s.skipped) parts.push(`${s.skipped} skipped`);
   return { passed, failed, summary: parts.join(', '), artifactsDir };
 }
-
-export interface ExecResult {
-  stdout: string;
-  stderr: string;
-  code: number | null;
-}
-export type Exec = (cmd: string, args: string[], opts: { cwd: string }) => Promise<ExecResult>;
-
-const defaultExec: Exec = (cmd, args, opts) =>
-  new Promise<ExecResult>((resolve, reject) => {
-    const child = spawn(cmd, args, { cwd: opts.cwd });
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (d) => (stdout += String(d)));
-    child.stderr.on('data', (d) => (stderr += String(d)));
-    child.on('error', reject);
-    child.on('close', (code) => resolve({ stdout, stderr, code }));
-  });
 
 export interface PlaywrightTestRunnerOptions {
   cwd: string;

@@ -6,6 +6,7 @@ import type {
   TestRunner,
   ToolContext,
 } from '../types';
+import { PlaywrightAdapter } from '../../framework/playwright-adapter';
 import type { AnthropicLike } from '../../agent/client';
 
 /** Build a minimal valid Anthropic.Message for tests. Accepts request-shaped blocks
@@ -100,5 +101,6 @@ export function makeFakeCtx(over: Partial<ToolContext> = {}): ToolContext {
     workspaceRoot: over.workspaceRoot ?? '/tmp/argus-ws',
     browser: over.browser ?? new FakeBrowserSession(),
     runner: over.runner ?? new FakeTestRunner(),
+    adapter: over.adapter ?? new PlaywrightAdapter(),
   };
 }

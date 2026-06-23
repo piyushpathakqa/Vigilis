@@ -1,7 +1,7 @@
 {
   "name": "vigilis-mcp",
-  "version": "0.1.0",
-  "description": "Vigilis MCP server — drive the Vigilis QA tools (generate/triage/heal Playwright tests) from Claude Desktop/Code over the Model Context Protocol.",
+  "version": "0.2.0",
+  "description": "Vigilis MCP server — drive the Vigilis QA tools (generate/triage/heal Playwright, Cypress & Selenium tests) from Claude Desktop/Code over the Model Context Protocol.",
   "type": "module",
   "license": "MIT",
   "author": "Piyush Pathak",

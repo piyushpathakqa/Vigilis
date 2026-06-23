@@ -7,8 +7,8 @@ type Surface = 'cli' | 'mcp';
 type Client = 'claude-code' | 'claude-desktop' | 'cursor';
 
 const CLI_STEPS = [
-  { n: 1, label: 'Install in your Playwright project', code: 'npm i -D vigilis' },
-  { n: 2, label: 'Scaffold config — detects your playwright.config', code: 'npx vigilis init' },
+  { n: 1, label: 'Install in your Playwright, Cypress, or Selenium project', code: 'npm i -D vigilis' },
+  { n: 2, label: 'Scaffold config — auto-detects your framework (or pass --framework)', code: 'npx vigilis init' },
   { n: 3, label: 'Generate a real test and run it', code: 'npx vigilis generate https://your-app.com --run' },
   { n: 4, label: 'Heal drift → verified PR + signed receipt', code: 'npx vigilis heal https://your-app.com --spec tests/login.spec.ts' },
 ];
@@ -102,7 +102,7 @@ export function InstallSection() {
         </span>
       </div>
       <p className="mt-3 text-center text-[var(--color-muted)]">
-        Drop Vigilis into your Playwright project, or drive it from your AI editor over MCP.
+        Drop Vigilis into your Playwright, Cypress, or Selenium project, or drive it from your AI editor over MCP.
       </p>
 
       {/* surface toggle */}

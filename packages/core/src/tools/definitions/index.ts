@@ -2,6 +2,7 @@ import { ToolRegistry } from '../registry';
 import { fsRead, fsWrite, fsList } from './fs';
 import { browserNavigate, browserClick, browserType, browserSnapshot } from './browser';
 import { domQuery, domTestids } from './dom';
+import { testRun } from './test-run';
 import { playwrightRun } from './playwright';
 
 /** Every built-in tool, in a stable order. */
@@ -15,7 +16,8 @@ export const ALL_TOOLS = [
   browserSnapshot,
   domQuery,
   domTestids,
-  playwrightRun,
+  testRun,
+  playwrightRun, // deprecated alias — remove next release
 ];
 
 /** A fresh registry with all built-in tools registered. */

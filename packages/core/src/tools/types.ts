@@ -13,6 +13,8 @@ export interface ToolContext {
   browser: BrowserSession;
   /** Runs Playwright specs. Real impl injected by TRE-32; faked in tests. */
   runner: TestRunner;
+  /** The active framework adapter (Playwright/Cypress/Selenium). Selected by detection/config. */
+  adapter: import('../framework/types').FrameworkAdapter;
 }
 
 /** Matched element returned by a DOM query. */

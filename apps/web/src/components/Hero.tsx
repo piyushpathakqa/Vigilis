@@ -19,17 +19,44 @@ export function Hero() {
         {...fade(0.08)}
         className="mt-8 font-mono text-xs uppercase tracking-[0.28em] text-[var(--color-cyan)]"
       >
-        The trust layer for autonomous testing
+        Open-source QA agent · CLI + MCP
       </motion.p>
       <motion.h1 {...fade(0.1)} className="gradient-text mt-3 text-6xl font-bold tracking-tight">
         VIGILIS
       </motion.h1>
-      <motion.p {...fade(0.2)} className="mt-4 max-w-2xl text-lg text-[var(--color-muted)]">
-        Self-healing Playwright tests you can{' '}
-        <span className="text-[var(--color-ink)]">verify</span> — every fix sealed in a signed,
-        tamper-evident receipt, and it never masks a real bug.
+      <motion.h2
+        {...fade(0.16)}
+        className="mt-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl"
+      >
+        The AI agent that writes your end-to-end tests — and fixes the ones your UI breaks.
+      </motion.h2>
+      <motion.p {...fade(0.24)} className="mt-4 max-w-2xl text-lg text-[var(--color-muted)]">
+        Vigilis detects your framework — <span className="text-[var(--color-ink)]">Playwright,
+        Cypress, or Selenium</span> — then writes specs from a URL, runs them in CI, heals safe UI
+        drift, and opens reviewable PRs. When behaviour changes, it{' '}
+        <span className="text-[var(--color-ink)]">fails loudly</span>.
       </motion.p>
-      <motion.div {...fade(0.3)} className="mt-8 flex gap-4">
+      <motion.ul {...fade(0.3)} className="mt-7 flex flex-wrap justify-center gap-2">
+        {['Generate specs', 'Gate deploys', 'Triage failures', 'Self-heal locators', 'Signed receipts'].map(
+          (p) => (
+            <li
+              key={p}
+              className="rounded-full border border-white/10 px-3 py-1.5 font-mono text-xs text-[var(--color-muted)]"
+            >
+              <span className="text-[var(--color-cyan)]">›</span> {p}
+            </li>
+          ),
+        )}
+      </motion.ul>
+      <motion.p
+        {...fade(0.34)}
+        className="mt-5 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-muted)]"
+      >
+        Works with <span className="text-[var(--color-cyan)]">Playwright</span> ·{' '}
+        <span className="text-[var(--color-cyan)]">Cypress</span> ·{' '}
+        <span className="text-[var(--color-cyan)]">Selenium</span>
+      </motion.p>
+      <motion.div {...fade(0.38)} className="mt-8 flex gap-4">
         <a
           href="https://github.com/piyushpathakqa/Vigilis"
           className="rounded-lg bg-white px-5 py-2.5 font-semibold text-black"

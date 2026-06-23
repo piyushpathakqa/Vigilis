@@ -1,8 +1,9 @@
 # 👁️ Vigilis — Agentic QA Framework
 
-> An agentic QA framework that **authors, generates, triages, and self-heals** Playwright
-> tests for any web app — usable from Claude Code/Desktop as an **MCP server** or from CI as a
-> **CLI** — with the whole loop running as a deployment gate in **GitHub Actions**.
+> An agentic QA framework that **authors, generates, triages, and self-heals** Playwright,
+> Cypress, and Selenium tests for any web app — usable from Claude Code/Desktop as an **MCP server**
+> or from CI as a **CLI** — with the whole loop running as a deployment gate in **GitHub Actions**.
+> Framework is **auto-detected**; pass `--framework playwright|cypress|selenium` to force one.
 
 [![CI](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml)
 [![QA Gate](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml)
@@ -19,8 +20,10 @@
 ## Why
 
 Test suites are expensive to write and brittle to maintain. Vigilis puts a Claude agent in the
-loop to do the slow parts: explore an app and write real Playwright tests, then — when the UI
-drifts — diagnose the failure and open a fix PR, while still refusing to paper over genuine bugs.
+loop to do the slow parts: explore an app and write real tests (Playwright, Cypress, or Selenium),
+then — when the UI drifts — diagnose the failure and open a fix PR, while still refusing to paper
+over genuine bugs. The framework is **auto-detected** from your project; use `--framework` to force
+one explicitly.
 
 ## The idea: one core, two consumers
 
@@ -93,18 +96,23 @@ On `dom-drift` it rewrites the locator, **re-runs to verify green**, and opens a
 (`NEXT_PUBLIC_ARGUS_DEMO_BUG=1`) it refuses and blocks the gate — Vigilis improves signal, it doesn't
 hide failures.
 
-### Use it in your own Playwright project
+### Use it in your own Playwright, Cypress, or Selenium project
 
 Install the [`vigilis`](https://www.npmjs.com/package/vigilis) package, then `vigilis init`
 scaffolds a `vigilis.config.json` so `generate`/`triage`/`heal` pick up your project's defaults
-(`baseUrl`, `testDir`, `model`) — explicit flags always override it:
+(`baseUrl`, `testDir`, `model`, `framework`) — explicit flags always override it:
 
 ```bash
 npm i -D vigilis
 export ANTHROPIC_API_KEY=sk-...
-vigilis init                                       # detects playwright.config.*, writes vigilis.config.json
+vigilis init                                       # auto-detects framework (playwright.config.*, etc.), writes vigilis.config.json
 vigilis generate https://your-app.com/login --run  # explore → write + run a real spec
+vigilis generate https://your-app.com/login --framework cypress --run  # force Cypress output
 ```
+
+Playwright is the most battle-tested surface; Cypress and Selenium support is built and unit-tested.
+All three frameworks use the same `generate`/`triage`/`heal` commands — the `--framework` flag
+(or the `framework` field in `vigilis.config.json`) selects the adapter.
 
 Or point any command at any URL directly; `--base-url` runs generated specs against any host:
 

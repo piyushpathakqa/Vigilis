@@ -24,9 +24,10 @@ import {
   createPlaywrightSession,
   createTreeshipObserver,
   extractFailures,
+  type Framework,
   generate,
   heal,
-  PlaywrightTestRunner,
+  resolveAdapter,
   resolveModel,
   runAgentLoop,
   triage,
@@ -74,12 +75,12 @@ const SMOKE_SYSTEM =
 
 program
   .name('vigilis')
-  .description('Agentic QA: author, generate, triage, and self-heal Playwright tests.')
-  .version('0.1.0');
+  .description('Agentic QA: author, generate, triage, and self-heal Playwright, Cypress & Selenium tests.')
+  .version('0.2.0');
 
 program
   .command('init')
-  .description('Scaffold vigilis.config.json so you can use Vigilis in your own Playwright project')
+  .description('Scaffold vigilis.config.json so you can use Vigilis in your own Playwright, Cypress, or Selenium project')
   .option('--force', 'overwrite an existing vigilis.config.json')
   .action((opts: { force?: boolean }) => {
     const cwd = process.cwd();
@@ -89,23 +90,30 @@ program
       console.log(`[vigilis] detected Playwright project (${pw})`);
     } else {
       console.log(
-        '[vigilis] no playwright.config.* found here. Vigilis writes standard Playwright specs — ' +
-          'run `npm init playwright@latest` first if you need a Playwright setup.',
+        '[vigilis] no playwright.config.* found here. Vigilis works with Playwright, Cypress, or Selenium — ' +
+          'run `npm init playwright@latest` first if you need a Playwright setup, or set --framework in your config.',
       );
     }
 
     const { written, path } = writeVigilisConfig(cwd, { force: opts.force });
     if (written) console.log(`[vigilis] wrote ${path}`);
-    else console.log(`[vigilis] ${CONFIG_FILE} already exists — left untouched (use --force to overwrite).`);
+    else
+      console.log(
+        `[vigilis] ${CONFIG_FILE} already exists — left untouched (use --force to overwrite).`,
+      );
 
     console.log('\nNext steps:');
     let n = 1;
     if (!hasAnthropicKey(cwd)) {
-      console.log(`  ${n++}. Set ANTHROPIC_API_KEY (in .env or your shell) — needed for generate/triage/heal.`);
+      console.log(
+        `  ${n++}. Set ANTHROPIC_API_KEY (in .env or your shell) — needed for generate/triage/heal.`,
+      );
     }
     console.log(`  ${n++}. Edit ${CONFIG_FILE} (baseUrl, testDir, model) to match your app.`);
     console.log(`  ${n++}. vigilis generate <url>            # explore the app and write a spec`);
-    console.log(`  ${n++}. vigilis heal <url> --spec <file>  # self-heal drift → verified PR + signed receipt`);
+    console.log(
+      `  ${n++}. vigilis heal <url> --spec <file>  # self-heal drift → verified PR + signed receipt`,
+    );
   });
 
 program
@@ -114,26 +122,38 @@ program
   .option('--model <id>', 'model id (default: primary/Opus)')
   .option('--run', 'run the generated spec after writing it')
   .option('--base-url <url>', 'base URL for running the spec (default: origin of <url>)')
-  .option('--out <dir>', 'output directory for the spec', 'tests/generated')
+  .option('--out <dir>', 'output directory for the spec (default: framework convention)')
   .option('--max-steps <n>', 'max agent steps', '20')
+  .option(
+    '--framework <name>',
+    'test framework: playwright | cypress | selenium (default: auto-detect)',
+  )
   .description(
-    'Explore the app and write a runnable Playwright spec (needs ANTHROPIC_API_KEY + chromium)',
+    'Explore the app and write a runnable spec for your test framework (needs ANTHROPIC_API_KEY + chromium)',
   )
   .action(
     async (
       url: string,
-      opts: { model?: string; run?: boolean; baseUrl?: string; out: string; maxSteps: string },
+      opts: {
+        model?: string;
+        run?: boolean;
+        baseUrl?: string;
+        out?: string;
+        maxSteps: string;
+        framework?: string;
+      },
     ) => {
       const { config, found } = loadVigilisConfig(process.cwd());
       const model = opts.model ?? (found ? config.model : undefined) ?? resolveModel('primary');
+      const adapter = await resolveAdapter(process.cwd(), opts.framework as Framework | undefined);
       const { session, close } = await createPlaywrightSession({ headless: true });
-      const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
+      const runner = adapter.createRunner({ cwd: process.cwd() });
       try {
         const result = await generate({
           client: createAnthropicClient(),
           url,
           registry: createDefaultRegistry(),
-          ctx: { workspaceRoot: process.cwd(), browser: session, runner },
+          ctx: { workspaceRoot: process.cwd(), browser: session, runner, adapter },
           model,
           outDir: opts.out,
           maxSteps: Number(opts.maxSteps),
@@ -154,7 +174,8 @@ program
         if (opts.run && result.writtenFiles.includes(result.specPath)) {
           // baseURL the generated spec runs against: explicit flag, else the
           // origin of the target URL — so `--run` works on any app.
-          const baseUrl = opts.baseUrl ?? (found ? config.baseUrl : undefined) ?? new URL(url).origin;
+          const baseUrl =
+            opts.baseUrl ?? (found ? config.baseUrl : undefined) ?? new URL(url).origin;
           process.env.ARGUS_BASE_URL = baseUrl;
           console.log(`\n[vigilis] running ${result.specPath} against ${baseUrl} …`);
           const tr = await runner.run(result.specPath);
@@ -184,13 +205,17 @@ program
   .option('--error <text>', 'the Playwright failure message')
   .option('--report <path>', 'a Playwright JSON report to extract the first failure from')
   .option('--model <id>', 'model id (default: primary/Opus)')
+  .option(
+    '--framework <name>',
+    'test framework: playwright | cypress | selenium (default: auto-detect)',
+  )
   .description(
     'Classify a failed test: real-bug, DOM drift, or flake (needs ANTHROPIC_API_KEY + chromium)',
   )
   .action(
     async (
       url: string,
-      opts: { spec?: string; error?: string; report?: string; model?: string },
+      opts: { spec?: string; error?: string; report?: string; model?: string; framework?: string },
     ) => {
       let specPath = opts.spec;
       let errorText = opts.error;
@@ -212,16 +237,18 @@ program
       }
 
       const cfg = loadVigilisConfig(process.cwd());
-      const model = opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
+      const model =
+        opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
+      const adapter = await resolveAdapter(process.cwd(), opts.framework as Framework | undefined);
       const { session, close } = await createPlaywrightSession({ headless: true });
-      const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
+      const runner = adapter.createRunner({ cwd: process.cwd() });
       try {
         const result = await triage({
           client: createAnthropicClient(),
           specPath,
           url,
           errorText,
-          ctx: { workspaceRoot: process.cwd(), browser: session, runner },
+          ctx: { workspaceRoot: process.cwd(), browser: session, runner, adapter },
           model,
           observer: new ConsoleObserver(),
         });
@@ -260,6 +287,10 @@ program
   .option('--no-receipt', 'skip the Treeship provenance receipt')
   .option('--no-publish', 'seal the receipt locally but do not upload it to the Treeship hub')
   .option('--model <id>', 'model id (default: primary/Opus)')
+  .option(
+    '--framework <name>',
+    'test framework: playwright | cypress | selenium (default: auto-detect)',
+  )
   .description(
     'Triage a failure and, only for DOM drift, rewrite the locator, verify green, and open a PR',
   )
@@ -273,14 +304,17 @@ program
         receipt: boolean;
         publish: boolean;
         model?: string;
+        framework?: string;
       },
     ) => {
       const cfg = loadVigilisConfig(process.cwd());
-      const model = opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
+      const model =
+        opts.model ?? (cfg.found ? cfg.config.model : undefined) ?? resolveModel('primary');
       const slug = (opts.spec.split('/').pop() ?? 'spec').replace(/\.spec\.ts$/, '');
+      const adapter = await resolveAdapter(process.cwd(), opts.framework as Framework | undefined);
       const { session, close } = await createPlaywrightSession({ headless: true });
-      const runner = new PlaywrightTestRunner({ cwd: process.cwd() });
-      const ctx = { workspaceRoot: process.cwd(), browser: session, runner };
+      const runner = adapter.createRunner({ cwd: process.cwd() });
+      const ctx = { workspaceRoot: process.cwd(), browser: session, runner, adapter };
 
       // Provenance is ON by default: wrap the whole self-heal in one signed Treeship
       // session. A no-op if the `treeship` CLI isn't installed (the observer is null).
@@ -386,40 +420,51 @@ program
   .option('--model <id>', 'model id (default: fast model)')
   .option('--headed', 'run with a visible browser')
   .option('--max-steps <n>', 'max agent steps', '8')
+  .option(
+    '--framework <name>',
+    'test framework: playwright | cypress | selenium (default: auto-detect)',
+  )
   .description(
     'Run the agent loop against a URL and print a step trace + cost (needs ANTHROPIC_API_KEY + chromium)',
   )
-  .action(async (url: string, opts: { model?: string; headed?: boolean; maxSteps: string }) => {
-    const model = opts.model ?? resolveModel('fast');
-    const isOpusTier = /opus|sonnet-4-6|fable/.test(model);
-    const { session, close } = await createPlaywrightSession({ headless: !opts.headed });
-    try {
-      const result = await runAgentLoop({
-        client: createAnthropicClient(),
-        system: SMOKE_SYSTEM,
-        prompt: `Explore ${url} and report its pages, data-testids, and how the add-to-cart flow works.`,
-        registry: createDefaultRegistry(),
-        ctx: {
-          workspaceRoot: process.cwd(),
-          browser: session,
-          runner: new PlaywrightTestRunner({ cwd: process.cwd() }),
-        },
-        model,
-        thinking: isOpusTier, // adaptive thinking + effort only on Opus-tier; Haiku would 400
-        maxSteps: Number(opts.maxSteps),
-        observer: new ConsoleObserver(),
-      });
-      console.log('\n--- result ---\n' + result.finalText);
-      const price = PRICES[model];
-      const cost = price
-        ? `$${((result.usage.inputTokens / 1e6) * price.in + (result.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
-        : 'n/a';
-      console.log(
-        `\n[vigilis] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
-      );
-    } finally {
-      await close();
-    }
-  });
+  .action(
+    async (
+      url: string,
+      opts: { model?: string; headed?: boolean; maxSteps: string; framework?: string },
+    ) => {
+      const model = opts.model ?? resolveModel('fast');
+      const isOpusTier = /opus|sonnet-4-6|fable/.test(model);
+      const adapter = await resolveAdapter(process.cwd(), opts.framework as Framework | undefined);
+      const { session, close } = await createPlaywrightSession({ headless: !opts.headed });
+      try {
+        const result = await runAgentLoop({
+          client: createAnthropicClient(),
+          system: SMOKE_SYSTEM,
+          prompt: `Explore ${url} and report its pages, data-testids, and how the add-to-cart flow works.`,
+          registry: createDefaultRegistry(),
+          ctx: {
+            workspaceRoot: process.cwd(),
+            browser: session,
+            runner: adapter.createRunner({ cwd: process.cwd() }),
+            adapter,
+          },
+          model,
+          thinking: isOpusTier, // adaptive thinking + effort only on Opus-tier; Haiku would 400
+          maxSteps: Number(opts.maxSteps),
+          observer: new ConsoleObserver(),
+        });
+        console.log('\n--- result ---\n' + result.finalText);
+        const price = PRICES[model];
+        const cost = price
+          ? `$${((result.usage.inputTokens / 1e6) * price.in + (result.usage.outputTokens / 1e6) * price.out).toFixed(4)}`
+          : 'n/a';
+        console.log(
+          `\n[vigilis] ${result.steps} steps · ${result.usage.inputTokens} in / ${result.usage.outputTokens} out tokens · ~${cost} (${model})`,
+        );
+      } finally {
+        await close();
+      }
+    },
+  );
 
 program.parse();
