@@ -4,48 +4,15 @@ import { readFile } from 'node:fs/promises';
 import type { TestRunner, TestRunResult } from '../tools/types';
 import { defaultExec } from './exec';
 import type { Exec } from './exec';
+import { parseMochaJson, extractMochaFailures, reportHasNoStats, type MochaReport } from './mocha-json';
 
-export interface CypressStats {
-  tests?: number;
-  passes?: number;
-  pending?: number;
-  failures?: number;
-}
-export interface CypressFailureRaw {
-  fullTitle?: string;
-  title?: string;
-  file?: string;
-  err?: { message?: string };
-}
-export interface CypressMochaReport {
-  stats?: CypressStats;
-  failures?: CypressFailureRaw[];
-}
+// back-compat aliases (SP2 imported these names from this module):
+export { parseMochaJson as parseCypressJson, extractMochaFailures as extractCypressFailures } from './mocha-json';
+export type { MochaReport as CypressMochaReport, MochaFailure as CypressFailure } from './mocha-json';
 
-export interface CypressFailure {
-  specPath: string;
-  title: string;
-  error: string;
-}
-
-/** Walk a Cypress (Mocha JSON) report's failures. Pure. */
-export function extractCypressFailures(report: CypressMochaReport): CypressFailure[] {
-  return (report.failures ?? []).map((f) => ({
-    specPath: f.file ?? '',
-    title: f.fullTitle ?? f.title ?? '',
-    error: f.err?.message ?? 'unknown failure',
-  }));
-}
-
-/** Turn Cypress `--reporter json` output into a TestRunResult. Pure. */
-export function parseCypressJson(report: CypressMochaReport, artifactsDir: string): TestRunResult {
-  const s = report.stats ?? {};
-  const passed = s.passes ?? 0;
-  const failed = s.failures ?? 0;
-  const parts = [`${passed} passed`, `${failed} failed`];
-  if (s.pending) parts.push(`${s.pending} pending`);
-  return { passed, failed, summary: parts.join(', '), artifactsDir };
-}
+// Keep the old shape aliases for any consumers that used the raw field types
+export type CypressStats = import('./mocha-json').MochaStats;
+export type CypressFailureRaw = import('./mocha-json').MochaFailureRaw;
 
 export interface CypressTestRunnerOptions {
   cwd: string;
@@ -82,10 +49,10 @@ export class CypressTestRunner implements TestRunner {
 
     await exec('npx', args, { cwd: this.opts.cwd });
 
-    let report: CypressMochaReport;
+    let report: MochaReport;
     try {
       const raw = await readReport(reportPath);
-      report = JSON.parse(raw) as CypressMochaReport;
+      report = JSON.parse(raw) as MochaReport;
     } catch {
       return {
         passed: 0,
@@ -96,7 +63,7 @@ export class CypressTestRunner implements TestRunner {
     }
 
     // Fail-closed: if parsed JSON has no stats, treat as a failure — not 0/0 green.
-    if (!report.stats) {
+    if (reportHasNoStats(report)) {
       return {
         passed: 0,
         failed: 1,
@@ -105,6 +72,6 @@ export class CypressTestRunner implements TestRunner {
       };
     }
 
-    return parseCypressJson(report, artifactsDir);
+    return parseMochaJson(report, artifactsDir);
   }
 }

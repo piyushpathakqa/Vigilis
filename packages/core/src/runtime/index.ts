@@ -4,6 +4,8 @@ export { PlaywrightTestRunner, parsePlaywrightJson, extractFailures } from './pl
 export type { Exec, ExecResult, PlaywrightJsonReport, PlaywrightFailure } from './playwright-runner';
 export { CypressTestRunner, parseCypressJson, extractCypressFailures } from './cypress-runner';
 export type { CypressMochaReport, CypressFailure } from './cypress-runner';
+export { parseMochaJson, extractMochaFailures, reportHasNoStats } from './mocha-json';
+export type { MochaReport, MochaFailure } from './mocha-json';
 export { trimHtml } from './html';
 export { createHealPr } from './git';
 export type { CreateHealPrOptions, GitExec } from './git';
