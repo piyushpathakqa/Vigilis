@@ -6,6 +6,7 @@ export { CypressTestRunner, parseCypressJson, extractCypressFailures } from './c
 export type { CypressMochaReport, CypressFailure } from './cypress-runner';
 export { parseMochaJson, extractMochaFailures, reportHasNoStats } from './mocha-json';
 export type { MochaReport, MochaFailure } from './mocha-json';
+export { SeleniumTestRunner } from './selenium-runner';
 export { trimHtml } from './html';
 export { createHealPr } from './git';
 export type { CreateHealPrOptions, GitExec } from './git';
