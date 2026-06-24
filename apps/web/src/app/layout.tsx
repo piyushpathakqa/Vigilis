@@ -4,7 +4,11 @@ import type { ReactNode } from 'react';
 
 const title = 'Vigilis · self-healing QA that refuses to hide a real bug';
 const description =
-  'Point it at the brittle Cypress, Selenium, or Playwright suite you already have. Vigilis heals the drift, gates every run on signed evidence, and stays fail-closed so it never papers over a real bug.';
+  "Vigilis heals the drift in the Cypress, Selenium, or Playwright suite you already have, and gates every run on signed evidence so a real regression can't slip through green.";
+const ogDescription =
+  'Heals your existing test suite in place. Gates every run on signed evidence. Fail-closed by design.';
+const favicon =
+  "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2306080b'/><text x='16' y='23' font-family='monospace' font-size='17' font-weight='800' text-anchor='middle'><tspan fill='%23ffb000'>[</tspan><tspan fill='%23ece7da'>V</tspan><tspan fill='%23ffb000'>]</tspan></text></svg>";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://vigilis.dev'),
@@ -22,9 +26,10 @@ export const metadata: Metadata = {
     'attestation',
   ],
   authors: [{ name: 'Piyush Pathak' }],
+  icons: { icon: favicon },
   openGraph: {
     title,
-    description,
+    description: ogDescription,
     url: 'https://vigilis.dev',
     siteName: 'Vigilis',
     type: 'website',
@@ -33,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title,
-    description,
+    description: ogDescription,
     images: ['/og.png'],
   },
 };
