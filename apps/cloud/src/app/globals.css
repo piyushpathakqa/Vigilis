@@ -116,6 +116,23 @@ form.filters a.clear {
   color: var(--dim);
   padding: 9px 4px;
 }
+form.filters .export {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+form.filters .export a {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--mist);
+  border: 1px solid var(--hair-2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+form.filters .export a:hover {
+  border-color: var(--mist);
+}
 
 table {
   width: 100%;

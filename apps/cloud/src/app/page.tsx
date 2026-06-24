@@ -36,6 +36,14 @@ export default async function DashboardPage({
   const org = getOrg(session.orgId);
   const rows: ReceiptRow[] = getReceiptsForOrg(session.orgId, { repo, verdict });
 
+  // Carry the active filters onto the export links so a download matches the view.
+  const exportQuery = (format: 'csv' | 'json') => {
+    const q = new URLSearchParams({ format });
+    if (repo) q.set('repo', repo);
+    if (verdict) q.set('verdict', verdict);
+    return `/api/export?${q.toString()}`;
+  };
+
   return (
     <main className="wrap">
       <header className="page">
@@ -94,6 +102,10 @@ export default async function DashboardPage({
             clear
           </a>
         )}
+        <span className="export">
+          <a href={exportQuery('csv')}>Export CSV</a>
+          <a href={exportQuery('json')}>Export JSON</a>
+        </span>
       </form>
 
       {rows.length === 0 ? (
