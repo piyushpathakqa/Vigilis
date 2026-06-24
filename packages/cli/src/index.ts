@@ -75,8 +75,8 @@ const SMOKE_SYSTEM =
 
 program
   .name('vigilis')
-  .description('Agentic QA: author, generate, triage, and self-heal Playwright, Cypress & Selenium tests.')
-  .version('0.2.0');
+  .description('Agentic QA: generate, triage, and self-heal Playwright, Cypress & Selenium tests.')
+  .version('0.2.1');
 
 program
   .command('init')
