@@ -3,6 +3,8 @@ import type { Exec } from '../runtime/exec';
 import type { MemoryProvider, MemoryRecall, MemoryRecordEntry } from './types';
 import { NoopMemoryProvider } from './types';
 
+const VALID_VERDICTS = new Set(['real-bug', 'dom-drift', 'flake']);
+
 /**
  * MemoryProvider backed by the `zmem` CLI (Zerker's local-first verifiable
  * memory for AI agents). All errors are swallowed — a missing or broken `zmem`
@@ -29,6 +31,9 @@ export class ZMemProvider implements MemoryProvider {
   async record(entry: MemoryRecordEntry): Promise<void> {
     try {
       await this.exec('zmem', this.recordArgv(entry), { cwd: this.cwd });
+      // Non-zero exit codes: exec (defaultExec) does NOT throw on non-zero; it
+      // resolves with { code: N }. Swallowing errors here covers exec throws only.
+      // If exec contract changes to throw on non-zero, this catch still handles it.
     } catch {
       // swallow — a broken zmem must never block a run
     }
@@ -95,7 +100,8 @@ export class ZMemProvider implements MemoryProvider {
     return parsed
       .filter(
         (item): item is Record<string, unknown> =>
-          item !== null && typeof item === 'object' && !Array.isArray(item),
+          item !== null && typeof item === 'object' && !Array.isArray(item) &&
+          typeof item['verdict'] === 'string' && VALID_VERDICTS.has(item['verdict']),
       )
       .map((item) => ({
         verdict: item['verdict'] as MemoryRecall['verdict'],

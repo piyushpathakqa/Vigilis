@@ -81,6 +81,25 @@ describe('ZMemProvider', () => {
       const result = await provider.recall({ specPath: 'a.spec.ts', url: 'http://x' });
       expect(result).toEqual([]);
     });
+
+    it('filters out non-object and invalid items from JSON array', async () => {
+      const mixedArray = [
+        null,
+        42,
+        'string',
+        { verdict: 'invalid-verdict', rationale: 'bad' },
+        { verdict: 'dom-drift', rationale: 'valid entry' },
+      ];
+      const fakeExec = makeExec({
+        'zmem recall': { stdout: JSON.stringify(mixedArray), stderr: '', code: 0 },
+      });
+      const provider = new ZMemProvider('/tmp/test', fakeExec);
+      const result = await provider.recall({ specPath: 'a.spec.ts', url: 'http://x' });
+      // Only the valid dom-drift entry should be returned
+      expect(result).toHaveLength(1);
+      expect(result[0]!.verdict).toBe('dom-drift');
+      expect(result[0]!.rationale).toBe('valid entry');
+    });
   });
 
   describe('record', () => {
@@ -169,11 +188,13 @@ describe('resolveMemoryProvider', () => {
     expect(provider).toBeInstanceOf(NoopMemoryProvider);
   });
 
-  it('defaults to auto mode when no opts provided (uses real exec — returns a provider)', async () => {
-    // We can't control the real exec, but we can confirm it returns a MemoryProvider
-    const provider = await resolveMemoryProvider('/tmp');
-    expect(provider).toBeDefined();
-    // The provider must have recall and record methods
+  it('defaults to auto mode when no opts provided — uses fake exec to confirm interface shape', async () => {
+    // Use a fake exec that simulates zmem not being present, so the test is
+    // environment-independent. The real-exec path is covered by the auto+PATH test above.
+    const notFoundExec: Exec = async () => ({ stdout: '', stderr: 'not found', code: 127 });
+    const provider = await resolveMemoryProvider('/tmp', { exec: notFoundExec });
+    // With no zmem on PATH, auto mode returns NoopMemoryProvider
+    expect(provider).toBeInstanceOf(NoopMemoryProvider);
     expect(typeof provider.recall).toBe('function');
     expect(typeof provider.record).toBe('function');
   });
