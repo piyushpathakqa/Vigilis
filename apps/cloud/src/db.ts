@@ -14,6 +14,12 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  entitlementsForPlan,
+  normalizePlan,
+  type Entitlements,
+  type Plan,
+} from '@/entitlements';
 
 /** Metadata sent to the governance cloud ingest endpoint. Matches @argus/core CloudReceipt. */
 export interface CloudReceipt {
@@ -353,6 +359,40 @@ export function getReceiptById(orgId: string, id: string): ReceiptRow | null {
     .prepare(`SELECT * FROM receipt WHERE id = ? AND org_id = ?`)
     .get(id, orgId) as ReceiptRow | undefined;
   return row ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Entitlements (TRE-68) — org-aware wrappers over the pure entitlements module.
+// ---------------------------------------------------------------------------
+
+/** Count of distinct, non-empty repos an org has reported (drives repo-limit gating). */
+export function distinctReposForOrg(orgId: string): number {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT COUNT(DISTINCT repo) AS n FROM receipt
+        WHERE org_id = ? AND repo IS NOT NULL AND repo <> ''`,
+    )
+    .get(orgId) as { n: number | bigint } | undefined;
+  return Number(row?.n ?? 0);
+}
+
+/** Resolve an org's entitlements from its plan — the single source of truth for limits. */
+export function getEntitlements(orgId: string): Entitlements {
+  const org = getOrg(orgId);
+  // extraRepos (Team per-repo add-ons) will come from the Stripe subscription
+  // in TRE-67; until then every org runs on its base plan limits.
+  return entitlementsForPlan(org?.plan);
+}
+
+/**
+ * Set an org's plan. This is the seam Stripe webhooks (TRE-67) call on a
+ * subscription create/update/cancel — billing writes the plan, enforcement
+ * reads it. Until Stripe is wired, it's also how a plan is set for testing.
+ */
+export function applyPlan(orgId: string, plan: Plan): void {
+  const db = getDb();
+  db.prepare(`UPDATE org SET plan = ? WHERE id = ?`).run(normalizePlan(plan), orgId);
 }
 
 /** The seeded dev org id (kept for backward-compat / the ingest dev key). */

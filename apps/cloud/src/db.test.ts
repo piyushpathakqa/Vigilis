@@ -226,3 +226,34 @@ describe('dashboard search + detail (TRE-65)', () => {
     expect(getReceiptById(owner.orgId, 'nope')).toBeNull();
   });
 });
+
+describe('entitlements wrappers (TRE-68)', () => {
+  it('new orgs are on the free plan; applyPlan switches entitlements', async () => {
+    const { ensureUserAndOrg, getEntitlements, applyPlan } = await db();
+    const { orgId } = ensureUserAndOrg({ email: 'ivan@example.com', name: 'Ivan' });
+
+    expect(getEntitlements(orgId).plan).toBe('free');
+    expect(getEntitlements(orgId).exportEnabled).toBe(false);
+
+    applyPlan(orgId, 'team');
+    expect(getEntitlements(orgId).plan).toBe('team');
+    expect(getEntitlements(orgId).exportEnabled).toBe(true);
+    expect(getEntitlements(orgId).repoLimit).toBe(5);
+
+    // Unknown plan strings fall back to free (defensive).
+    applyPlan(orgId, 'garbage' as never);
+    expect(getEntitlements(orgId).plan).toBe('free');
+  });
+
+  it('distinctReposForOrg counts unique non-empty repos only', async () => {
+    const { ensureUserAndOrg, insertReceipt, distinctReposForOrg } = await db();
+    const { orgId } = ensureUserAndOrg({ email: 'judy@example.com', name: 'Judy' });
+
+    expect(distinctReposForOrg(orgId)).toBe(0);
+    insertReceipt(orgId, receipt({ receiptId: 'p1', repo: 'judy/a' }));
+    insertReceipt(orgId, receipt({ receiptId: 'p2', repo: 'judy/a' })); // dup repo
+    insertReceipt(orgId, receipt({ receiptId: 'p3', repo: 'judy/b' }));
+    insertReceipt(orgId, receipt({ receiptId: 'p4', repo: undefined })); // no repo
+    expect(distinctReposForOrg(orgId)).toBe(2);
+  });
+});
