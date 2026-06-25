@@ -247,3 +247,20 @@ tbody tr:hover {
   margin-top: 18px;
   font-size: 12px;
 }
+
+.nudge {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--amber, #ffb000);
+  border-radius: 8px;
+  background: var(--amber-deep, #2a1e00);
+  color: var(--mist);
+  font-size: 13px;
+}
+.nudge a {
+  color: var(--amber, #ffb000);
+}
+form.filters .export a.locked {
+  color: var(--amber, #ffb000);
+  border-color: var(--amber, #ffb000);
+}

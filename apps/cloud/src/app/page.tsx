@@ -8,7 +8,14 @@ export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
 import { auth, signOut } from '@/auth';
-import { getOrg, getReceiptsForOrg, getEntitlements, type ReceiptRow } from '@/db';
+import {
+  getOrg,
+  getReceiptsForOrg,
+  getEntitlements,
+  distinctReposForOrg,
+  type ReceiptRow,
+} from '@/db';
+import { repoLimitExceeded } from '@/entitlements';
 
 const VERDICTS = ['real-bug', 'dom-drift', 'flake'];
 
@@ -45,6 +52,8 @@ export default async function DashboardPage({
 
   const org = getOrg(session.orgId);
   const ent = getEntitlements(session.orgId);
+  const repoCount = distinctReposForOrg(session.orgId);
+  const overRepoLimit = repoLimitExceeded(repoCount, ent);
   const rows: ReceiptRow[] = getReceiptsForOrg(session.orgId, {
     repo,
     verdict,
@@ -100,6 +109,14 @@ export default async function DashboardPage({
         </p>
       </header>
 
+      {overRepoLimit && (
+        <div className="nudge">
+          You&apos;re protecting <strong>{repoCount}</strong> repos; the {ent.label} plan covers{' '}
+          <strong>{ent.repoLimit}</strong>. Receipts are still recorded —{' '}
+          <a href="/pricing">upgrade to Team</a> to keep every repo governed.
+        </div>
+      )}
+
       <form className="filters" method="get">
         <label>
           Repo
@@ -135,8 +152,16 @@ export default async function DashboardPage({
           </a>
         )}
         <span className="export">
-          <a href={exportQuery('csv')}>Export CSV</a>
-          <a href={exportQuery('json')}>Export JSON</a>
+          {ent.exportEnabled ? (
+            <>
+              <a href={exportQuery('csv')}>Export CSV</a>
+              <a href={exportQuery('json')}>Export JSON</a>
+            </>
+          ) : (
+            <a className="locked" href="/pricing" title="Export is a Team feature">
+              Export (Team) ↗
+            </a>
+          )}
         </span>
       </form>
 

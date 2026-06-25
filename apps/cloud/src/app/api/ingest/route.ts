@@ -5,7 +5,14 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { findOrgByApiKey, insertReceipt, type CloudReceipt } from '@/db';
+import {
+  findOrgByApiKey,
+  insertReceipt,
+  getEntitlements,
+  distinctReposForOrg,
+  type CloudReceipt,
+} from '@/db';
+import { repoLimitExceeded } from '@/entitlements';
 
 function bearer(req: Request): string | null {
   const h = req.headers.get('authorization') ?? '';
@@ -62,6 +69,20 @@ export async function POST(req: Request) {
         : new Date().toISOString(),
   };
 
+  // Always store — never drop audit data. If the org is now over its plan's
+  // repo limit, accept-but-flag with an upgrade nudge (the agent/CI sees it).
   const result = insertReceipt(org.id, receipt);
-  return NextResponse.json({ ok: true }, { status: result.inserted ? 201 : 200 });
+
+  const ent = getEntitlements(org.id);
+  const repos = distinctReposForOrg(org.id);
+  const resBody: Record<string, unknown> = { ok: true };
+  if (repoLimitExceeded(repos, ent)) {
+    resBody.warning = 'repo_limit_exceeded';
+    resBody.message =
+      `Your ${ent.label} plan covers ${ent.repoLimit} ` +
+      `repo${ent.repoLimit === 1 ? '' : 's'}; you're now reporting ${repos}. ` +
+      `Receipts are still recorded — upgrade to keep them all governed: ` +
+      `https://vigilis.dev/pricing`;
+  }
+  return NextResponse.json(resBody, { status: result.inserted ? 201 : 200 });
 }

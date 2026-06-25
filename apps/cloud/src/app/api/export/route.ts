@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { auth } from '@/auth';
-import { getReceiptsForOrg } from '@/db';
+import { getReceiptsForOrg, getEntitlements } from '@/db';
 import { toCsv, toJson } from '@/export';
 
 export async function GET(req: Request) {
@@ -22,6 +22,20 @@ export async function GET(req: Request) {
       status: 401,
       headers: { 'content-type': 'application/json' },
     });
+  }
+
+  // Compliance export is a paid feature — free plans hit a wall with an upgrade nudge.
+  const ent = getEntitlements(session.orgId);
+  if (!ent.exportEnabled) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: 'export_requires_upgrade',
+        message: `Compliance export isn't included on the ${ent.label} plan. Upgrade to Team to export your audit trail.`,
+        upgradeUrl: '/pricing',
+      }),
+      { status: 403, headers: { 'content-type': 'application/json' } },
+    );
   }
 
   const query = new URL(req.url).searchParams;
