@@ -169,3 +169,60 @@ describe('auth + multi-tenant (TRE-63)', () => {
     expect(aAll.some((r) => r.receipt_id === 'b1')).toBe(false);
   });
 });
+
+describe('dashboard search + detail (TRE-65)', () => {
+  it('filters by spec substring (case-insensitive) and escapes LIKE wildcards', async () => {
+    const { ensureUserAndOrg, insertReceipt, listReceipts } = await db();
+    const { orgId } = ensureUserAndOrg({ email: 'erin@example.com', name: 'Erin' });
+
+    insertReceipt(orgId, receipt({ receiptId: 's1', specPath: 'tests/login.spec.ts' }));
+    insertReceipt(orgId, receipt({ receiptId: 's2', specPath: 'tests/checkout.spec.ts' }));
+    insertReceipt(orgId, receipt({ receiptId: 's3', specPath: 'tests/100%-coverage.spec.ts' }));
+
+    // Substring, case-insensitive.
+    const login = listReceipts(orgId, { spec: 'LOGIN' });
+    expect(login).toHaveLength(1);
+    expect(login[0]?.spec_path).toBe('tests/login.spec.ts');
+
+    // Common '.spec' matches all three.
+    expect(listReceipts(orgId, { spec: '.spec' })).toHaveLength(3);
+
+    // '%' is matched literally, not as a wildcard.
+    const pct = listReceipts(orgId, { spec: '100%' });
+    expect(pct).toHaveLength(1);
+    expect(pct[0]?.spec_path).toContain('100%');
+  });
+
+  it('filters by inclusive created_at date range', async () => {
+    const { ensureUserAndOrg, insertReceipt, listReceipts } = await db();
+    const { orgId } = ensureUserAndOrg({ email: 'frank@example.com', name: 'Frank' });
+
+    insertReceipt(orgId, receipt({ receiptId: 'd1', timestamp: '2026-06-20T09:00:00.000Z' }));
+    insertReceipt(orgId, receipt({ receiptId: 'd2', timestamp: '2026-06-24T15:00:00.000Z' }));
+    insertReceipt(orgId, receipt({ receiptId: 'd3', timestamp: '2026-06-28T23:30:00.000Z' }));
+
+    // from only.
+    expect(listReceipts(orgId, { dateFrom: '2026-06-24' })).toHaveLength(2);
+    // to only — end-of-day inclusive captures the 15:00 receipt on the 24th.
+    expect(listReceipts(orgId, { dateTo: '2026-06-24' })).toHaveLength(2);
+    // both bounds.
+    const window = listReceipts(orgId, { dateFrom: '2026-06-24', dateTo: '2026-06-24' });
+    expect(window).toHaveLength(1);
+    expect(window[0]?.receipt_id).toBe('d2');
+  });
+
+  it('getReceiptById returns the row for its org and null cross-tenant', async () => {
+    const { ensureUserAndOrg, insertReceipt, getReceiptById } = await db();
+    const owner = ensureUserAndOrg({ email: 'grace@example.com', name: 'Grace' });
+    const other = ensureUserAndOrg({ email: 'heidi@example.com', name: 'Heidi' });
+
+    const ins = insertReceipt(owner.orgId, receipt({ receiptId: 'det1', specPath: 'tests/detail.spec.ts' }));
+
+    const got = getReceiptById(owner.orgId, ins.id);
+    expect(got?.spec_path).toBe('tests/detail.spec.ts');
+
+    // Another tenant cannot read it; unknown id is null.
+    expect(getReceiptById(other.orgId, ins.id)).toBeNull();
+    expect(getReceiptById(owner.orgId, 'nope')).toBeNull();
+  });
+});

@@ -294,9 +294,20 @@ export function insertReceipt(orgId: string, r: CloudReceipt): InsertResult {
 export interface ListFilter {
   repo?: string;
   verdict?: string;
+  /** Case-insensitive substring match on spec_path. */
+  spec?: string;
+  /** Inclusive lower bound on created_at, as an ISO date (YYYY-MM-DD) or timestamp. */
+  dateFrom?: string;
+  /** Inclusive upper bound on created_at, as an ISO date (YYYY-MM-DD) or timestamp. */
+  dateTo?: string;
 }
 
-/** List an org's receipts (newest first), optionally filtered by repo/verdict. */
+/** Escape LIKE wildcards so user input is matched literally (paired with ESCAPE '\'). */
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+/** List an org's receipts (newest first), optionally filtered by repo/verdict/spec/date. */
 export function listReceipts(orgId: string, filter: ListFilter = {}): ReceiptRow[] {
   const db = getDb();
   const clauses = ['org_id = ?'];
@@ -309,6 +320,23 @@ export function listReceipts(orgId: string, filter: ListFilter = {}): ReceiptRow
     clauses.push('verdict = ?');
     params.push(filter.verdict);
   }
+  if (filter.spec) {
+    clauses.push("spec_path LIKE ? ESCAPE '\\'");
+    params.push(`%${escapeLike(filter.spec)}%`);
+  }
+  if (filter.dateFrom) {
+    clauses.push('created_at >= ?');
+    params.push(filter.dateFrom);
+  }
+  if (filter.dateTo) {
+    // Bare dates (YYYY-MM-DD) sort before that day's timestamps; extend to end-of-day
+    // so an inclusive "to 2026-06-24" still captures 2026-06-24T15:00:00Z.
+    const upper = /^\d{4}-\d{2}-\d{2}$/.test(filter.dateTo)
+      ? `${filter.dateTo}T23:59:59.999Z`
+      : filter.dateTo;
+    clauses.push('created_at <= ?');
+    params.push(upper);
+  }
   return db
     .prepare(
       `SELECT * FROM receipt
@@ -316,6 +344,15 @@ export function listReceipts(orgId: string, filter: ListFilter = {}): ReceiptRow
         ORDER BY created_at DESC, ingested_at DESC`,
     )
     .all(...(params as never[])) as ReceiptRow[];
+}
+
+/** Fetch a single receipt by id, scoped to its org (null if absent or another tenant's). */
+export function getReceiptById(orgId: string, id: string): ReceiptRow | null {
+  const db = getDb();
+  const row = db
+    .prepare(`SELECT * FROM receipt WHERE id = ? AND org_id = ?`)
+    .get(id, orgId) as ReceiptRow | undefined;
+  return row ?? null;
 }
 
 /** The seeded dev org id (kept for backward-compat / the ingest dev key). */
@@ -444,12 +481,9 @@ export function revokeApiKey(orgId: string, keyId: string): boolean {
   return Number(res.changes ?? 0) > 0;
 }
 
-export interface ReceiptFilter {
-  repo?: string;
-  verdict?: string;
-}
+export type ReceiptFilter = ListFilter;
 
-/** Org-scoped receipt listing with optional repo/verdict filters (newest first). */
+/** Org-scoped receipt listing with optional repo/verdict/spec/date filters (newest first). */
 export function getReceiptsForOrg(orgId: string, filter: ReceiptFilter = {}): ReceiptRow[] {
   return listReceipts(orgId, filter);
 }

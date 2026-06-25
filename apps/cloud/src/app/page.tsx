@@ -24,7 +24,13 @@ function fmtTime(iso: string): string {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ repo?: string; verdict?: string }>;
+  searchParams: Promise<{
+    repo?: string;
+    verdict?: string;
+    spec?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
   const session = await auth();
   if (!session?.orgId) redirect('/signin');
@@ -32,15 +38,28 @@ export default async function DashboardPage({
   const sp = await searchParams;
   const repo = sp.repo?.trim() || undefined;
   const verdict = sp.verdict?.trim() || undefined;
+  const spec = sp.spec?.trim() || undefined;
+  const dateFrom = sp.from?.trim() || undefined;
+  const dateTo = sp.to?.trim() || undefined;
+  const hasFilters = Boolean(repo || verdict || spec || dateFrom || dateTo);
 
   const org = getOrg(session.orgId);
-  const rows: ReceiptRow[] = getReceiptsForOrg(session.orgId, { repo, verdict });
+  const rows: ReceiptRow[] = getReceiptsForOrg(session.orgId, {
+    repo,
+    verdict,
+    spec,
+    dateFrom,
+    dateTo,
+  });
 
   // Carry the active filters onto the export links so a download matches the view.
   const exportQuery = (format: 'csv' | 'json') => {
     const q = new URLSearchParams({ format });
     if (repo) q.set('repo', repo);
     if (verdict) q.set('verdict', verdict);
+    if (spec) q.set('spec', spec);
+    if (dateFrom) q.set('from', dateFrom);
+    if (dateTo) q.set('to', dateTo);
     return `/api/export?${q.toString()}`;
   };
 
@@ -96,8 +115,20 @@ export default async function DashboardPage({
             ))}
           </select>
         </label>
+        <label>
+          Spec
+          <input type="text" name="spec" defaultValue={spec ?? ''} placeholder="login.spec" />
+        </label>
+        <label>
+          From
+          <input type="date" name="from" defaultValue={dateFrom ?? ''} />
+        </label>
+        <label>
+          To
+          <input type="date" name="to" defaultValue={dateTo ?? ''} />
+        </label>
         <button type="submit">Filter</button>
-        {(repo || verdict) && (
+        {hasFilters && (
           <a className="clear" href="/">
             clear
           </a>
@@ -130,7 +161,9 @@ export default async function DashboardPage({
             {rows.map((r) => (
               <tr key={r.id}>
                 <td className="mono">{r.repo ?? <span className="dim">—</span>}</td>
-                <td className="mono">{r.spec_path}</td>
+                <td className="mono">
+                  <a href={`/receipt/${r.id}`}>{r.spec_path}</a>
+                </td>
                 <td>
                   <span className={`tag ${verdictClass(r.verdict)}`}>{r.verdict}</span>
                 </td>

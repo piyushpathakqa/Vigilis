@@ -208,3 +208,37 @@ tbody tr:hover {
   font-family: var(--mono);
   color: var(--amber);
 }
+
+.detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hair-2);
+  border: 1px solid var(--hair-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.detail .field {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  padding: 13px 16px;
+  background: var(--steel);
+}
+.detail .flabel {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.detail .fvalue {
+  font-size: 13px;
+  color: var(--mist);
+  word-break: break-word;
+}
+@media (max-width: 560px) {
+  .detail .field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
