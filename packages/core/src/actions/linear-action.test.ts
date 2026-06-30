@@ -72,4 +72,20 @@ describe('LinearRefusalAction.notify', () => {
     const r = new LinearRefusalAction({ apiKey: 'lin_k', teamId: 'team_1', fetchFn: fn });
     await expect(r.notify(p)).resolves.toEqual({ ok: false });
   });
+
+  it('returns { ok:false } when the dedup search fails — never falls through to create', async () => {
+    const createdBodies: string[] = [];
+    const fn = (async (_url: string | URL, init?: RequestInit) => {
+      const body = String(init?.body ?? '');
+      if (body.includes('issueCreate')) {
+        createdBodies.push(body);
+        return new Response(JSON.stringify({ data: { issueCreate: { success: true, issue: { url: 'https://linear.app/should-not-happen' } } } }), { status: 200 });
+      }
+      throw new Error('search down'); // the dedup search fails
+    }) as unknown as typeof fetch;
+
+    const r = await new LinearRefusalAction({ apiKey: 'lin_k', teamId: 'team_1', fetchFn: fn }).notify(p);
+    expect(r).toEqual({ ok: false });
+    expect(createdBodies).toHaveLength(0); // must NOT create on a failed search
+  });
 });

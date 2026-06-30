@@ -15,17 +15,17 @@ export function linearBody(p: RefusalPayload, fp: string): string {
     'Vigilis **refused to heal** a failing test — triaged as a suspected real regression (behaviour change), not selector drift. The deploy gate was blocked.',
     '',
     `- **Spec:** \`${p.specPath}\``,
-    p.repo ? `- **Repo:** ${p.repo}` : '',
-    p.url ? `- **URL:** ${p.url}` : '',
-    p.expected || p.actual ? `- **Assertion:** expected \`${p.expected ?? '?'}\`, got \`${p.actual ?? '?'}\`` : '',
+    p.repo ? `- **Repo:** ${p.repo}` : null,
+    p.url ? `- **URL:** ${p.url}` : null,
+    p.expected || p.actual ? `- **Assertion:** expected \`${p.expected ?? '?'}\`, got \`${p.actual ?? '?'}\`` : null,
     `- **Rationale:** ${p.rationale}`,
-    p.receiptUrl ? `- **Signed receipt:** ${p.receiptUrl}` : '',
+    p.receiptUrl ? `- **Signed receipt:** ${p.receiptUrl}` : null,
     '',
     '_Attestation is verifiable and auditable — it records what happened, not that the judgment is correct. Verify the receipt before acting._',
     '',
     marker(fp),
   ]
-    .filter((l) => l !== '')
+    .filter((l): l is string => l !== null)
     .join('\n');
 }
 
@@ -79,7 +79,12 @@ export class LinearRefusalAction implements RefusalAction {
       'query($q:String!){ issueSearch(query:$q){ nodes{ url state{ type } } } }',
       { q: marker(fp) },
     );
-    const open = found?.issueSearch?.nodes?.find((n) => n.state.type !== 'completed' && n.state.type !== 'canceled');
+    // A failed search (network/timeout/non-2xx → null) means we cannot determine
+    // idempotency. Do NOT fall through to create — that risks duplicate tickets.
+    if (found === null) return { ok: false };
+    const open = found.issueSearch?.nodes?.find(
+      (n) => n.state.type !== 'completed' && n.state.type !== 'canceled' && n.state.type !== 'cancelled',
+    );
     if (open) return { ok: true, created: false, url: open.url };
 
     // 2. Create.
