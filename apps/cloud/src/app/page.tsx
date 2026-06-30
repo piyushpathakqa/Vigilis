@@ -7,7 +7,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { redirect } from 'next/navigation';
-import { auth, signOut } from '@/auth';
+import { auth, signOut, devBypassEnabled } from '@/auth';
+import { setPlanAction, seedDemoAction } from './demo-actions';
+import type { Plan } from '@/entitlements';
 import {
   getOrg,
   getReceiptsForOrg,
@@ -108,6 +110,23 @@ export default async function DashboardPage({
           was correct.
         </p>
       </header>
+
+      {devBypassEnabled() && (
+        <div className="demo-controls">
+          <span className="tag demo">demo</span>
+          <span className="mono dim">plan: {ent.label}</span>
+          {(['free', 'team', 'enterprise'] as Plan[]).map((p) => (
+            <form key={p} action={setPlanAction.bind(null, p)}>
+              <button type="submit" disabled={ent.plan === p}>
+                {p}
+              </button>
+            </form>
+          ))}
+          <form action={seedDemoAction}>
+            <button type="submit">Reset demo data</button>
+          </form>
+        </div>
+      )}
 
       {overRepoLimit && (
         <div className="nudge">

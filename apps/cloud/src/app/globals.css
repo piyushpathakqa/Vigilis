@@ -264,3 +264,26 @@ form.filters .export a.locked {
   color: var(--amber, #ffb000);
   border-color: var(--amber, #ffb000);
 }
+
+.demo-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed #7c3aef88;
+  border-radius: 6px;
+}
+.demo-controls form {
+  display: inline;
+  margin: 0;
+}
+.demo-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.tag.demo {
+  background: #7c3aef22;
+  color: #a78bfa;
+}
