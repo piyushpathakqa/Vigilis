@@ -287,3 +287,123 @@ form.filters .export a.locked {
   background: #7c3aef22;
   color: #a78bfa;
 }
+
+/* Pricing / upgrade page */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+.pricing-card {
+  position: relative;
+  background: var(--steel);
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card.featured {
+  border-color: var(--signal);
+  box-shadow: inset 0 0 0 1px var(--signal-deep);
+}
+.pricing-badge {
+  position: absolute;
+  top: -0.6rem;
+  left: 1.25rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal);
+  background: var(--signal-deep);
+  border: 1px solid var(--signal);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-weight: 700;
+}
+.pricing-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 700;
+}
+.pricing-price {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0.35rem 0 0.1rem;
+  letter-spacing: -0.02em;
+}
+.pricing-cadence {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--faint);
+  letter-spacing: 0;
+  margin-top: 2px;
+}
+.pricing-blurb {
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0.6rem 0 0;
+  min-height: 3.2em;
+}
+.pricing-features {
+  list-style: none;
+  margin: 0.9rem 0 1.2rem;
+  padding: 0;
+  flex: 1;
+}
+.pricing-features li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.55rem;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--mist);
+}
+.pricing-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--signal);
+  font-size: 12px;
+}
+.pricing-cta {
+  display: block;
+  text-align: center;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--hair-2);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--mist);
+  text-decoration: none;
+}
+.pricing-cta.primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--void);
+}
+.pricing-anchor {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--hair);
+  padding-top: 1.2rem;
+}
+.pricing-anchor p {
+  margin: 0 0 0.5rem;
+  color: var(--dim);
+}
+.pricing-anchor .pricing-line {
+  color: var(--mist);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  max-width: 38rem;
+}
+@media (max-width: 760px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+}
