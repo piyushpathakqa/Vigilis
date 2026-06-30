@@ -29,6 +29,7 @@ import {
   heal,
   resolveAdapter,
   resolveCloudReporter,
+  resolveRefusalDispatcher,
   resolveMemoryProvider,
   resolveModel,
   runAgentLoop,
@@ -356,7 +357,7 @@ program
       // Optional governance-cloud reporter: no-op unless VIGILIS_CLOUD_KEY is set.
       const reporter = resolveCloudReporter();
       // Captured across early returns so we can report exactly one receipt in finally.
-      let cloudVerdict: { verdict: string; rationale?: string; suggestedSelector?: string } | null = null;
+      let cloudVerdict: { verdict: string; rationale?: string; suggestedSelector?: string; confidence?: string } | null = null;
       let cloudHealed = false;
 
       try {
@@ -377,6 +378,7 @@ program
             verdict: v.verdict,
             rationale: v.rationale,
             suggestedSelector: v.suggestedSelector,
+            confidence: v.confidence,
           };
         }
         console.log(`\n[vigilis] verdict: ${v ? `${v.verdict} (${v.confidence})` : 'none'}`);
@@ -472,6 +474,22 @@ program
             timestamp: new Date().toISOString(),
           };
           await reporter.report(receipt);
+        }
+
+        // Optional refusal actions (Slack alert + Linear ticket). No-op unless
+        // SLACK_WEBHOOK_URL / LINEAR_API_KEY+LINEAR_TEAM_ID are set; never throws.
+        // Only on a refusal — the gate's most actionable event.
+        if (cloudVerdict?.verdict === 'real-bug') {
+          await resolveRefusalDispatcher().dispatch({
+            specPath: opts.spec,
+            url,
+            rationale: cloudVerdict.rationale ?? '',
+            confidence: cloudVerdict.confidence,
+            framework: adapter.name,
+            repo: await repoSlug(),
+            receiptUrl: receiptUrl ?? undefined,
+            timestamp: new Date().toISOString(),
+          });
         }
 
         await close();
