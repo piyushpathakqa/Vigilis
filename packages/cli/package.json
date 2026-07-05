@@ -1,6 +1,6 @@
 {
   "name": "vigilis",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Agentic QA — an AI agent that writes, gates, triages, and self-heals Playwright, Cypress & Selenium tests, with signed provenance receipts.",
   "type": "module",
   "license": "MIT",
