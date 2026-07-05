@@ -7,7 +7,20 @@
  */
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { Command } from 'commander';
+
+// Load ./.env at startup so a key placed there — exactly as `vigilis init`
+// instructs ("in .env or your shell") — is actually picked up at runtime, not
+// just detected. Node 20.12+ built-in; shell env vars take precedence. Without
+// this, users who put ANTHROPIC_API_KEY in .env still hit "key not set".
+if (existsSync('.env')) {
+  try {
+    process.loadEnvFile('.env');
+  } catch {
+    // malformed .env — ignore and fall back to the shell environment.
+  }
+}
 import {
   CONFIG_FILE,
   detectPlaywrightConfig,
