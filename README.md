@@ -69,6 +69,16 @@ The same tools ship as an **MCP server** — generate / triage / heal straight f
 
 When the [Treeship](https://www.treeship.dev) CLI is present, every `vigilis heal` run is sealed into a signed, offline-verifiable receipt automatically. No hard dependency; `--no-receipt` to opt out. Verify with `treeship verify last`. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
 
+## Why I built this
+
+I've spent my career in QA, and AI just rewrote the job: agents now write and fix tests on their own. Huge speed win — but it quietly breaks the one thing testing exists for. When an agent makes a red test green, did it *fix* the bug, or delete the test that caught it? At scale, nobody can check every change by hand.
+
+So Vigilis isn't another self-healer — healing is becoming a commodity. It's the layer that decides **honestly** which failures to heal and which to refuse, and signs every call so you don't have to take its word for it.
+
+The way I think about it: **git is a ledger of your code; Vigilis is a ledger of your agent's decisions** — proof you can hand to someone who doesn't already trust you.
+
+— [Piyush](https://vigilis.dev)
+
 ---
 
 ## How it's built
@@ -120,6 +130,10 @@ Watch the full loop against the bundled demo app — see [`docs/DEMO.md`](./docs
 - ✅ GitHub Actions QA gate · signed provenance receipts · MCP server
 - ✅ Refusal actions (Slack + Linear) · governance-cloud audit dashboard
 - 🚧 Author (intent → test plan) · broader agent-attestation surface
+
+## Credits
+
+Provenance receipts are powered by **[Treeship](https://www.treeship.dev)** — the independent attestation primitive — and governed memory by **ZMem**, both built by **Zerker Labs**. Thanks to the Zerker Labs team for the trust primitives Vigilis stands on.
 
 ## License
 
