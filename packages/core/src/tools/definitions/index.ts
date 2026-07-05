@@ -4,6 +4,7 @@ import { browserNavigate, browserClick, browserType, browserSnapshot } from './b
 import { domQuery, domTestids } from './dom';
 import { testRun } from './test-run';
 import { playwrightRun } from './playwright';
+import { webSearch } from './web-search';
 
 /** Every built-in tool, in a stable order. */
 export const ALL_TOOLS = [
@@ -18,6 +19,7 @@ export const ALL_TOOLS = [
   domTestids,
   testRun,
   playwrightRun, // deprecated alias — remove next release
+  webSearch,
 ];
 
 /** A fresh registry with all built-in tools registered. */
