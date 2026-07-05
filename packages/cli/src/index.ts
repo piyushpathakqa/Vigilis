@@ -550,4 +550,10 @@ program
     },
   );
 
-program.parse();
+// Top-level catch: async command errors surface as a clean one-line message
+// (with the underlying detail) and a non-zero exit — never a raw stack trace.
+program.parseAsync().catch((err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error(`\n[vigilis] ${msg}`);
+  process.exit(1);
+});
