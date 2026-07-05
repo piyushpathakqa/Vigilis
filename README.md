@@ -1,164 +1,125 @@
-# 👁️ Vigilis — Agentic QA Framework
+<h1 align="center">👁️ Vigilis</h1>
 
-> An agentic QA framework that **generates, triages, and self-heals** Playwright,
-> Cypress, and Selenium tests for any web app — usable from Claude Code/Desktop as an **MCP server**
-> or from CI as a **CLI** — with the whole loop running as a deployment gate in **GitHub Actions**.
-> Framework is **auto-detected**; pass `--framework playwright|cypress|selenium` to force one.
+<p align="center"><b>The QA gate for AI-written code.</b><br/>
+It heals safe test drift, <b>refuses real regressions</b>, and signs every decision into an independent, verifiable receipt.</p>
 
-[![CI](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml)
-[![QA Gate](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml/badge.svg)](https://github.com/piyushpathakqa/Vigilis/actions/workflows/qa.yml)
+<p align="center">
+<a href="https://www.npmjs.com/package/vigilis"><img src="https://img.shields.io/npm/v/vigilis?color=41f59a&label=npm" alt="npm"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT"></a>
+<a href="https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml"><img src="https://github.com/piyushpathakqa/Vigilis/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+<a href="https://vigilis.dev"><img src="https://img.shields.io/badge/site-vigilis.dev-ece7da" alt="site"></a>
+</p>
 
-**🌐 Live site → [vigilis.dev](https://vigilis.dev)** · the landing page (`apps/web`), built with Next.js, Framer Motion & a pre-rendered Remotion hero.
-
-> [!NOTE]
-> **M0–M3 complete, M4 in progress.** The full loop runs as code: generate a test from a URL → gate
-> it in CI → triage a failure → self-heal DOM drift with a PR (while refusing real bugs). See
-> [Roadmap](#roadmap).
+<p align="center"><img src="./docs/vigilis-receipts-comparison.png" alt="One agent, two decisions: a cosmetic drift is healed; a real bug is refused — both signed." width="880"></p>
 
 ---
 
-## Why
+## The problem
 
-Test suites are expensive to write and brittle to maintain. Vigilis puts a Claude agent in the
-loop to do the slow parts: explore an app and write real tests (Playwright, Cypress, or Selenium),
-then — when the UI drifts — diagnose the failure and open a fix PR, while still refusing to paper
-over genuine bugs. The framework is **auto-detected** from your project; use `--framework` to force
-one explicitly.
+Tell any coding agent to *"make CI pass"* and the cheapest path to green is **deleting the test that caught the bug.** AI now writes and fixes tests on its own — so the only question that matters is: **can you trust what it did?**
 
-## The idea: one core, two consumers
+Vigilis answers it. Point it at the Playwright, Cypress, or Selenium suite you already have. When a test breaks, it decides:
 
-Vigilis defines its QA tools **once** and exposes them **twice**.
+- **Cosmetic drift** (a renamed selector) → it heals the locator, re-runs to verify green, opens a PR.
+- **A real behaviour change** (checkout total went from `$49` to `$0`) → it **refuses to touch the test, fails the gate**, and surfaces the bug instead of burying it.
 
-```
-                     ┌──────────────────────────────┐
-                     │   @argus/core                │
-                     │   Agent loop (Claude)        │   Anthropic Messages API + tool use
-                     │   + single Tool Registry     │   browser · dom · fs · playwright · git
-                     └───────┬───────────────┬──────┘
-                             │               │
-              ┌──────────────▼──┐         ┌──▼───────────────┐
-              │ @argus/mcp      │         │ @argus/cli       │
-              │ MCP server      │         │ npx argus ...    │
-              │ (Claude Desktop)│         │ (used in CI)     │
-              └─────────────────┘         └──────────────────┘
-```
+And **every decision is sealed into a signed, offline-verifiable receipt** by an independent notary — so a refusal is something you can *prove*, not just claim.
 
-## The loop
+> Self-healing is the wedge. **Verifiable proof is the point.**
 
-Three behaviors run today; **Author** is on the roadmap.
+## See it refuse a real bug
 
-| Stage | Input | The agent… | Output |
-|-------|-------|------------|--------|
-| **Author** _(roadmap)_ | Plain-English intent | compiles intent into a structured test plan | `*.plan.json` |
-| **Generate** | A URL | explores the app, writes specs with assertions | `tests/*.spec.ts` |
-| **Triage** | A failed run | classifies real bug vs DOM drift vs flake | root-cause report |
-| **Heal** | A drift verdict | rewrites the locator, verifies green, opens a PR | a pull request |
+<img src="./docs/images/vigilis-refuse-terminal.png" alt="vigilis heal refusing a real bug and sealing a verifiable receipt" width="820">
+
+The agent ran the spec, saw it fail, checked that the selectors were all correct, concluded the app's login was genuinely broken, and **refused to heal** — then sealed a receipt anyone can verify offline.
 
 ## Quickstart
 
 ```bash
-pnpm install
-cp .env.example .env   # add your ANTHROPIC_API_KEY
-pnpm build
+npm i -D vigilis                      # in your Playwright / Cypress / Selenium project
+npx playwright install chromium       # one-time, for browser automation
+export ANTHROPIC_API_KEY=sk-ant-...   # a pay-as-you-go API key (not a Claude.ai subscription)
+
+npx vigilis init                                   # scaffold vigilis.config.json (auto-detects your framework)
+npx vigilis generate https://your-app.com --run    # explore the app → write + run a real spec
+npx vigilis heal https://your-app.com --spec tests/login.spec.ts   # heal drift → verify green → PR (refuses real bugs)
 ```
 
-### Watch the agent run (E2E)
+Runs in your CI on your own key + chromium. About **10¢ per run** on the fast model (`--model claude-haiku-4-5`); Opus by default for quality.
 
-The agent loop is live. Point it at the bundled demo app and watch it explore — navigate, snapshot
-the DOM, read `data-testid`s, and click through the login → cart flow:
+## Why it's different
 
-```bash
-pnpm --filter @argus/core exec playwright install chromium   # one-time
-pnpm --filter @argus/sample-shop dev                          # terminal 1 → http://localhost:3100
-node --env-file=.env packages/cli/dist/index.js smoke http://localhost:3100/login   # terminal 2
+| | Vigilis |
+|---|---|
+| **Heals** | Rewrites the locator for cosmetic drift, re-verifies green, opens a PR. |
+| **Refuses** | A real regression is a hard, fail-closed contract — it will not weaken the assertion that caught the bug. |
+| **Proves** | Every heal *and* every refusal is sealed into an independent, offline-verifiable receipt (via [Treeship](https://www.treeship.dev)). |
+
+Attestation is **verifiable** and **auditable** — it proves *what the agent did*, in order, unaltered. It does **not** claim the agent's judgement was correct. That honesty is the point: Vigilis improves signal, it doesn't hide failures.
+
+## Optional: alert on a refusal
+
+On a real-bug refusal, Vigilis can post a **Slack** alert and file a **deduplicated Linear** ticket — each linking the signed receipt. Off by default; a no-op until you set `SLACK_WEBHOOK_URL` / `LINEAR_API_KEY`. See [`docs/REFUSAL-ACTIONS.md`](./docs/REFUSAL-ACTIONS.md).
+
+## Drive it from Claude (MCP)
+
+The same tools ship as an **MCP server** — generate / triage / heal straight from Claude Desktop or Claude Code. Setup: [`docs/MCP.md`](./docs/MCP.md).
+
+## Provenance receipts
+
+When the [Treeship](https://www.treeship.dev) CLI is present, every `vigilis heal` run is sealed into a signed, offline-verifiable receipt automatically. No hard dependency; `--no-receipt` to opt out. Verify with `treeship verify last`. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
+
+---
+
+## How it's built
+
+Vigilis defines its QA tools **once** and exposes them **twice** — as an MCP server and as a CLI — over one Claude agent loop:
+
+```
+                     ┌──────────────────────────────┐
+                     │   @argus/core                │  Anthropic Messages API + tool use
+                     │   Agent loop + Tool Registry │  browser · dom · fs · playwright · git
+                     └───────┬───────────────┬──────┘
+                ┌────────────▼──┐         ┌──▼───────────────┐
+                │ @argus/mcp    │         │ vigilis (CLI)    │
+                │ MCP server    │         │ npx vigilis ...  │
+                │ (Claude)      │         │ (used in CI)     │
+                └───────────────┘         └──────────────────┘
 ```
 
-It prints a step-by-step trace and a token/cost line (~$0.05–0.15 per run on the fast model).
-Requires a real Anthropic **API** key (a Max subscription doesn't fund the API).
+The loop: **Generate** (explore a URL → write specs) → **Triage** (real-bug vs drift vs flake) → **Heal** (fix drift → verify green → PR, refuse real bugs). *Author* (plain-English intent → test plan) is on the roadmap.
 
-Or have it **write a test and run it green**:
-
-```bash
-node --env-file=.env packages/cli/dist/index.js generate http://localhost:3100/login --run
-```
-
-It explores the app, writes `tests/generated/login.spec.ts`, and runs it against sample-shop
-(`3 passed, 0 failed`). Defaults to Opus for quality; add `--model claude-haiku-4-5` for ~10¢ runs.
-
-### See it self-heal
-
-Seed a DOM drift, then watch Vigilis triage and fix it (full runbook: [`docs/DEMO.md`](./docs/DEMO.md)):
-
-```bash
-NEXT_PUBLIC_ARGUS_DEMO_DRIFT=1 pnpm --filter @argus/sample-shop dev   # renames a data-testid
-node --env-file=.env packages/cli/dist/index.js heal \
-  http://localhost:3100/login --spec tests/generated/login.spec.ts    # → dom-drift → fix → PR
-```
-On `dom-drift` it rewrites the locator, **re-runs to verify green**, and opens a PR. On a real bug
-(`NEXT_PUBLIC_ARGUS_DEMO_BUG=1`) it refuses and blocks the gate — Vigilis improves signal, it doesn't
-hide failures.
-
-### Use it in your own Playwright, Cypress, or Selenium project
-
-Install the [`vigilis`](https://www.npmjs.com/package/vigilis) package, then `vigilis init`
-scaffolds a `vigilis.config.json` so `generate`/`triage`/`heal` pick up your project's defaults
-(`baseUrl`, `testDir`, `model`, `framework`) — explicit flags always override it:
-
-```bash
-npm i -D vigilis
-export ANTHROPIC_API_KEY=sk-...
-vigilis init                                       # auto-detects framework (playwright.config.*, etc.), writes vigilis.config.json
-vigilis generate https://your-app.com/login --run  # explore → write + run a real spec
-vigilis generate https://your-app.com/login --framework cypress --run  # force Cypress output
-```
-
-All three frameworks are **live-verified** — each runs the full `generate → run green` loop against
-the sample app (Playwright, Cypress, and Selenium). They share the same `generate`/`triage`/`heal`
-commands — the `--framework` flag (or the `framework` field in `vigilis.config.json`) selects the adapter.
-
-Or point any command at any URL directly; `--base-url` runs generated specs against any host:
-
-```bash
-node --env-file=.env packages/cli/dist/index.js generate https://your-app.com/login \
-  --run --base-url https://your-app.com
-```
-
-> Generated files are plain specs — copy them into your repo's test folder and own them like any
-> other test. Published on npm: `npm i -D vigilis` (v0.2.1 — Playwright, Cypress & Selenium all
-> live-verified: detect → generate → run green).
-
-### Drive it from Claude Desktop / Code (MCP)
-
-`@argus/mcp` exposes the QA tools over MCP. Setup + config snippets: [`docs/MCP.md`](./docs/MCP.md).
-
-### Provenance receipts
-
-When the [Treeship](https://www.treeship.dev) CLI is installed, **every `argus heal` run is sealed
-into a signed, offline-verifiable receipt automatically** — *self-healing QA you can audit*. No hard
-dependency; `--no-receipt` to opt out. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
-
-## Repo layout
+### Repo layout
 
 ```
 argus/
 ├─ packages/
-│  ├─ core/   # agent loop, tool registry, Claude client, prompts
+│  ├─ core/   # agent loop, tool registry, Claude client, prompts, refusal actions
 │  ├─ mcp/    # MCP server wrapping the registry
-│  └─ cli/    # `argus author|generate|triage|heal`
+│  └─ cli/    # the `vigilis` command (generate | triage | heal)
 ├─ apps/
-│  ├─ sample-shop/   # Next.js demo target (login + products + cart)
-│  └─ web/           # landing page (Next 15 · motion · Remotion hero) → Vercel
-└─ tests/     # generated Playwright specs land here
+│  ├─ sample-shop/   # Next.js demo target (login + products + cart, with seeded drift/bug toggles)
+│  ├─ cloud/         # governance cloud — org audit dashboard over signed receipts
+│  └─ web/           # landing page → vigilis.dev
+└─ tests/            # generated specs land here
 ```
+
+### Develop
+
+```bash
+pnpm install
+cp .env.example .env    # add ANTHROPIC_API_KEY
+pnpm build && pnpm test
+```
+
+Watch the full loop against the bundled demo app — see [`docs/DEMO.md`](./docs/DEMO.md).
 
 ## Roadmap
 
-- ✅ **M0 — Foundations** · monorepo, tooling, CI
-- ✅ **M1 — Core + sample-shop + Generate** · `argus generate <url> --run` writes + runs real tests
-- ✅ **M2 — CLI + GitHub Actions gate** · the `QA Gate` check runs generated specs (red/green)
-- ✅ **M3 — Triage + Heal** · `argus heal` fixes DOM drift with a PR, refuses real bugs
-- 🚧 **M4 — MCP server + polish** · `argus-mcp` is live ([`docs/MCP.md`](./docs/MCP.md)); demo GIFs next
-- ✅ **Landing page** · [`apps/web`](./apps/web) deployed to Vercel → [vigilis.dev](https://vigilis.dev)
+- ✅ Generate · Triage · Heal (Playwright, Cypress & Selenium — all live-verified)
+- ✅ GitHub Actions QA gate · signed provenance receipts · MCP server
+- ✅ Refusal actions (Slack + Linear) · governance-cloud audit dashboard
+- 🚧 Author (intent → test plan) · broader agent-attestation surface
 
 ## License
 
