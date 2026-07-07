@@ -21,7 +21,13 @@
     "agent",
     "provenance",
     "attestation",
-    "mcp"
+    "mcp",
+    "ai-agent",
+    "agentic",
+    "ai-testing",
+    "test-integrity",
+    "model-context-protocol",
+    "claude"
   ],
   "bin": {
     "vigilis": "./dist/index.js",

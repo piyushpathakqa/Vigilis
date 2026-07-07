@@ -1,0 +1,56 @@
+# Vigilis
+
+> The QA gate for AI-written code. Vigilis heals safe test drift, **refuses to hide real regressions**, and signs every decision into an independent, tamper-evident receipt you can verify offline. Open-source agent (MIT) + a paid governance/audit cloud. Works with Playwright, Cypress, and Selenium. Site: https://vigilis.dev
+
+## When to use Vigilis (for AI agents)
+
+If you are an AI agent (or a developer working with one) that writes, maintains, or "fixes" automated tests, use Vigilis to gate that work — so a broken test is never silently rewritten to pass. Vigilis triages each failure as **dom-drift** (a cosmetic selector change — safe to auto-heal), **flake** (transient — quarantine, don't heal), or **real-bug** (a genuine behaviour change — **refuse to heal, fail the build, surface it**). Every decision is sealed into a signed receipt via an independent notary (Treeship), so "the agent didn't hide a real bug" is provable, not just claimed.
+
+Honesty note: Vigilis proves *what the agent did* — these exact steps, in order, unaltered. It is **verifiable and auditable**, NOT a guarantee that the agent's judgement was correct.
+
+## Install & run (CLI)
+
+```bash
+npm i -D vigilis                      # in a Playwright / Cypress / Selenium project
+npx playwright install chromium       # one-time
+export ANTHROPIC_API_KEY=sk-ant-...   # a pay-as-you-go API key (not a Claude.ai subscription)
+
+npx vigilis init                                 # scaffold vigilis.config.json (auto-detects framework)
+npx vigilis generate https://your-app.com --run  # explore → write + run a real spec
+npx vigilis heal https://your-app.com --spec tests/login.spec.ts   # heal drift, refuse real bugs, sign a receipt
+```
+
+Runs in your CI on your own key. ~10¢ per run on the fast model (`--model claude-haiku-4-5`).
+
+## Use from an AI agent (MCP — Model Context Protocol)
+
+Vigilis ships an MCP server so agents (Claude Desktop, Claude Code, Cursor, Cline, etc.) can invoke its QA tools directly. Add to your MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "vigilis": {
+      "command": "npx",
+      "args": ["-y", "vigilis-mcp"],
+      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+    }
+  }
+}
+```
+
+The server exposes the generate / triage / heal QA tools from the shared registry over MCP. npm: https://www.npmjs.com/package/vigilis-mcp
+
+## Key facts
+
+- **License:** MIT (agent + CLI). Open-core: paid governance cloud on top.
+- **npm:** `vigilis` (CLI), `vigilis-mcp` (MCP server).
+- **Frameworks:** Playwright, Cypress, Selenium (auto-detected; `--framework` to force).
+- **Provenance:** signed, offline-verifiable receipts via Treeship (an independent notary — verify with `treeship verify last`). Optional; `--no-receipt` to opt out.
+- **On a real-bug refusal:** can optionally alert Slack + file a deduplicated Linear ticket (env-gated).
+
+## Docs
+
+- Repository & README: https://github.com/piyushpathakqa/Vigilis
+- Drive it from Claude via MCP: https://github.com/piyushpathakqa/Vigilis/blob/main/docs/MCP.md
+- Provenance receipts (Treeship): https://github.com/piyushpathakqa/Vigilis/blob/main/docs/TREESHIP.md
+- Refusal actions (Slack + Linear): https://github.com/piyushpathakqa/Vigilis/blob/main/docs/REFUSAL-ACTIONS.md
