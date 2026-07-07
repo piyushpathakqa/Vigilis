@@ -23,7 +23,7 @@ const MARKUP = `
       <span class="pill">Built by Piyush&nbsp;Pathak</span>
     </div>
     <h1>The QA gate for <span class="g">AI-written code.</span></h1>
-    <p class="lede">Coding agents can make CI pass. <b>Vigilis makes sure it should.</b> Point it at the Cypress, Selenium, or Playwright suite you already have: it heals safe drift, blocks real regressions, and signs the proof.</p>
+    <p class="lede">Coding agents can make CI pass. <b>Vigilis makes sure it should.</b> Point it at the Playwright, Cypress, or Selenium suite you already have: it heals safe drift, blocks real regressions, and signs the proof.</p>
     <div class="cta-row">
       <div class="install">
         <code><span class="p">$</span> npm i -D vigilis</code>
@@ -219,10 +219,11 @@ const MARKUP = `
         <div class="qs-bar">
           <span class="d"></span><span class="d"></span><span class="d"></span>
           <span class="t">quickstart</span>
-          <button class="qs-copy" data-copy="npm i -D vigilis&#10;vigilis init&#10;vigilis generate https://your-app.com --run" aria-label="Copy quickstart commands">COPY</button>
+          <button class="qs-copy" data-copy="npm i -D vigilis&#10;npx playwright install chromium&#10;vigilis init&#10;vigilis generate https://your-app.com --run" aria-label="Copy quickstart commands">COPY</button>
         </div>
         <div class="qs-body">
 <div><span class="c">$</span> npm i -D vigilis</div>
+<div><span class="c">$</span> npx playwright install chromium</div>
 <div><span class="c">$</span> vigilis init</div>
 <div><span class="c">$</span> vigilis generate https://your-app.com --run</div>
         </div>
