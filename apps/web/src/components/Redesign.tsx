@@ -9,6 +9,7 @@ const MARKUP = `
     <div class="nav-r">
       <a class="lnk" data-view="home" href="#home">Home</a>
       <a class="lnk" data-view="how" href="#how">How it works</a>
+      <a class="lnk" href="/use-cases">Use cases</a>
       <a class="lnk" href="https://github.com/piyushpathakqa/Vigilis">GitHub</a>
       <a class="nav-cta" href="#start">Get started</a>
     </div>
@@ -361,6 +362,7 @@ const MARKUP = `
     <div class="foot-grid">
       <div class="mark"><span class="b">[</span>VIGILIS<span class="b">]</span></div>
       <div class="foot-links">
+        <a href="/use-cases">Use cases</a>
         <a href="https://github.com/piyushpathakqa/Vigilis">GitHub</a>
         <a href="https://www.npmjs.com/package/vigilis">npm</a>
         <a href="https://github.com/piyushpathakqa/Vigilis/blob/main/docs/MCP.md">MCP</a>
