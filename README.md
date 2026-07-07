@@ -27,6 +27,8 @@ And **every decision is sealed into a signed, offline-verifiable receipt** by an
 
 > Self-healing is the wedge. **Verifiable proof is the point.**
 
+**Where teams point it:** gate AI-written code · self-heal without hiding bugs · auditable test runs · audit-grade evidence for SOX / payment controls · agent-native (MCP). → [see the use cases](https://vigilis.dev/use-cases)
+
 ## See it refuse a real bug
 
 <img src="./docs/images/vigilis-refuse-terminal.png" alt="vigilis heal refusing a real bug and sealing a verifiable receipt" width="820">
@@ -57,13 +59,29 @@ Runs in your CI on your own key + chromium. About **10¢ per run** on the fast m
 
 Attestation is **verifiable** and **auditable** — it proves *what the agent did*, in order, unaltered. It does **not** claim the agent's judgement was correct. That honesty is the point: Vigilis improves signal, it doesn't hide failures.
 
+**Why a refusal is credible: no layer grades its own work.** The **actor** (any agent) writes the code and tests; **Vigilis** judges the behaviour and gates the deploy; an **independent notary** ([Treeship](https://www.treeship.dev)) signs the verdict. Vigilis never signs its own homework — which is what makes the proof worth anything to someone who doesn't already trust you.
+
 ## Optional: alert on a refusal
 
 On a real-bug refusal, Vigilis can post a **Slack** alert and file a **deduplicated Linear** ticket — each linking the signed receipt. Off by default; a no-op until you set `SLACK_WEBHOOK_URL` / `LINEAR_API_KEY`. See [`docs/REFUSAL-ACTIONS.md`](./docs/REFUSAL-ACTIONS.md).
 
 ## Drive it from Claude (MCP)
 
-The same tools ship as an **MCP server** — generate / triage / heal straight from Claude Desktop or Claude Code. Setup: [`docs/MCP.md`](./docs/MCP.md).
+The same tools ship as an **MCP server** ([`vigilis-mcp`](https://www.npmjs.com/package/vigilis-mcp), [in the official MCP registry](https://registry.modelcontextprotocol.io)) — generate / triage / heal straight from Claude Desktop, Claude Code, or Cursor. Add it to your MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "vigilis": {
+      "command": "npx",
+      "args": ["-y", "vigilis-mcp"],
+      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+    }
+  }
+}
+```
+
+Full setup: [`docs/MCP.md`](./docs/MCP.md).
 
 ## Provenance receipts
 
@@ -87,11 +105,11 @@ Vigilis defines its QA tools **once** and exposes them **twice** — as an MCP s
 
 ```
                      ┌──────────────────────────────┐
-                     │   @argus/core                │  Anthropic Messages API + tool use
+                     │   core                       │  Anthropic Messages API + tool use
                      │   Agent loop + Tool Registry │  browser · dom · fs · playwright · git
                      └───────┬───────────────┬──────┘
                 ┌────────────▼──┐         ┌──▼───────────────┐
-                │ @argus/mcp    │         │ vigilis (CLI)    │
+                │ vigilis-mcp   │         │ vigilis (CLI)    │
                 │ MCP server    │         │ npx vigilis ...  │
                 │ (Claude)      │         │ (used in CI)     │
                 └───────────────┘         └──────────────────┘
@@ -102,7 +120,7 @@ The loop: **Generate** (explore a URL → write specs) → **Triage** (real-bug 
 ### Repo layout
 
 ```
-argus/
+vigilis/
 ├─ packages/
 │  ├─ core/   # agent loop, tool registry, Claude client, prompts, refusal actions
 │  ├─ mcp/    # MCP server wrapping the registry
