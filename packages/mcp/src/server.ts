@@ -12,7 +12,7 @@ export interface VigilisMcpOptions {
  */
 export function createVigilisMcpServer(opts: VigilisMcpOptions): McpServer {
   const registry = createDefaultRegistry();
-  const server = new McpServer({ name: 'vigilis-mcp', version: '0.4.0' });
+  const server = new McpServer({ name: 'vigilis-mcp', version: '0.4.1' });
 
   for (const tool of registry.toMcp()) {
     server.registerTool(

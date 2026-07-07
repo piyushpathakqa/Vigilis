@@ -1,6 +1,7 @@
 {
   "name": "vigilis-mcp",
-  "version": "0.4.0",
+  "mcpName": "io.github.piyushpathakqa/vigilis-mcp",
+  "version": "0.4.1",
   "description": "Vigilis MCP server — drive the Vigilis QA tools (generate/triage/heal Playwright, Cypress & Selenium tests) from Claude Desktop/Code over the Model Context Protocol.",
   "type": "module",
   "license": "MIT",

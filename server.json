@@ -3,7 +3,7 @@
   "name": "io.github.piyushpathakqa/vigilis-mcp",
   "title": "Vigilis",
   "description": "Gate AI-written tests: heal safe drift, refuse to hide real bugs, sign a verifiable receipt.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "websiteUrl": "https://vigilis.dev",
   "repository": {
     "url": "https://github.com/piyushpathakqa/Vigilis",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "vigilis-mcp",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "transport": {
         "type": "stdio"
       },
