@@ -1,0 +1,18 @@
+# Smithery configuration — https://smithery.ai/docs
+# Lets Smithery run vigilis-mcp as a local stdio server with the user's Anthropic key.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required: ["anthropicApiKey"]
+    properties:
+      anthropicApiKey:
+        type: string
+        title: Anthropic API Key
+        description: Pay-as-you-go Anthropic API key used to run the Vigilis agent.
+  commandFunction: |-
+    (config) => ({
+      command: 'npx',
+      args: ['-y', 'vigilis-mcp'],
+      env: { ANTHROPIC_API_KEY: config.anthropicApiKey }
+    })

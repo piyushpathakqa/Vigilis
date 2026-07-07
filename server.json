@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.piyushpathakqa/vigilis-mcp",
+  "title": "Vigilis",
+  "description": "Gate AI-written tests: heal safe drift, refuse to hide real bugs, sign a verifiable receipt.",
+  "version": "0.4.0",
+  "websiteUrl": "https://vigilis.dev",
+  "repository": {
+    "url": "https://github.com/piyushpathakqa/Vigilis",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "vigilis-mcp",
+      "version": "0.4.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "description": "Pay-as-you-go Anthropic API key used to run the Vigilis agent (not a Claude.ai subscription).",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
