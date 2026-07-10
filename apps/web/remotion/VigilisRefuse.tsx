@@ -14,7 +14,6 @@ const HAIR = '#1c232c';
 const HAIR2 = '#2a323d';
 const MIST = '#ece7da';
 const DIM = '#8a929c';
-const FAINT = '#565e69';
 const SIGNAL = '#41f59a';
 const AMBER = '#ffb000';
 const ALERT = '#ff6a5d';
@@ -221,32 +220,43 @@ function Cta({ local, dur }: { local: number; dur: number }) {
   );
 }
 
+// scene durations (frames @30fps)
+const D_HOOK = 96;
+const D_RUN = 126;
+const D_REFUSE = 132;
+const D_SIGN = 108;
+const D_CTA = 108;
+
+// cumulative start offsets
+const T_HOOK = 0;
+const T_RUN = T_HOOK + D_HOOK;
+const T_REFUSE = T_RUN + D_RUN;
+const T_SIGN = T_REFUSE + D_REFUSE;
+const T_CTA = T_SIGN + D_SIGN;
+
+export const VIGILIS_REFUSE_FRAMES = T_CTA + D_CTA; // 570 @30fps = 19s
+
 export const VigilisRefuse = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  // scene durations (frames @30fps)
-  const S = [96, 126, 132, 108, 108];
-  const start = S.reduce<number[]>((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + (i ? S[i - 1] : 0)], []);
   return (
     <AbsoluteFill style={{ backgroundColor: VOID }}>
       <Bg />
-      <Sequence from={start[0]} durationInFrames={S[0]}>
-        <Hook local={frame - start[0]} dur={S[0]} />
+      <Sequence from={T_HOOK} durationInFrames={D_HOOK}>
+        <Hook local={frame - T_HOOK} dur={D_HOOK} />
       </Sequence>
-      <Sequence from={start[1]} durationInFrames={S[1]}>
-        <Run local={frame - start[1]} dur={S[1]} />
+      <Sequence from={T_RUN} durationInFrames={D_RUN}>
+        <Run local={frame - T_RUN} dur={D_RUN} />
       </Sequence>
-      <Sequence from={start[2]} durationInFrames={S[2]}>
-        <Refuse local={frame - start[2]} dur={S[2]} fps={fps} />
+      <Sequence from={T_REFUSE} durationInFrames={D_REFUSE}>
+        <Refuse local={frame - T_REFUSE} dur={D_REFUSE} fps={fps} />
       </Sequence>
-      <Sequence from={start[3]} durationInFrames={S[3]}>
-        <Sign local={frame - start[3]} dur={S[3]} fps={fps} />
+      <Sequence from={T_SIGN} durationInFrames={D_SIGN}>
+        <Sign local={frame - T_SIGN} dur={D_SIGN} fps={fps} />
       </Sequence>
-      <Sequence from={start[4]} durationInFrames={S[4]}>
-        <Cta local={frame - start[4]} dur={S[4]} />
+      <Sequence from={T_CTA} durationInFrames={D_CTA}>
+        <Cta local={frame - T_CTA} dur={D_CTA} />
       </Sequence>
     </AbsoluteFill>
   );
 };
-
-export const VIGILIS_REFUSE_FRAMES = 96 + 126 + 132 + 108 + 108; // 570 @30fps = 19s
