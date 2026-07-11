@@ -117,6 +117,8 @@ Vigilis defines its QA tools **once** and exposes them **twice** — as an MCP s
 
 The loop: **Generate** (explore a URL → write specs) → **Triage** (real-bug vs drift vs flake) → **Heal** (fix drift → verify green → PR, refuse real bugs). *Author* (plain-English intent → test plan) is on the roadmap.
 
+When `YDC_API_KEY` is set, the shared tool registry also exposes an optional `web_search` tool backed by You.com Search for cases where the browser session needs outside context.
+
 ### Repo layout
 
 ```

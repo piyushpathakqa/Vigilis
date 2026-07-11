@@ -13,18 +13,19 @@ const EXPECTED = [
   'dom_testids',
   'test_run',
   'playwright_run', // deprecated alias
+  'web_search',
 ];
 
 describe('createDefaultRegistry', () => {
-  it('registers all 11 tools', () => {
+  it('registers all 12 tools', () => {
     const r = createDefaultRegistry();
     expect(r.list().map((t) => t.name).sort()).toEqual([...EXPECTED].sort());
   });
 
   it('adapts every tool for Anthropic and MCP', () => {
     const r = createDefaultRegistry();
-    expect(r.toAnthropic()).toHaveLength(11);
-    expect(r.toMcp()).toHaveLength(11);
+    expect(r.toAnthropic()).toHaveLength(12);
+    expect(r.toMcp()).toHaveLength(12);
     for (const t of r.toAnthropic()) {
       expect(t.input_schema.type).toBe('object');
     }
