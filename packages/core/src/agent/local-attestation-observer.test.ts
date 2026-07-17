@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import {
   createLocalAttestationObserver,
   hashRecord,
+  verifyLocalBundle,
   type AttestationBundle,
 } from './local-attestation-observer';
 
@@ -52,5 +53,44 @@ describe('createLocalAttestationObserver', () => {
     expect(bundle.chainIntact).toBe(true);
     expect(bundle.headHash).toBe(obs.headHash);
     expect(bundle.records).toHaveLength(4);
+  });
+});
+
+describe('verifyLocalBundle', () => {
+  function buildBundle(): AttestationBundle {
+    const dir = mkdtempSync(join(tmpdir(), 'vigilis-verify-'));
+    const obs = createLocalAttestationObserver({
+      label: 'heal',
+      outPath: join(dir, 'b.json'),
+      now: fixedClock(),
+    });
+    obs.onLoopStart?.({ system: 'sys', model: 'm' });
+    obs.onToolCall?.({ step: 1, name: 'fs_read', input: { path: 'a' } });
+    obs.onToolCall?.({ step: 2, name: 'fs_write', input: { path: 'b' } });
+    obs.onLoopEnd?.({ steps: 2, stopReason: 'end_turn' });
+    return {
+      version: 1,
+      actor: 'agent://vigilis',
+      label: 'heal',
+      createdAt: '2026-07-17T00:00:09.000Z',
+      count: obs.records.length,
+      headHash: obs.headHash,
+      signed: false,
+      chainIntact: true,
+      records: obs.records.map((r) => ({ ...r })),
+    };
+  }
+
+  it('accepts an intact chain', () => {
+    const v = verifyLocalBundle(buildBundle());
+    expect(v).toEqual({ ok: true, count: 4 });
+  });
+
+  it('rejects a bundle whose middle record was tampered', () => {
+    const bundle = buildBundle();
+    (bundle.records[1].meta as any).input = { path: 'HACKED' };
+    const v = verifyLocalBundle(bundle);
+    expect(v.ok).toBe(false);
+    expect(v.brokenAt).toBe(1);
   });
 });

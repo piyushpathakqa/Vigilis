@@ -65,6 +65,30 @@ export function hashRecord(rec: Omit<AttestationRecord, 'hash'>): string {
   return createHash('sha256').update(canonicalJson(rec)).digest('hex');
 }
 
+export interface BundleVerification {
+  ok: boolean;
+  count: number;
+  /** Index of the first record whose hash or linkage does not verify. */
+  brokenAt?: number;
+}
+
+/**
+ * Re-walk the chain: each record's hash must equal the recomputed hash of its
+ * own fields, and its prevHash must equal the previous record's hash. Any edit
+ * to any record breaks it here — the property that makes the bundle auditable.
+ */
+export function verifyLocalBundle(bundle: AttestationBundle): BundleVerification {
+  let prev: string | null = null;
+  for (let i = 0; i < bundle.records.length; i++) {
+    const { hash, ...rest } = bundle.records[i];
+    if (rest.prevHash !== prev || hashRecord(rest) !== hash) {
+      return { ok: false, count: bundle.records.length, brokenAt: i };
+    }
+    prev = hash;
+  }
+  return { ok: true, count: bundle.records.length };
+}
+
 export function createLocalAttestationObserver(
   opts: LocalAttestationObserverOptions,
 ): LocalAttestationObserver {
