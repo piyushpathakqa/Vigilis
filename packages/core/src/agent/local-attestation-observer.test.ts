@@ -32,13 +32,13 @@ describe('createLocalAttestationObserver', () => {
 
     // 4 records, seq 0..3, each prevHash === previous record's hash
     expect(obs.records).toHaveLength(4);
-    expect(obs.records[0].prevHash).toBeNull();
+    expect(obs.records[0]!.prevHash).toBeNull();
     for (let i = 1; i < obs.records.length; i++) {
-      expect(obs.records[i].prevHash).toBe(obs.records[i - 1].hash);
-      expect(obs.records[i].seq).toBe(i);
+      expect(obs.records[i]!.prevHash).toBe(obs.records[i - 1]!.hash);
+      expect(obs.records[i]!.seq).toBe(i);
     }
     // headHash is the last record's hash
-    expect(obs.headHash).toBe(obs.records[3].hash);
+    expect(obs.headHash).toBe(obs.records[3]!.hash);
 
     // each hash equals the recomputed hash of its own fields (real chain)
     for (const rec of obs.records) {
@@ -88,7 +88,7 @@ describe('verifyLocalBundle', () => {
 
   it('rejects a bundle whose middle record was tampered', () => {
     const bundle = buildBundle();
-    (bundle.records[1].meta as any).input = { path: 'HACKED' };
+    (bundle.records[1]!.meta as any).input = { path: 'HACKED' };
     const v = verifyLocalBundle(bundle);
     expect(v.ok).toBe(false);
     expect(v.brokenAt).toBe(1);

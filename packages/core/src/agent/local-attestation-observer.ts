@@ -80,7 +80,9 @@ export interface BundleVerification {
 export function verifyLocalBundle(bundle: AttestationBundle): BundleVerification {
   let prev: string | null = null;
   for (let i = 0; i < bundle.records.length; i++) {
-    const { hash, ...rest } = bundle.records[i];
+    const rec = bundle.records[i];
+    if (!rec) return { ok: false, count: bundle.records.length, brokenAt: i };
+    const { hash, ...rest } = rec;
     if (rest.prevHash !== prev || hashRecord(rest) !== hash) {
       return { ok: false, count: bundle.records.length, brokenAt: i };
     }
