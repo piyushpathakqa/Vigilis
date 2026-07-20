@@ -1,7 +1,7 @@
 # Vigilis → ZMem: report-only QA gate (design)
 
 **Date:** 2026-07-17
-**Status:** Approved (brainstorm) → ready for implementation planning
+**Status:** Approved (brainstorm) → Plan A implemented & shipped as `vigilis@0.5.1` (2026-07-20; `0.5.0` deprecated — wrong `--version` string). Plan B pending.
 **Origin:** Revaz (ZerkerLabs) asked whether Vigilis can serve as an automated QA gate for ZMem. Piyush has owner access to `zerkerlabs`. This is internal dogfooding: ZMem becomes Vigilis's first external user and reference story.
 
 ---

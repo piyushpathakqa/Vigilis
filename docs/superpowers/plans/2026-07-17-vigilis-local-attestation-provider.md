@@ -4,6 +4,8 @@
 
 **Goal:** Add a real local attestation provider to Vigilis so the agent loop produces a tamper-evident, hash-chained attestation bundle on disk with zero external dependencies, then publish it as `vigilis@0.5.0`.
 
+> **Executed 2026-07-20:** shipped as **`vigilis@0.5.1`**, not `0.5.0`. `0.5.0` was published first but reported its own `--version` as `0.4.0` (a hardcoded string the package.json bump missed); `0.5.1` fixes this by reading the version from `package.json` and is the `latest` tag. `0.5.0` is deprecated on npm. Downstream (Plan B) consumes `vigilis@0.5.1`.
+
 **Architecture:** A new `LocalAttestationObserver` implements the existing `AgentObserver` seam and mirrors `TreeshipObserver`'s public shape (`flush()`, head hash). It appends one hash-chained record per loop event and writes a JSON bundle on flush. A small `createAttestationObserver` selector returns the Treeship observer when available, else the local one. The `heal` CLI command is wired to use the selector and print a local summary when Treeship is absent.
 
 **Tech Stack:** TypeScript (ESM, strict), Node built-in `crypto`/`fs`, Vitest. Repo: `argus` monorepo, pnpm workspaces. Core package `@argus/core`; CLI package `vigilis`.

@@ -6,7 +6,7 @@
 
 **Architecture:** A deterministic Python seed script fills the review queue. CI boots `python -m zerker_memory.dashboard` on `127.0.0.1:8765` against the same seeded DB. A self-contained Playwright project in `qa/` runs 4 specs (network-level assertions so selector drift doesn't flake). A conditional Vigilis `heal` step attests the agent's triage/heal decisions via the local (unsigned, zero-secret) provider. All steps are `continue-on-error` — report-only.
 
-**Tech Stack:** Python 3.11 (ZMem), Node 20 + `@playwright/test`, `npx vigilis@0.5.0` (from Plan A). Target repo: `zerkerlabs/zmem` (cloned separately; this plan edits that repo, not `argus`).
+**Tech Stack:** Python 3.11 (ZMem), Node 20 + `@playwright/test`, `npx vigilis@0.5.1` (from Plan A). Target repo: `zerkerlabs/zmem` (cloned separately; this plan edits that repo, not `argus`).
 
 ## Global Constraints
 
@@ -14,7 +14,7 @@
 - Every CI step in the new job is **report-only**: `continue-on-error: true`; the job must not fail the PR check.
 - Attestation notary is **optional** (local provider, zero secrets). The **model key** `ANTHROPIC_API_KEY` is required for the Vigilis agent to run; the attested step is skipped (not failed) when it's absent.
 - Seed and dashboard must use the **same** `--db` path (else the queue is empty).
-- Vigilis consumption: `npx vigilis@0.5.0`. If Plan A didn't publish to npm, substitute `npx github:<owner>/argus#<pinned-sha>` (record the SHA from Plan A) everywhere `npx vigilis@0.5.0` appears, and use a scoped name if Plan A published one.
+- Vigilis consumption: `npx vigilis@0.5.1`. If Plan A didn't publish to npm, substitute `npx github:<owner>/argus#<pinned-sha>` (record the SHA from Plan A) everywhere `npx vigilis@0.5.1` appears, and use a scoped name if Plan A published one.
 - ZMem's own tests run with `python -m unittest discover -s tests`.
 - Commit messages end with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
 - Do not touch ZMem's existing `.github/workflows/test.yml`; add a **new** workflow file.
@@ -325,7 +325,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Create: `.github/workflows/vigilis-qa.yml`
 
 **Interfaces:**
-- Consumes: `scripts/seed_review_state.py` (Task 1), `qa/` project (Task 2), `npx vigilis@0.5.0` (Plan A). Optional secrets `ANTHROPIC_API_KEY` (agent) and `TREESHIP_*` (signed receipts).
+- Consumes: `scripts/seed_review_state.py` (Task 1), `qa/` project (Task 2), `npx vigilis@0.5.1` (Plan A). Optional secrets `ANTHROPIC_API_KEY` (agent) and `TREESHIP_*` (signed receipts).
 - Produces: uploaded artifacts `zmem-playwright-report` and `zmem-vigilis-attestation`.
 
 - [ ] **Step 1: Write the workflow**
@@ -389,7 +389,7 @@ jobs:
           HAS_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY != '' }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          npx vigilis@0.5.0 heal "$ZMEM_DASHBOARD_URL" \
+          npx vigilis@0.5.1 heal "$ZMEM_DASHBOARD_URL" \
             --spec qa/e2e/promote-memory.spec.ts \
             --error "CI QA gate: triage the dashboard promote flow" \
             --no-pr --no-publish
@@ -521,4 +521,4 @@ Expected: `vigilis-qa` present, not failing the PR.
 - **Spec coverage:** §5.1 four specs → Task 2; §5.2 data flow (install→seed→boot→run→attest→upload) → Task 3 workflow; §5.3 files (workflow, seed, config, specs, doc) → Tasks 1–4; §5.4 selector-stability testid contingency → Task 4 Step 2; §5.5 verify (local + throwaway PR) → Task 2 Step 3, Task 4 Step 5. All covered.
 - **Placeholder scan:** `<owner>`, `<branch>`, `<pr-number>`, `<pinned-sha>` are intentional per-run values, called out in Global Constraints; all code/commands are complete. No TBD/TODO.
 - **Type/name consistency:** `ZMEM_DB` and `ZMEM_DASHBOARD_URL` used identically across Tasks 1–3; `seed(db_path)` returns `{queued, active}` (Task 1 impl + test); action routes `/api/memories/{id}/promote|reject` and `/api/snapshot` match the specs (Task 2) and the dashboard source. `vigilis heal ... --spec qa/e2e/promote-memory.spec.ts` references a file created in Task 2.
-- **Cross-plan dependency:** `npx vigilis@0.5.0` depends on Plan A publishing; fallback documented in Global Constraints.
+- **Cross-plan dependency:** `npx vigilis@0.5.1` depends on Plan A publishing; fallback documented in Global Constraints.
