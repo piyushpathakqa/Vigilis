@@ -7,7 +7,7 @@
  */
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { Command } from 'commander';
 
 // Load ./.env at startup so a key placed there — exactly as `vigilis init`
@@ -29,15 +29,17 @@ import {
   writeVigilisConfig,
 } from './config';
 import {
+  type AttestationBundle,
   composeObservers,
   ConsoleObserver,
   createAnthropicClient,
+  createAttestationObserver,
   createDefaultRegistry,
   createHealPr,
   createPlaywrightSession,
-  createTreeshipObserver,
   extractFailures,
   type Framework,
+  verifyLocalBundle,
   generate,
   heal,
   resolveAdapter,
@@ -363,9 +365,17 @@ program
       // Provenance is ON by default: wrap the whole self-heal in one signed Treeship
       // session. A no-op if the `treeship` CLI isn't installed (the observer is null).
       // Opt out with --no-receipt.
-      const tree = opts.receipt === false ? null : await createTreeshipObserver({ label: 'heal' });
-      if (tree) await treeshipCli(['session', 'start', '--name', `vigilis heal ${slug}`]);
-      const observer = composeObservers(new ConsoleObserver(), tree);
+      const attestation =
+        opts.receipt === false
+          ? null
+          : await createAttestationObserver({
+              label: 'heal',
+              outPath: `.vigilis/attestation/heal-${slug}.json`,
+            });
+      if (attestation?.kind === 'treeship') {
+        await treeshipCli(['session', 'start', '--name', `vigilis heal ${slug}`]);
+      }
+      const observer = composeObservers(new ConsoleObserver(), attestation?.observer);
 
       // Optional governance-cloud reporter: no-op unless VIGILIS_CLOUD_KEY is set.
       const reporter = resolveCloudReporter();
@@ -454,9 +464,9 @@ program
         console.log(`\n[vigilis] opened PR: ${pr.url}`);
       } finally {
         // Seal the provenance session (records every tool call + decision above).
-        await tree?.flush();
+        await attestation?.observer.flush();
         let receiptUrl: string | null = null;
-        if (tree) {
+        if (attestation?.kind === 'treeship') {
           await treeshipCli(['session', 'close']);
           receiptUrl = opts.publish === false ? null : await publishReceipt();
           if (receiptUrl) {
@@ -469,6 +479,21 @@ program
                 '(needs `treeship hub attach` once).',
             );
           }
+        } else if (attestation?.kind === 'local' && attestation.local) {
+          const bundle = JSON.parse(
+            readFileSync(attestation.local.bundlePath, 'utf8'),
+          ) as AttestationBundle;
+          const v = verifyLocalBundle(bundle);
+          console.log(
+            `\n[vigilis] 🔗 local attestation: ${v.count} artifacts, ${
+              v.ok ? 'chain intact' : `CHAIN BROKEN at #${v.brokenAt}`
+            } (unsigned)`,
+          );
+          console.log(`[vigilis] bundle: ${attestation.local.bundlePath}`);
+          console.log(
+            '[vigilis] verifiable + auditable — not a correctness guarantee. ' +
+              'Configure Treeship for a signed, independently-notarized receipt.',
+          );
         }
 
         // Optional best-effort governance-cloud report. No-op unless a key is
