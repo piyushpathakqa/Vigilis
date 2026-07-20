@@ -29,7 +29,7 @@ describe('createAttestationObserver', () => {
     const sel = await createAttestationObserver({
       label: 'heal',
       outPath,
-      createTreeship: async () => fakeTree as any,
+      createTreeship: async () => fakeTree as never,
     });
     expect(sel.kind).toBe('treeship');
     expect(sel.treeship).toBe(fakeTree);

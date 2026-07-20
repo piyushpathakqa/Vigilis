@@ -25,7 +25,7 @@ describe('createLocalAttestationObserver', () => {
     obs.onModelResponse?.({
       step: 1,
       stopReason: 'tool_use',
-      usage: { input_tokens: 10, output_tokens: 5 } as any,
+      usage: { input_tokens: 10, output_tokens: 5 } as never,
     });
     obs.onLoopEnd?.({ steps: 1, stopReason: 'end_turn' });
     await obs.flush();
@@ -88,7 +88,7 @@ describe('verifyLocalBundle', () => {
 
   it('rejects a bundle whose middle record was tampered', () => {
     const bundle = buildBundle();
-    (bundle.records[1]!.meta as any).input = { path: 'HACKED' };
+    bundle.records[1]!.meta.input = { path: 'HACKED' };
     const v = verifyLocalBundle(bundle);
     expect(v.ok).toBe(false);
     expect(v.brokenAt).toBe(1);

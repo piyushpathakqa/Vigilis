@@ -87,6 +87,8 @@ Full setup: [`docs/MCP.md`](./docs/MCP.md).
 
 When the [Treeship](https://www.treeship.dev) CLI is present, every `vigilis heal` run is sealed into a signed, offline-verifiable receipt automatically. No hard dependency; `--no-receipt` to opt out. Verify with `treeship verify last`. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
 
+Without Treeship, `heal` falls back to a **local attestation** provider (zero secrets): a hash-chained, tamper-evident bundle written to `.vigilis/attestation/` — "N artifacts, chain intact (unsigned)". It's verifiable and auditable (it proves *what the agent did*, not that its judgment was correct); configure Treeship to upgrade it to a signed, independently-notarized receipt.
+
 ## Why I built this
 
 I've spent my career in QA, and AI just rewrote the job: agents now write and fix tests on their own. Huge speed win — but it quietly breaks the one thing testing exists for. When an agent makes a red test green, did it *fix* the bug, or delete the test that caught it? At scale, nobody can check every change by hand.
