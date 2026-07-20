@@ -8,7 +8,17 @@
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
+
+// Single source of truth for the CLI version: the package's own package.json,
+// read at runtime (the published tarball ships package.json alongside dist/).
+const VERSION = (
+  JSON.parse(
+    readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../package.json'), 'utf8'),
+  ) as { version: string }
+).version;
 
 // Load ./.env at startup so a key placed there — exactly as `vigilis init`
 // instructs ("in .env or your shell") — is actually picked up at runtime, not
@@ -114,7 +124,7 @@ const SMOKE_SYSTEM =
 program
   .name('vigilis')
   .description('Agentic QA: generate, triage, and self-heal Playwright, Cypress & Selenium tests.')
-  .version('0.4.0');
+  .version(VERSION);
 
 program
   .command('init')
