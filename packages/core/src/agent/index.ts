@@ -11,14 +11,27 @@ export {
   verifyLocalBundle,
   canonicalJson,
   hashRecord,
+  makeRecord,
+  chainEntries,
+  buildBundle,
+  writeBundle,
 } from './local-attestation-observer';
 export type {
   LocalAttestationObserver,
   LocalAttestationObserverOptions,
   AttestationRecord,
   AttestationBundle,
+  AttestationEntry,
+  ChainContext,
   BundleVerification,
 } from './local-attestation-observer';
+export { attestRun, parsePlaywrightReport } from './attest-run';
+export type {
+  AttestRunOptions,
+  AttestRunResult,
+  ParsedReport,
+  SpecResult,
+} from './attest-run';
 export { createAttestationObserver } from './attestation';
 export type {
   AttestationSelection,

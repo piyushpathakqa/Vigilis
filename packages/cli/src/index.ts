@@ -42,6 +42,7 @@ import {
   type AttestationBundle,
   composeObservers,
   ConsoleObserver,
+  attestRun,
   createAnthropicClient,
   createAttestationObserver,
   createDefaultRegistry,
@@ -595,6 +596,34 @@ program
       } finally {
         await close();
       }
+    },
+  );
+
+program
+  .command('attest-run')
+  .argument('<report>', 'path to a Playwright JSON report (the `json` reporter output)')
+  .requiredOption('--commit <sha>', 'commit SHA the run was executed against')
+  .option('--exit-code <n>', 'the test runner exit code, bound into the receipt')
+  .option('--label <name>', 'bundle label', 'qa-run')
+  .option('--out <path>', 'where to write the attestation bundle (default: .vigilis/attestation/qa-run-<commit>.json)')
+  .description(
+    'Attest an actual test run: hash-chain the report digest + commit into a verifiable receipt (no secrets)',
+  )
+  .action(
+    (report: string, opts: { commit: string; exitCode?: string; label: string; out?: string }) => {
+      const out = opts.out ?? `.vigilis/attestation/qa-run-${opts.commit.slice(0, 12)}.json`;
+      const res = attestRun({
+        reportPath: report,
+        commit: opts.commit,
+        exitCode: opts.exitCode !== undefined ? Number(opts.exitCode) : undefined,
+        label: opts.label,
+        outPath: out,
+      });
+      console.log(`\n[vigilis] 🔗 ${res.summary}`);
+      console.log(`[vigilis] bundle: ${out}`);
+      console.log(
+        '[vigilis] verifiable + auditable — proves the recorded results are unaltered, not that they are correct.',
+      );
     },
   );
 

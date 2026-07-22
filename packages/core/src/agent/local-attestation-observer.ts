@@ -6,12 +6,29 @@ import type { AgentObserver } from './observer';
 export interface AttestationRecord {
   seq: number;
   timestamp: string;
-  type: 'loop_start' | 'model_response' | 'tool_call' | 'tool_result' | 'loop_end';
+  // Loop events use `loop_start | model_response | tool_call | tool_result |
+  // loop_end`; other attesters (e.g. attest-run) use their own kinds. Kept open
+  // so the attestation core is not QA-loop-specific.
+  type: string;
   actor: string;
   action: string;
   meta: Record<string, unknown>;
   prevHash: string | null;
   hash: string;
+}
+
+/** A single event to be chained into an attestation record. */
+export interface AttestationEntry {
+  type: string;
+  action: string;
+  meta: Record<string, unknown>;
+}
+
+/** Shared context for stamping records: actor URI, action prefix, clock. */
+export interface ChainContext {
+  actor: string;
+  prefix: string;
+  now: () => string;
 }
 
 export interface AttestationBundle {
@@ -65,6 +82,62 @@ export function hashRecord(rec: Omit<AttestationRecord, 'hash'>): string {
   return createHash('sha256').update(canonicalJson(rec)).digest('hex');
 }
 
+/** Stamp one entry into a hash-linked record (links to `prevHash`). */
+export function makeRecord(
+  seq: number,
+  prevHash: string | null,
+  entry: AttestationEntry,
+  ctx: ChainContext,
+): AttestationRecord {
+  const base = {
+    seq,
+    timestamp: ctx.now(),
+    type: entry.type,
+    actor: ctx.actor,
+    action: `${ctx.prefix}${entry.action}`,
+    meta: entry.meta,
+    prevHash,
+  };
+  return { ...base, hash: hashRecord(base) };
+}
+
+/** Chain a batch of entries into an ordered, hash-linked record list. */
+export function chainEntries(entries: AttestationEntry[], ctx: ChainContext): AttestationRecord[] {
+  const records: AttestationRecord[] = [];
+  let prev: string | null = null;
+  for (const entry of entries) {
+    const rec = makeRecord(records.length, prev, entry, ctx);
+    records.push(rec);
+    prev = rec.hash;
+  }
+  return records;
+}
+
+/** Wrap chained records in a sealed (unsigned) bundle envelope. */
+export function buildBundle(
+  records: AttestationRecord[],
+  meta: { actor: string; label: string; now: () => string },
+): AttestationBundle {
+  const last = records[records.length - 1];
+  return {
+    version: 1,
+    actor: meta.actor,
+    label: meta.label,
+    createdAt: meta.now(),
+    count: records.length,
+    headHash: last ? last.hash : null,
+    signed: false,
+    chainIntact: true,
+    records,
+  };
+}
+
+/** Write a bundle to disk as pretty JSON, creating parent dirs. */
+export function writeBundle(outPath: string, bundle: AttestationBundle): void {
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, JSON.stringify(bundle, null, 2), 'utf8');
+}
+
 export interface BundleVerification {
   ok: boolean;
   count: number;
@@ -98,27 +171,14 @@ export function createLocalAttestationObserver(
   const prefix = opts.label ? `${opts.label}.` : '';
   const now = opts.now ?? (() => new Date().toISOString());
   const label = opts.label ?? '';
+  const ctx: ChainContext = { actor, prefix, now };
   const records: AttestationRecord[] = [];
   let headHash: string | null = null;
 
-  const append = (
-    type: AttestationRecord['type'],
-    action: string,
-    meta: Record<string, unknown>,
-  ): void => {
-    const base = {
-      seq: records.length,
-      timestamp: now(),
-      type,
-      actor,
-      action: `${prefix}${action}`,
-      meta,
-      prevHash: headHash,
-    };
-    const hash = hashRecord(base);
-    const rec: AttestationRecord = { ...base, hash };
+  const append = (type: string, action: string, meta: Record<string, unknown>): void => {
+    const rec = makeRecord(records.length, headHash, { type, action, meta }, ctx);
     records.push(rec);
-    headHash = hash;
+    headHash = rec.hash;
   };
 
   return {
@@ -155,19 +215,7 @@ export function createLocalAttestationObserver(
       append('loop_end', 'loop.end', { steps: e.steps, stop: e.stopReason });
     },
     async flush() {
-      const bundle: AttestationBundle = {
-        version: 1,
-        actor,
-        label,
-        createdAt: now(),
-        count: records.length,
-        headHash,
-        signed: false,
-        chainIntact: true,
-        records,
-      };
-      mkdirSync(dirname(opts.outPath), { recursive: true });
-      writeFileSync(opts.outPath, JSON.stringify(bundle, null, 2), 'utf8');
+      writeBundle(opts.outPath, buildBundle(records, { actor, label, now }));
     },
   };
 }
