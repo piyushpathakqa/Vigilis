@@ -45,6 +45,11 @@ export ANTHROPIC_API_KEY=sk-ant-...   # a pay-as-you-go API key (not a Claude.ai
 npx vigilis init                                   # scaffold vigilis.config.json (auto-detects your framework)
 npx vigilis generate https://your-app.com --run    # explore the app → write + run a real spec
 npx vigilis heal https://your-app.com --spec tests/login.spec.ts   # heal drift → verify green → PR (refuses real bugs)
+
+# already have a suite running in CI? attest the run you just did — no API key, no secrets:
+npx playwright test --reporter=json > report.json
+npx vigilis attest-run report.json --commit $GITHUB_SHA --exit-code $?
+npx vigilis verify .vigilis/attestation/qa-run-*.json    # offline: chain intact, or broken at record #N
 ```
 
 Runs in your CI on your own key + chromium. About **10¢ per run** on the fast model (`--model claude-haiku-4-5`); Opus by default for quality.
@@ -85,9 +90,15 @@ Full setup: [`docs/MCP.md`](./docs/MCP.md).
 
 ## Provenance receipts
 
-When the [Treeship](https://www.treeship.dev) CLI is present, every `vigilis heal` run is sealed into a signed, offline-verifiable receipt automatically. No hard dependency; `--no-receipt` to opt out. Verify with `treeship verify last`. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
+Receipts work out of the box with **zero secrets** — no account, no API key, no network:
 
-Without Treeship, `heal` falls back to a **local attestation** provider (zero secrets): a hash-chained, tamper-evident bundle written to `.vigilis/attestation/` — "N artifacts, chain intact (unsigned)". It's verifiable and auditable (it proves *what the agent did*, not that its judgment was correct); configure Treeship to upgrade it to a signed, independently-notarized receipt.
+- **`vigilis attest-run <report.json>`** seals *any* test run (not just Vigilis's own) into a receipt: it hash-chains the Playwright report's digest, the commit SHA, and the runner's exit code into a tamper-evident bundle under `.vigilis/attestation/`. Drop it after your existing `playwright test` step in CI and every run leaves evidence.
+- **`vigilis heal`** seals its whole triage-and-heal session the same way — every tool call and every decision, hash-chained in order.
+- **`vigilis verify <bundle>`** re-walks the chain offline and reports *chain intact* or *broken at record #N*. Anyone holding the file can check it; editing or deleting any step breaks every hash after it.
+
+When the [Treeship](https://www.treeship.dev) CLI is present, `heal` receipts are additionally **signed by an independent notary** — verify with `treeship verify last`, or share the hosted URL. No hard dependency; `--no-receipt` to opt out. See [`docs/TREESHIP.md`](./docs/TREESHIP.md).
+
+Local bundles are verifiable and auditable (they prove *what the agent did*, unaltered and in order — not that its judgment was correct); Treeship upgrades that to a signed, independently-notarized receipt.
 
 ## Why I built this
 
@@ -126,7 +137,7 @@ vigilis/
 ├─ packages/
 │  ├─ core/   # agent loop, tool registry, Claude client, prompts, refusal actions
 │  ├─ mcp/    # MCP server wrapping the registry
-│  └─ cli/    # the `vigilis` command (generate | triage | heal)
+│  └─ cli/    # the `vigilis` command (generate | triage | heal | attest-run | verify)
 ├─ apps/
 │  ├─ sample-shop/   # Next.js demo target (login + products + cart, with seeded drift/bug toggles)
 │  ├─ cloud/         # governance cloud — org audit dashboard over signed receipts
@@ -149,6 +160,7 @@ Watch the full loop against the bundled demo app — see [`docs/DEMO.md`](./docs
 - ✅ Generate · Triage · Heal (Playwright, Cypress & Selenium — all live-verified)
 - ✅ GitHub Actions QA gate · signed provenance receipts · MCP server
 - ✅ Refusal actions (Slack + Linear) · governance-cloud audit dashboard
+- ✅ Zero-secret attestation: `attest-run` + `verify` — receipts for any test run, no keys
 - 🚧 Author (intent → test plan) · broader agent-attestation surface
 
 ## Credits

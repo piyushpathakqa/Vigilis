@@ -51,3 +51,8 @@ pnpm-debug.log*
 # Governance cloud local SQLite store
 .data/
 *.db
+
+# Private outreach drafts / positioning notes — keep out of the public repo
+revaz-slack-reply.txt
+docs/positioning/
+docs/Vigilis-Pricing-Flow.pdf

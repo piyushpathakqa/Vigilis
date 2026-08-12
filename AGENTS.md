@@ -5,15 +5,16 @@
 
 ## What this project is
 
-**Vigilis** is an **agentic QA framework**: a Claude agent that **authors, generates, triages,
-and self-heals Playwright tests** for any web app. It ships two ways from one core:
+**Vigilis** is the **trust layer for autonomous testing**: a Claude agent that generates,
+triages, and self-heals Playwright/Cypress/Selenium tests — and seals every decision into a
+hash-chained, verifiable attestation receipt. Healing is the wedge; **attestation is the
+product** (see `CLAUDE.md` for the full thesis). It ships two ways from one core:
 
-- **MCP server** (`@argus/mcp`) — drive it from Claude Desktop/Code
-- **CLI** (`@argus/cli`) — drive it from CI
+- **MCP server** (`vigilis-mcp` on npm, `packages/mcp`) — drive it from Claude Desktop/Code
+- **CLI** (`vigilis` on npm, `packages/cli`) — drive it from CI
 
-The whole loop runs as a deployment gate in **GitHub Actions**. It is a portfolio + OSS
-showcase for Piyush Pathak (Staff SDET) demonstrating AI-augmented QA, MCP, prompt
-engineering, and CI/CD gating with running code.
+The whole loop runs as a deployment gate in **GitHub Actions**. Built by Piyush Pathak;
+open-core (MIT agent/CLI/MCP + a commercial governance cloud, `apps/cloud`).
 
 ## Where to find things
 
@@ -58,7 +59,10 @@ Milestones are epics TRE-22 (M0) → TRE-26 (M4); tasks are TRE-27..46. See `doc
 
 ## Current status (short version)
 
-**M0 done. M1 in progress:** `TRE-30` (sample-shop app) and `TRE-31` (shared Tool Registry in
-`@argus/core`) are done and verified. **Next up: `TRE-32`** — the Claude agent loop. See
-`docs/STATUS.md` for the full picture, including the one open chore (pushing to GitHub needs a
-`workflow` OAuth scope).
+**Shipped and live:** `vigilis` on npm (0.6.x) with generate / triage / heal / smoke /
+attest-run / verify; multi-framework adapters (Playwright, Cypress, Selenium); attestation with
+a **zero-secret local provider by default** and optional Treeship signing; refusal actions
+(Slack + Linear); the MCP server (`vigilis-mcp`); the landing site (vigilis.dev, `apps/web`);
+and the governance cloud (`apps/cloud`). CI + QA Gate run on every push to `main`.
+See `docs/STATUS.md` and `docs/ROADMAP.md` for detail — some milestone docs lag the code;
+trust the code and recent git history over stale status notes.

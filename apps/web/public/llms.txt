@@ -18,6 +18,10 @@ export ANTHROPIC_API_KEY=sk-ant-...   # a pay-as-you-go API key (not a Claude.ai
 npx vigilis init                                 # scaffold vigilis.config.json (auto-detects framework)
 npx vigilis generate https://your-app.com --run  # explore → write + run a real spec
 npx vigilis heal https://your-app.com --spec tests/login.spec.ts   # heal drift, refuse real bugs, sign a receipt
+
+# attest a test run you already ran — zero secrets, no API key, works in any CI:
+npx vigilis attest-run report.json --commit $GITHUB_SHA --exit-code $?
+npx vigilis verify .vigilis/attestation/qa-run-*.json   # offline: chain intact, or broken at record #N
 ```
 
 Runs in your CI on your own key. ~10¢ per run on the fast model (`--model claude-haiku-4-5`).
@@ -45,7 +49,8 @@ The server exposes the generate / triage / heal QA tools from the shared registr
 - **License:** MIT (agent + CLI). Open-core: paid governance cloud on top.
 - **npm:** `vigilis` (CLI), `vigilis-mcp` (MCP server).
 - **Frameworks:** Playwright, Cypress, Selenium (auto-detected; `--framework` to force).
-- **Provenance:** signed, offline-verifiable receipts via Treeship (an independent notary — verify with `treeship verify last`). Optional; `--no-receipt` to opt out.
+- **Provenance (zero-secret default):** `vigilis attest-run` hash-chains any test run (report digest + commit + exit code) into a tamper-evident local bundle; `vigilis verify` re-walks the chain offline. No account, key, or network needed.
+- **Provenance (signed, optional):** receipts additionally signed via Treeship (an independent notary — verify with `treeship verify last`). `--no-receipt` to opt out.
 - **On a real-bug refusal:** can optionally alert Slack + file a deduplicated Linear ticket (env-gated).
 
 ## Docs

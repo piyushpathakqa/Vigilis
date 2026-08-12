@@ -219,13 +219,15 @@ const MARKUP = `
         <div class="qs-bar">
           <span class="d"></span><span class="d"></span><span class="d"></span>
           <span class="t">quickstart</span>
-          <button class="qs-copy" data-copy="npm i -D vigilis&#10;npx playwright install chromium&#10;vigilis init&#10;vigilis generate https://your-app.com --run" aria-label="Copy quickstart commands">COPY</button>
+          <button class="qs-copy" data-copy="npm i -D vigilis&#10;npx playwright install chromium&#10;vigilis init&#10;vigilis generate https://your-app.com --run&#10;vigilis attest-run report.json --commit $GITHUB_SHA&#10;vigilis verify .vigilis/attestation/qa-run-*.json" aria-label="Copy quickstart commands">COPY</button>
         </div>
         <div class="qs-body">
 <div><span class="c">$</span> npm i -D vigilis</div>
 <div><span class="c">$</span> npx playwright install chromium</div>
 <div><span class="c">$</span> vigilis init</div>
 <div><span class="c">$</span> vigilis generate https://your-app.com --run</div>
+<div><span class="c">$</span> vigilis attest-run report.json --commit $GITHUB_SHA</div>
+<div><span class="c">$</span> vigilis verify .vigilis/attestation/qa-run-*.json</div>
         </div>
       </div>
       <p class="reqs">Runs in your CI with your own Anthropic key and chromium. About 10&cent; per run on Haiku, Opus by default. <a href="https://github.com/piyushpathakqa/Vigilis">Read the docs &#9656;</a></p>
@@ -281,7 +283,7 @@ const MARKUP = `
         </div>
       </div>
     </div>
-    <p class="seal-note reveal">Every heal and every refusal becomes an offline-verifiable receipt when the <a href="https://www.treeship.dev">Treeship</a> CLI is present. No hard dependency, <span style="color:var(--dim)">--no-receipt</span> to opt out.</p>
+    <p class="seal-note reveal">Receipts need <b style="color:var(--mist)">zero secrets</b> by default: every heal and refusal is sealed into a hash-chained local bundle, <span style="color:var(--dim)">vigilis attest-run</span> seals any test run you already have, and <span style="color:var(--dim)">vigilis verify</span> re-walks the chain offline &mdash; intact, or broken at the exact record. With the <a href="https://www.treeship.dev">Treeship</a> CLI present, receipts are additionally signed by an independent notary. No hard dependency, <span style="color:var(--dim)">--no-receipt</span> to opt out.</p>
   </div>
 </section>
 

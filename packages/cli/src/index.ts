@@ -501,6 +501,7 @@ program
             } (unsigned)`,
           );
           console.log(`[vigilis] bundle: ${attestation.local.bundlePath}`);
+          console.log(`[vigilis] check it anytime: vigilis verify ${attestation.local.bundlePath}`);
           console.log(
             '[vigilis] verifiable + auditable — not a correctness guarantee. ' +
               'Configure Treeship for a signed, independently-notarized receipt.',
@@ -624,8 +625,47 @@ program
       console.log(
         '[vigilis] verifiable + auditable — proves the recorded results are unaltered, not that they are correct.',
       );
+      console.log(`[vigilis] check it anytime: vigilis verify ${out}`);
     },
   );
+
+program
+  .command('verify')
+  .argument('<bundle>', 'path to a local attestation bundle (.vigilis/attestation/*.json)')
+  .description(
+    'Re-walk an attestation bundle\'s hash chain and report whether it is intact (offline, no secrets)',
+  )
+  .action(async (bundlePath: string) => {
+    const bundle = JSON.parse(await readFile(bundlePath, 'utf8')) as AttestationBundle;
+    const v = verifyLocalBundle(bundle);
+    // The chain walk covers the records; also check the envelope agrees with them,
+    // so a tampered count/headHash can't dress up a truncated bundle as intact.
+    const last = bundle.records[bundle.records.length - 1];
+    const envelopeOk =
+      bundle.count === bundle.records.length &&
+      (bundle.headHash ?? null) === (last ? last.hash : null);
+
+    if (v.ok && envelopeOk) {
+      console.log(
+        `[vigilis] ✅ chain intact — ${v.count} records · label "${bundle.label}" · actor ${bundle.actor}`,
+      );
+      console.log(`[vigilis] head: ${bundle.headHash}`);
+      console.log(
+        '[vigilis] verifiable + auditable — proves these records are unaltered, not that they are correct.',
+      );
+    } else {
+      if (!v.ok) {
+        console.error(
+          `[vigilis] ❌ CHAIN BROKEN at record #${v.brokenAt} of ${v.count} — the bundle was altered after it was sealed.`,
+        );
+      } else {
+        console.error(
+          '[vigilis] ❌ envelope mismatch — count/headHash do not match the records in the bundle.',
+        );
+      }
+      process.exitCode = 1;
+    }
+  });
 
 // Top-level catch: async command errors surface as a clean one-line message
 // (with the underlying detail) and a non-zero exit — never a raw stack trace.
