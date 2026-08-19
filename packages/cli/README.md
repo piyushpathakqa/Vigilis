@@ -60,4 +60,4 @@ flags always override it.
 The same tools ship as an MCP server — generate/triage/heal straight from Claude Desktop/Code.
 See the [docs](https://github.com/piyushpathakqa/Vigilis/blob/main/docs/MCP.md).
 
-MIT © Piyush Pathak · provenance powered by Treeship (Zerker Lab)
+MIT © Piyush Pathak · provenance powered by [Treeship](https://www.treeship.dev), governed memory by ZMem — trust primitives from **Zerker Labs**

@@ -356,7 +356,7 @@ const MARKUP = `
 
 <div class="cred">
   <div class="cred-in">
-    Vigilis is built by <b>Piyush&nbsp;Pathak</b>. It consumes <b>Treeship</b> for independent attestation and <b>ZMem</b> for governed memory &mdash; external primitives Vigilis doesn't own or control. Because the notary that signs every verdict is independent, Vigilis can make a fail-closed, signed guarantee the rest of the category can't.
+    Vigilis is built by <b>Piyush&nbsp;Pathak</b>. It consumes <a href="https://www.treeship.dev"><b>Treeship</b></a> for independent attestation and <b>ZMem</b> for governed memory &mdash; both built by <b>Zerker&nbsp;Labs</b>, external primitives Vigilis doesn't own or control. Because the notary that signs every verdict is independent, Vigilis can make a fail-closed, signed guarantee the rest of the category can't.
   </div>
 </div>
 
@@ -372,6 +372,7 @@ const MARKUP = `
         <a href="https://github.com/piyushpathakqa/Vigilis/blob/main/docs/TREESHIP.md">Receipts</a>
       </div>
     </div>
+    <div class="foot-cred">Provenance by <a href="https://www.treeship.dev">Treeship</a> &middot; governed memory by ZMem &mdash; trust primitives from <b>Zerker Labs</b></div>
   </div>
 </footer>
 

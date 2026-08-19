@@ -50,7 +50,7 @@ The server exposes the generate / triage / heal QA tools from the shared registr
 - **npm:** `vigilis` (CLI), `vigilis-mcp` (MCP server).
 - **Frameworks:** Playwright, Cypress, Selenium (auto-detected; `--framework` to force).
 - **Provenance (zero-secret default):** `vigilis attest-run` hash-chains any test run (report digest + commit + exit code) into a tamper-evident local bundle; `vigilis verify` re-walks the chain offline. No account, key, or network needed.
-- **Provenance (signed, optional):** receipts additionally signed via Treeship (an independent notary — verify with `treeship verify last`). `--no-receipt` to opt out.
+- **Provenance (signed, optional):** receipts additionally signed via Treeship, the independent notary built by Zerker Labs (verify with `treeship verify last`). `--no-receipt` to opt out.
 - **On a real-bug refusal:** can optionally alert Slack + file a deduplicated Linear ticket (env-gated).
 
 ## Docs
