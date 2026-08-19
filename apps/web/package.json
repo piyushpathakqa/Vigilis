@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start -p 3200",
     "typecheck": "tsc --noEmit",
-    "render": "remotion render remotion/index.ts VigilisLoop public/argus-loop.mp4 --codec=h264"
+    "render": "remotion render remotion/index.ts VigilisLoop public/vigilis-loop.mp4 --codec=h264"
   },
   "dependencies": {
     "next": "^15.1.6",

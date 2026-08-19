@@ -1,5 +1,5 @@
 import { Composition } from 'remotion';
-import { VigilisLoop } from './VigilisLoop';
+import { VigilisLoop, VIGILIS_LOOP_FRAMES } from './VigilisLoop';
 import { VigilisRefuse, VIGILIS_REFUSE_FRAMES } from './VigilisRefuse';
 import { LoomReliability, LOOM_RELIABILITY_FRAMES } from './LoomReliability';
 
@@ -8,7 +8,7 @@ export const RemotionRoot = () => (
     <Composition
       id="VigilisLoop"
       component={VigilisLoop}
-      durationInFrames={675}
+      durationInFrames={VIGILIS_LOOP_FRAMES}
       fps={30}
       width={1920}
       height={1080}
