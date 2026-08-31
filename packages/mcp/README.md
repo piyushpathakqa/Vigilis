@@ -45,6 +45,8 @@ or *"this spec is failing — is it a real bug or DOM drift?"* and it drives the
 ## What it exposes
 
 The full Vigilis tool registry over MCP: `browser_navigate/click/type/snapshot`,
-`dom_query/dom_testids`, `fs_read/write/list`, `playwright_run`, `report_verdict`.
+`dom_query/dom_testids`, `fs_read/write/list`, `playwright_run`, `web_search`, `report_verdict`.
+
+`web_search` is optional and only appears when `YDC_API_KEY` is set.
 
 MIT © Piyush Pathak · provenance powered by Treeship (Zerker Lab)
