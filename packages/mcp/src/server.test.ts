@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { ToolContext } from '@argus/core';
@@ -29,8 +29,29 @@ async function connect() {
   return client;
 }
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});
+
 describe('createVigilisMcpServer', () => {
-  it('exposes the 10 registry tools', async () => {
+  it('removes external search from discovery and execution when disabled', async () => {
+    vi.stubEnv('VIGILIS_SEARCH', 'off');
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const client = await connect();
+    expect((await client.listTools()).tools.map((tool) => tool.name)).not.toContain('web_search');
+    expect(
+      await client.callTool({
+        name: 'web_search',
+        arguments: { objective: 'docs', search_queries: ['docs'] },
+      }),
+    ).toMatchObject({ isError: true });
+    expect(fetch).not.toHaveBeenCalled();
+    await client.close();
+  });
+
+  it('exposes the shared registry tools', async () => {
     const client = await connect();
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual(
@@ -46,6 +67,8 @@ describe('createVigilisMcpServer', () => {
         'fs_write',
         'playwright_run',
         'test_run',
+        'web_search',
+        'web_fetch',
       ].sort(),
     );
     await client.close();

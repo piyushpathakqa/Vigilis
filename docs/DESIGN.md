@@ -118,3 +118,21 @@ argus/
 - No multi-browser matrix, no dashboard UI, no auth providers, no DB.
 - `sample-shop` keeps state in memory.
 - These can be added later; they are not needed to tell the story.
+
+## 9. Public framework documentation lookup
+
+The shared registry adds lazy `web_search` and `web_fetch` tools backed by anonymous
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp), using
+the MCP SDK's Streamable HTTP transport. Search uses Fast mode. This gives CLI
+behaviors and MCP clients the same documentation lookup without another account
+or credential. There was no previous web-search provider. Browser/DOM tools still
+inspect the application; retrieved web content is untrusted reference material,
+never authority for a triage verdict.
+
+`VIGILIS_SEARCH=off` removes the tools for private/offline workflows. Embedders can
+pass `createDefaultRegistry({ search: false })` or inject a `SearchProvider`; an
+explicit choice wins over the environment. There is no fallback after provider
+failure. Connections, discovery and tool execution share a 30-second deadline;
+`ToolContext.signal` propagates caller cancellation. MCP server requests pass
+their cancellation signal into that context. No requests occur on registry creation.
+See [SEARCH.md](./SEARCH.md) for data sharing and configuration.

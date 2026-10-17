@@ -6,7 +6,7 @@ over the Model Context Protocol, so you can drive the **exact tools the agent us
 the agent loop; the server holds the live browser.
 
 > No `ANTHROPIC_API_KEY` is needed for the MCP server itself — it only executes tools (the
-> reasoning happens in your client). It does launch headless Chromium on the first browser/DOM
+> reasoning happens in your client). It does launch headless Chromium on the first
 > tool call, so run `npx playwright install chromium` once.
 
 ## Claude Code
@@ -49,9 +49,22 @@ failing spec* and it drives the tools.
 | `dom_query` / `dom_testids` | Inspect elements / list `data-testid`s |
 | `fs_read` / `fs_write` / `fs_list` | Read/write files (sandboxed to the working dir) |
 | `playwright_run` | Run a Playwright spec, get pass/fail |
+| `web_search` / `web_fetch` | Search public framework docs / fetch public pages through Parallel |
 
 ## Try it
 
 In your MCP client, ask: *"Navigate to http://localhost:3100/login, list the data-testids, log in
 with demo/demo, then write a Playwright spec for the flow to tests/generated/login.spec.ts."* The
 client will call the Vigilis tools to do it — the same tools `argus generate` uses, now driven by you.
+
+## Public documentation lookup
+
+The shared registry includes lazy `web_search` / `web_fetch` tools using
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp), with
+Fast-mode search and no account or API key. Queries and fetched URLs are sent
+to Parallel only when a tool is called. Send public documentation requests only.
+Your MCP client's tool permissions still control which calls it makes.
+
+To remove these tools, add `"env": { "VIGILIS_SEARCH": "off" }` to the Vigilis
+server entry in your client configuration, then restart it. This also works as
+a shell environment variable when starting `vigilis-mcp`. See [SEARCH.md](./SEARCH.md).

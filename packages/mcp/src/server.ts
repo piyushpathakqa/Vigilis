@@ -18,9 +18,9 @@ export function createVigilisMcpServer(opts: VigilisMcpOptions): McpServer {
     server.registerTool(
       tool.name,
       { description: tool.description, inputSchema: tool.inputSchema },
-      async (args: Record<string, unknown>) => {
+      async (args: Record<string, unknown>, extra) => {
         const ctx = await opts.getContext();
-        const result = await registry.execute(tool.name, args, ctx);
+        const result = await registry.execute(tool.name, args, { ...ctx, signal: extra.signal });
         return {
           content: [{ type: 'text' as const, text: result.content }],
           isError: result.isError ?? false,

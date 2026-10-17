@@ -2,7 +2,7 @@
   "name": "vigilis-mcp",
   "mcpName": "io.github.piyushpathakqa/vigilis-mcp",
   "version": "0.4.1",
-  "description": "Vigilis MCP server — drive the Vigilis QA tools (generate/triage/heal Playwright, Cypress & Selenium tests) from Claude Desktop/Code over the Model Context Protocol.",
+  "description": "Vigilis MCP server \u2014 drive the Vigilis QA tools (generate/triage/heal Playwright, Cypress & Selenium tests) from Claude Desktop/Code over the Model Context Protocol.",
   "type": "module",
   "license": "MIT",
   "author": "Piyush Pathak",
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@playwright/test": "^1.60.0",
     "playwright": "^1.60.0",
     "zod": "^4.4.3"

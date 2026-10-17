@@ -24,7 +24,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
     "playwright": "^1.60.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "optionalDependencies": {
     "@treeship/sdk": "^0.12.0"

@@ -70,6 +70,16 @@ Attestation is **verifiable** and **auditable** — it proves *what the agent di
 
 On a real-bug refusal, Vigilis can post a **Slack** alert and file a **deduplicated Linear** ticket — each linking the signed receipt. Off by default; a no-op until you set `SLACK_WEBHOOK_URL` / `LINEAR_API_KEY`. See [`docs/REFUSAL-ACTIONS.md`](./docs/REFUSAL-ACTIONS.md).
 
+## Look up framework documentation
+
+The agent can use `web_search` and `web_fetch` to consult current public framework
+documentation through [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp).
+Search uses Fast mode with no account or API key. Tools are available by default;
+they connect only when called. Set `VIGILIS_SEARCH=off` before starting the CLI or
+MCP server to remove both tools. Keep queries public: never send private app URLs,
+specs, logs or credentials. Web references do not replace live-app verification.
+See [web lookup configuration](./docs/SEARCH.md).
+
 ## Drive it from Claude (MCP)
 
 The same tools ship as an **MCP server** ([`vigilis-mcp`](https://www.npmjs.com/package/vigilis-mcp), [in the official MCP registry](https://registry.modelcontextprotocol.io)) — generate / triage / heal straight from Claude Desktop, Claude Code, or Cursor. Add it to your MCP client config:

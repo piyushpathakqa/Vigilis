@@ -1,7 +1,7 @@
 {
   "name": "vigilis",
   "version": "0.6.0",
-  "description": "Agentic QA — an AI agent that writes, gates, triages, and self-heals Playwright, Cypress & Selenium tests, with signed provenance receipts.",
+  "description": "Agentic QA \u2014 an AI agent that writes, gates, triages, and self-heals Playwright, Cypress & Selenium tests, with signed provenance receipts.",
   "type": "module",
   "license": "MIT",
   "author": "Piyush Pathak",
@@ -53,7 +53,8 @@
     "@playwright/test": "^1.60.0",
     "commander": "^13.0.0",
     "playwright": "^1.60.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "optionalDependencies": {
     "@treeship/sdk": "^0.12.0"

@@ -7,6 +7,8 @@ export class ToolError extends Error {
 
 /** Runtime dependencies a tool handler may use. Injected by the caller. */
 export interface ToolContext {
+  /** Optional cancellation for network tools, supplied by the embedding caller. */
+  signal?: AbortSignal;
   /** Absolute directory that all fs_* tools are sandboxed to. */
   workspaceRoot: string;
   /** Live page/browser. Real impl injected by the agent loop (TRE-32); faked in tests. */

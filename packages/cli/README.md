@@ -40,6 +40,15 @@ vigilis verify  .vigilis/attestation/qa-run-<sha>.json              # re-walk th
 - **Verify** a receipt offline — `vigilis verify <bundle>` re-walks the hash chain and tells you
   *intact* or *broken at record #N*. Anyone with the file can run it; no account, no network.
 
+## Framework documentation lookup
+
+`web_search` and `web_fetch` are available to the agent by default through
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp). Search
+uses Fast mode with no account or API key; connections start only on tool calls.
+Use public framework questions only, never private app URLs, specs, logs or secrets.
+Set `VIGILIS_SEARCH=off` before running Vigilis to remove both tools.
+[Configuration and data sharing](https://github.com/piyushpathakqa/Vigilis/blob/main/docs/SEARCH.md).
+
 ## Receipts
 
 Every attested run produces a hash-chained bundle: each record embeds the hash of the previous

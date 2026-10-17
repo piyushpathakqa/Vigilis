@@ -28,3 +28,5 @@ export * from './framework';
 export * from './memory';
 export * from './cloud';
 export * from './actions';
+
+export * from './search';
